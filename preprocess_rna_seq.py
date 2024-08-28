@@ -22,7 +22,9 @@ def main(args: argparse.Namespace) -> None:
     ----------
     args : argparse.Namespace
         Command-line arguments containing the following:
+
         - n_components (int): Number of PCA components to retain.
+
         - timestep_train (int): Timestep to filter the data (-1 to keep all).
 
     Returns

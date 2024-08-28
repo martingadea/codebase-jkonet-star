@@ -3,7 +3,7 @@ import jax
 import jax.numpy as jnp
 from flax.training import train_state
 from flax import linen as nn
-from flax.core import freeze
+from flax.core import freeze, FrozenDict
 import optax
 from typing import Dict, Callable, Any
 
@@ -127,7 +127,23 @@ def global_norm(updates: Dict[str, jnp.ndarray]) -> jnp.ndarray:
         sum([jnp.sum(jnp.square(x)) for x in jax.tree_util.tree_leaves(updates)]))
 
 
-def clip_weights_icnn(params):
+def clip_weights_icnn(params: FrozenDict) -> FrozenDict:
+    """
+    Clip the weights of an Input Convex Neural Network (ICNN).
+
+    This function modifies the weights of the ICNN by clipping the values in kernels that start with 'Wz'
+    to ensure they are non-negative. This is necessary to maintain the convexity property of the ICNN.
+
+    Parameters
+    ----------
+    params : FrozenDict
+        A frozen dictionary containing the parameters of the ICNN.
+
+    Returns
+    -------
+    Any
+        A frozen dictionary with the same structure as `params`, but with the relevant weights clipped to be non-negative.
+    """
     params = params.unfreeze()
     for k in params.keys():
         if (k.startswith('Wz')):
@@ -136,7 +152,24 @@ def clip_weights_icnn(params):
     return freeze(params)
 
 
-def penalize_weights_icnn(params):
+def penalize_weights_icnn(params: FrozenDict) -> jnp.ndarray:
+    """
+    Compute a penalty for negative weights in an ICNN.
+
+    This function calculates a penalty term based on the L2 norm of any negative values in the weights
+    that start with 'Wz'. This penalty can be added to the loss function during training to encourage
+    the network to maintain non-negative weights in those layers, which is important for the ICNN's convexity.
+
+    Parameters
+    ----------
+    params : FrozenDict
+        A frozen dictionary containing the parameters of the ICNN.
+
+    Returns
+    -------
+    jnp.ndarray
+        A scalar penalty value representing the sum of the L2 norms of the negative weights.
+    """
     penalty = 0
     for k in params.keys():
         if (k.startswith('Wz')):

@@ -3,7 +3,7 @@ import itertools
 import functools
 import jax.numpy as jnp
 from flax.training import train_state
-from  utils.features import rbfs
+from utils.features import rbfs
 from models.base import LearningDiffusionModel
 from dataset import CouplingsDataset, LinearParametrizationDataset
 from networks.energies import MLP
