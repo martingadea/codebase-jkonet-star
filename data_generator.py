@@ -10,6 +10,7 @@ from utils.density import GaussianMixtureModel
 from utils.ot import compute_couplings
 from utils.plotting import plot_couplings, plot_level_curves
 from collections import defaultdict
+from typing import Tuple, Union
 
 def filename_from_args(args):
     """
@@ -35,23 +36,37 @@ def filename_from_args(args):
     
     return filename
 
-def train_test_split(values, sample_labels, test_size=0.4):
+def train_test_split(
+    values: jnp.ndarray,
+    sample_labels: jnp.ndarray,
+    test_size: float = 0.4
+) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+    """"
+    Splits the dataset into training and testing sets while preserving the distribution of labels.
+
+    This function ensures that the proportion of each label in the dataset is preserved in both the
+    training and testing subsets.
+
+    Parameters
+    ----------
+    values : jnp.ndarray
+        The data array to be split.
+    sample_labels : jnp.ndarray
+        The corresponding labels for the data. Contains the timestep
+        linked to each value.
+    test_size : float, optional
+        The proportion of the dataset to include in the test split. Defaults to 0.4.
+
+    Returns
+    -------
+    tuple of jnp.ndarray
+        A tuple containing:
+
+        - Train values: Subset of the data for training.
+        - Train labels: Corresponding labels for the training data.
+        - Test values: Subset of the data for testing.
+        - Test labels: Corresponding labels for the testing data.
     """
-        Splits the dataset into training and testing sets, ensuring the distribution of labels is preserved.
-
-        Parameters:
-        values (Union[np.ndarray, jnp.ndarray]): The data array to be split.
-        sample_labels (Union[np.ndarray, jnp.ndarray]): The corresponding labels for the data. It contains the timestep linked to each value.
-        test_size (float, optional): The proportion of the dataset to include in the test split.
-
-        Returns:
-        Tuple[Union[np.ndarray, jnp.ndarray], Union[np.ndarray, jnp.ndarray], Union[np.ndarray, jnp.ndarray], Union[np.ndarray, jnp.ndarray]]:
-            A tuple containing:
-            - Train values (Union[np.ndarray, jnp.ndarray]): Subset of the data for training.
-            - Train labels (Union[np.ndarray, jnp.ndarray]): Corresponding labels for the training data.
-            - Test values (Union[np.ndarray, jnp.ndarray]): Subset of the data for testing.
-            - Test labels (Union[np.ndarray, jnp.ndarray]): Corresponding labels for the testing data.
-        """
     unique_labels = np.unique(sample_labels)
     train_indices = []
     test_indices = []
@@ -68,14 +83,28 @@ def train_test_split(values, sample_labels, test_size=0.4):
 
     return values[train_indices], sample_labels[train_indices], values[test_indices], sample_labels[test_indices]
 
-def generate_data_from_trajectory(folder, values, sample_labels, n_gmm_components=10, data_type='train'):
+def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_labels: jnp.ndarray,
+                                  n_gmm_components: int = 10, data_type: str = 'train') -> None:
     """
-    Fits the gaussians and computes the couplings from the trajectory.
+    Fits Gaussian Mixture Models (GMM) to the trajectory data, computes couplings,
+    and saves the results to disk. This function also plots the data and saves the plots.
 
-    - Saves the data to file
-    - Fits a Gaussian Mixture Model to the data and saves the densities and gradients at the particles to file
-    - Computes the couplings between the particles and saves them to file
-    - Plots all the information and saves the plots to file
+    Parameters
+    ----------
+    folder : str
+        Directory where the data and plots will be saved.
+    values : jnp.ndarray
+        Array of trajectory data points.
+    sample_labels : jnp.ndarray
+        Array of sample labels corresponding to each data point.
+    n_gmm_components : int, optional
+        Number of components for the Gaussian Mixture Model (default is 10).
+    data_type : str, optional
+        Type of data being processed, either 'train' or 'test' (default is 'train').
+
+    Returns
+    -------
+    None
     """
     sample_labels = [int(label) for label in sample_labels]
     # Group the values by sample labels
@@ -134,7 +163,52 @@ def generate_data_from_trajectory(folder, values, sample_labels, n_gmm_component
         plt.savefig(os.path.join('out', 'plots', folder, f'couplings_{data_type}_{label}_to_{next_label}.png'))
         plt.clf()
 
-def main(args):
+def main(args: argparse.Namespace) -> None:
+    """
+    Main function to run the data generation and processing pipeline.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Command-line arguments containing the following:
+
+        - load_from_file (str): Path to a file to load a pre-generated trajectory.
+          If provided, skips data generation.
+
+        - potential (str): Name of the potential energy to use. Options include
+          various potentials or 'none' to skip.
+
+        - n_timesteps (int): Number of timesteps for the SDE simulation.
+
+        - dt (float): Time increment for each step in the simulation.
+
+        - internal (str): Type of internal energy ('wiener' for Wiener process
+          or 'none').
+
+        - beta (float): Standard deviation of the Wiener process. Used only if
+          `internal` is 'wiener'.
+
+        - interaction (str): Name of the interaction energy. Options include
+          various interactions or 'none'.
+
+        - dimension (int): Dimensionality of the system for synthetic data generation.
+
+        - n_particles (int): Number of particles to simulate.
+
+        - batch_size (int): Batch size for computing couplings.
+
+        - n_gmm_components (int): Number of components in the Gaussian Mixture
+          Model. Set to 0 to disable GMM fitting.
+
+        - seed (int): Random seed for reproducibility.
+
+        - train_test_split (float): Ratio for train-test split. Set to 0 for
+          no split.
+
+    Returns
+    -------
+    None
+    """
     print("Running with arguments: ", args)
     key = jax.random.PRNGKey(args.seed)
 

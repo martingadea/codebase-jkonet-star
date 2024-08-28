@@ -2,6 +2,7 @@
 # Monge gap regularizer see https://arxiv.org/abs/2302.04953
 import jax
 import jax.numpy as jnp
+import numpy as np
 import optax
 from models.base import LearningDiffusionModel
 from dataset import PopulationDataset
@@ -12,12 +13,68 @@ from networks.fixpoint_loop import fixpoint_iter
 from networks.utils import count_parameters
 from utils.ot import sinkhorn_loss
 from ott.neural.methods.monge_gap import monge_gap_from_samples as monge_gap
+from flax.training import train_state
+from typing import Any, Dict, Tuple, List, Callable
+
 
 class JKOnet(LearningDiffusionModel):
-    def load_dataset(self, dataset_name: str):
+    """
+    JKOnet is a model designed for learning diffusion processes using
+    a combination of energy-based models and optimal transport maps.
+
+    Attributes
+    ----------
+    tau : float
+        The regularization parameter for the JKO objective.
+    data_dim : int
+        The dimensionality of the data being processed.
+    potential_optimizer : optax.GradientTransformation
+        Optimizer for the energy model.
+    model_potential : MLP
+        The energy model used to compute potential functions.
+    config_settings : Dict
+        Configuration settings for the model.
+    otmap_config : Dict
+        Configuration for the optimal transport map.
+    otmap_optimizer : Any
+        Optimizer for the optimal transport map.
+    rng : jax.random.PRNGKey
+        Random number generator state.
+    model_otmap : ICNN
+        The ICNN model used as the optimal transport map.
+    optimize_otmap_fn : Callable
+        Function to optimize the transport map using fixed-point iteration.
+    """
+    def load_dataset(self, dataset_name: str) -> PopulationDataset:
+        """
+        Load a dataset by its name.
+
+        Parameters
+        ----------
+        dataset_name : str
+            The name of the dataset to load.
+
+        Returns
+        -------
+        PopulationDataset
+            The loaded dataset.
+        """
         return PopulationDataset(dataset_name)
     
-    def __init__(self, config, data_dim, tau) -> None:
+    def __init__(self, config: Dict, data_dim: int, tau: float) -> None:
+        """
+        Initialize the JKOnet model.
+
+        Parameters
+        ----------
+        config : Dict
+            Configuration dictionary containing model parameters and settings.
+        data_dim : int
+            The dimensionality of the input data.
+        tau : float
+            Represents the time scale over which the diffusion process described by the
+        Fokker-Planck equation is considered.
+        """
         super().__init__()
         self.tau = tau
         self.data_dim = data_dim
@@ -29,7 +86,29 @@ class JKOnet(LearningDiffusionModel):
         self.otmap_config = config['otmap']
         self.otmap_optimizer = get_optimizer(config['otmap']['optim'])
 
-    def _loss_fn_otmap(self, params_otmap, params_energy, data):
+    def _loss_fn_otmap(
+        self,
+        params_otmap: Any,
+        params_energy: Any,
+        data: jnp.ndarray
+    ) -> Tuple[jnp.ndarray, jnp.ndarray]:
+        """
+        Compute the loss function for the optimal transport map.
+
+        Parameters
+        ----------
+        params_otmap : Any
+            Parameters for the optimal transport map (ICNN model).
+        params_energy : Any
+            Parameters for the energy model (potential).
+        data : jnp.ndarray
+            The input data batch.
+
+        Returns
+        -------
+        Tuple[jnp.ndarray, jnp.ndarray]
+            The computed loss and the predicted values.
+        """
         grad_otmap_data = jax.vmap(lambda x: jax.grad(
             self.model_otmap.apply, argnums=1)(
                 {'params': params_otmap}, x))(data)
@@ -48,12 +127,33 @@ class JKOnet(LearningDiffusionModel):
 
         return loss, predicted
 
-    def _prepare_otmap(self):
+    def _prepare_otmap(self) -> ICNN:
+        """
+        Prepare the ICNN model for the optimal transport map.
+
+        Returns
+        -------
+        ICNN
+            The initialized ICNN model.
+        """
         return ICNN(dim_hidden=self.otmap_config['model']['layers'],
                     init_fn=self.otmap_config['model']['init_fn'],
                     pos_weights=self.otmap_config['model']['pos_weights'])
 
-    def create_state(self, rng):
+    def create_state(self, rng: jax.random.PRNGKey) -> Any:
+        """
+        Create the initial state of the model, including the energy model and transport map.
+
+        Parameters
+        ----------
+        rng : Any
+            Random number generator state.
+
+        Returns
+        -------
+        Any
+            The initial state of the potential model.
+        """
         self.rng = rng
         self.model_otmap = self._prepare_otmap()
         self.optimize_otmap_fn = get_optimize_psi_fn(
@@ -69,7 +169,20 @@ class JKOnet(LearningDiffusionModel):
             rng, self.model_potential, get_optimizer(self.potential_optimizer), self.data_dim)
         return potential
     
-    def create_state_from_params(self, params):
+    def create_state_from_params(self, params: Dict) -> train_state.TrainState:
+        """
+        Creates and returns the initial state for training from the provided parameters.
+
+        Parameters
+        ----------
+        params : Dict
+            A dictionary containing the parameters used to initialize the training state for the potential model.
+
+        Returns
+        -------
+        Any
+            The initialized state for the potential model.
+        """
         self.model_otmap = self._prepare_otmap()
         self.optimize_otmap_fn = get_optimize_psi_fn(
             jax.jit(self._loss_fn_otmap),
@@ -86,7 +199,34 @@ class JKOnet(LearningDiffusionModel):
         
 
     # Source: https://github.com/bunnech/jkonet
-    def loss_fn_energy(self, params_energy, rng_psi, batch, t):
+    def loss_fn_energy(
+            self,
+            params_energy: Dict,
+            rng_psi: jax.random.PRNGKey,
+            batch: jnp.ndarray,
+            t: int
+    ) -> Tuple[float, Tuple[jnp.ndarray, jnp.ndarray]]:
+        """
+        Computes the energy loss by solving the JKO step and comparing the prediction to the actual data.
+
+        Parameters
+        ----------
+        params_energy : Dict
+            The parameters of the energy model.
+        rng_psi : jax.random.PRNGKey
+            The random key used for initializing the OT map parameters.
+        batch : jnp.ndarray
+            The batch of data at different time steps.
+        t : int
+            The current time step.
+
+        Returns
+        -------
+        loss_energy : float
+            The computed energy loss.
+        (loss_psi, predicted) : Tuple[jnp.ndarray, jnp.ndarray]
+            The loss from optimizing the OT map and the predicted next step from the JKO step.
+        """
         # initialize psi model and optimizer
         params_psi = self.model_otmap.init(
             rng_psi, jnp.ones(batch[t].shape[1]))['params']
@@ -101,7 +241,28 @@ class JKOnet(LearningDiffusionModel):
 
         return loss_energy, (loss_psi, predicted)
     
-    def train_step(self, state, sample):
+    def train_step(
+        self,
+        state: train_state.TrainState,
+        sample: List[List[np.ndarray]]
+    ) -> Tuple[jnp.ndarray, train_state.TrainState]:
+        """
+        Performs a single training step by iterating through the time steps of the batch.
+
+        Parameters
+        ----------
+        state : train_state.TrainState
+            The current state of the model, containing the parameters and optimizer state.
+        sample : List[List[np.ndarray]]
+            A sample batch of data.
+
+        Returns
+        -------
+        loss : float
+            The total loss computed over the entire batch.
+        state : train_state.TrainState
+            The updated state after applying the gradients.
+        """
         batch = jnp.stack(sample, axis=2).transpose(2, 0, 1)
 
         # define gradient function
@@ -141,22 +302,120 @@ class JKOnet(LearningDiffusionModel):
 
         return loss, state
     
-    def get_potential(self, state):
+    def get_potential(self, state: train_state.TrainState) -> Callable[[jnp.ndarray], jnp.ndarray]:
+        """
+        Returns the potential function based on the current state.
+
+        Parameters
+        ----------
+        state : Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]
+            The current state containing the potential, interaction, and internal parameters.
+
+        Returns
+        -------
+        Callable[[jnp.ndarray], jnp.ndarray]
+            A function that computes the potential for a given input `x`.
+        """
         return lambda x: self.model_potential.apply(
             {'params': state.params}, x)
 
-    def get_beta(self, _):
+    def get_beta(self, _) -> float:
+        """
+        Return a constant zero value for the beta term of the internal energy model.
+
+        This implementation returns a constant zero value, as the internal energy is not used in this method.
+
+        Parameters
+        ----------
+        state : Tuple[train_state.TrainState, train_state.TrainState, train_state.TrainState]
+            The current states of the potential, internal, and interaction models.
+
+        Returns
+        -------
+        float
+            The constant zero value for the beta term of the internal energy model.
+        """
         return 0.
     
-    def get_interaction(self, _):
+    def get_interaction(self, _) -> Callable[[jnp.ndarray], jnp.ndarray]:
+        """
+        Returns a function representing the interaction term.
+
+        This implementation returns a constant zero function, as the interaction is not used in this method.
+
+        Parameters
+        ----------
+        _ : Any
+            Unused parameter in this context.
+
+        Returns
+        -------
+        Callable[[jnp.ndarray], float]
+            A function that always returns 0.
+        """
         return lambda _: 0.
     
 class JKOnetVanilla(JKOnet):
-    def _prepare_otmap(self):
+    """
+    A variant of the JKOnet model without the use of ICNN (Input Convex Neural Networks).
+
+    This class prepares the optimal transport map (OT map) using a simple
+    Multi-Layer Perceptron (MLP) based on the provided configuration. It
+    inherits most of its functionality from the `JKOnet` class but does not
+    include additional regularizations or constraints like ICNN.
+    """
+    def _prepare_otmap(self) -> MLP:
+        """
+        Prepare the optimal transport map (OT map) model.
+
+        This method constructs and returns an MLP (Multi-Layer Perceptron)
+        based on the layer configuration provided in `otmap_config['model']['layers']`.
+
+        Returns
+        -------
+        MLP
+            An MLP model configured according to the specified layers in `otmap_config`.
+        """
         return MLP(self.otmap_config['model']['layers'])
 
 class JKOnetMongeGap(JKOnetVanilla):
-    def _loss_fn_otmap(self, params_otmap, params_energy, data):
+    """
+    A JKOnet model variant incorporating Monge gap regularization.
+
+    This class extends `JKOnetVanilla` by adding a Monge gap regularization term
+    to the loss function. This regularization encourages the optimal transport map
+    to be more efficient in the sense of the Monge problem, which can lead to
+    better performance in certain applications.
+    """
+    def _loss_fn_otmap(self,
+        params_otmap: Dict[str, Any],
+        params_energy: Dict[str, Any],
+        data: jnp.ndarray
+    ) -> Tuple[float, jnp.ndarray]:
+        """
+        Compute the loss function for the optimal transport map (OT map) with Monge gap regularization.
+
+        This method calculates the JKO (Jordan-Kinderlehrer-Otto) objective, which includes
+        the potential energy loss and the squared deviation from the input data. It also
+        adds a Monge gap regularization term to encourage more efficient transport maps.
+
+        Parameters
+        ----------
+        params_otmap : Dict[str, Any]
+            The parameters for the OT map model.
+        params_energy : Dict[str, Any]
+            The parameters for the energy model.
+        data : jnp.ndarray
+            The input data to be transported by the OT map.
+
+        Returns
+        -------
+        Tuple[float, jnp.ndarray]
+            A tuple containing:
+            - float: The total loss, including potential energy, squared deviation,
+              and Monge gap regularization.
+            - jnp.ndarray: The predicted output from the OT map for the given data.
+        """
         predicted = jax.vmap(lambda x: jax.grad(
             self.model_otmap.apply, argnums=1)(
                 {'params': params_otmap}, x))(data)

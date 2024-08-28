@@ -4,6 +4,9 @@ import pickle
 
 class GaussianMixtureModel:
     def __init__(self):
+        """
+        Initializes the Gaussian Mixture Model with empty lists for storing parameters.
+        """
         self.gms_means = []
         self.gms_covs_invs = []
         self.gms_den = []
@@ -11,11 +14,21 @@ class GaussianMixtureModel:
 
     def fit(self, grouped_values, n_components: int):
         """
-        Fits a Gaussian Mixture Model to the grouped values.
+        Fits a Gaussian Mixture Model to the provided grouped values.
 
-        Parameters:
-            grouped_values (dict): Dictionary where keys are labels and values are arrays of data points.
-            n_components (int): Number of components in the Gaussian Mixture Model.
+        Parameters
+        ----------
+        grouped_values : dict
+            Dictionary where the trajectories are stored. The keys of the dictionary are the timesteps and the values are arrays of data points.
+            Each array should have shape (n_samples, n_features).
+
+        n_components : int
+            Number of components (clusters) to use in the Gaussian Mixture Model.
+
+        Notes
+        -----
+        This method fits a Gaussian Mixture Model to each group of data points separately.
+        Components with small determinants are discarded to avoid numerical instability.
         """
         data_dim = list(grouped_values.values())[0].shape[1]
         for label in sorted(grouped_values.keys()):
@@ -37,6 +50,11 @@ class GaussianMixtureModel:
     def to_file(self, filename: str):
         """
         Saves the Gaussian Mixture Model to a file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to the file where the model should be saved.
         """
         data = {
             'gms_means': self.gms_means,
@@ -50,6 +68,11 @@ class GaussianMixtureModel:
     def from_file(self, filename: str):
         """
         Loads the Gaussian Mixture Model from a file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to the file from which the model should be loaded.
         """
         with open(filename, 'rb') as file:
             data = pickle.load(file)
@@ -60,14 +83,20 @@ class GaussianMixtureModel:
 
     def gmm_density(self, t, x):
         """
-        Computes the density (differentiable) of the Gaussian Mixture Model at time t and state x.
+        Computes the density of the Gaussian Mixture Model at a given time t and state x.
 
-        Parameters:
-            t (int): Time index.
-            x (jnp.ndarray): State.
+        Parameters
+        ----------
+        t : int
+            Time index corresponding to the group of components to use for the density calculation.
 
-        Returns:
-            Density of the Gaussian Mixture Model at time t and state x.
+        x : jnp.ndarray
+            State (data point) at which the density should be computed. Should have shape (n_features,).
+
+        Returns
+        -------
+        float
+            Density of the Gaussian Mixture Model at the specified time and state.
         """
         diffs = x - self.gms_means[t]  # (n_components, dim)
         mahalanobis_terms = jnp.einsum('ij,ijk,ik->i', diffs, self.gms_covs_invs[t], diffs)  # (n_components,)

@@ -26,7 +26,27 @@ def numpy_collate(batch):
     else:
         return np.array(batch)
 
-def main(args):
+def main(args: argparse.Namespace) -> None:
+    """
+    Main function to train a model on a specified dataset and evaluate it.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Command-line arguments containing the following:
+
+        - solver (EnumMethod): Name of the solver to use.
+        - dataset (str): Name of the dataset to train the model on.
+        - eval (str): Option to validate on 'train_data' or 'test_data'.
+        - wandb (bool): Option to run with activated wandb for logging.
+        - debug (bool): Option to run in debug mode.
+        - seed (int): Seed for random number generation for reproducibility.
+
+    Returns
+    -------
+    None
+        The function trains the model, evaluates it, and optionally logs the results and metrics.
+    """
     # Set random key
     key = jax.random.PRNGKey(args.seed)
 

@@ -12,7 +12,35 @@ def get_SDE_predictions(model, dt, n_timesteps, start_timestep, potential, inter
 
 class SDESimulator:
     """
-    Simulator for SDEs.
+    Simulator for Stochastic Differential Equations (SDEs) with an explicit scheme.
+
+    Parameters
+    ----------
+    dt : float
+        The time step size for the simulation.
+
+    n_timesteps : int
+        The number of timesteps to simulate.
+
+    start_timestep : int
+        The initial timestep index for the simulation.
+
+    potential : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
+        If `True`, the potential function is used. If a callable, it should take a JAX array as input
+        and return the potential. If `False`, no potential is applied.
+
+    internal : Union[bool, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray], float]
+        If a float, represents the internal energy scale. If a callable, it should take a JAX array and
+        a JAX random key as input and return the internal component. If `False`, no internal component is used.
+
+    interaction : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
+        If `True`, the interaction function is used. If a callable, it should take a JAX array as input
+        and return the interaction component. If `False`, no interaction is applied.
+
+    Methods
+    -------
+    forward_sampling(key: jnp.ndarray, init: jnp.ndarray) -> jnp.ndarray
+        Performs forward sampling of the SDE from the initial condition `init` using the provided random key.
 
     Usage:
     >>> simulator = SDESimulator(dt, n_timesteps, potential, internal, interaction)
@@ -52,7 +80,25 @@ class SDESimulator:
             interaction_component = lambda pp, _: jax.vmap(get_interaction_component(pp))(pp) * dt
             
         
-        def forward_sampling(key, init):
+        def forward_sampling(key: jnp.ndarray, init: jnp.ndarray) -> jnp.ndarray:
+            """
+            Performs forward sampling of the SDE from the initial condition.
+
+            Parameters
+            ----------
+            key : jnp.ndarray
+                Random key used for sampling.
+
+            init : jnp.ndarray
+                Initial condition for the simulation.
+
+            Returns
+            -------
+            jnp.ndarray
+                The array of simulated trajectories with shape (n_timesteps + 1, ...) where
+                the first dimension represents the timestep and the remaining dimensions
+                represent the state variables.
+            """
             pp = jnp.copy(init)
             trajectories = [pp]
             for i in range(1, n_timesteps + 1):
@@ -66,7 +112,36 @@ class SDESimulator:
 
 class SDESimulator_implicit_time:
     """
-    Simulator for SDEs.
+    Simulator for Stochastic Differential Equations (SDEs) using implicit methods.
+
+    Parameters
+    ----------
+    dt : float
+        The time step size for the simulation.
+
+    n_timesteps : int
+        The number of timesteps to simulate.
+
+    start_timestep : int
+        The initial timestep index for the simulation.
+
+    potential : Union[bool, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]]
+        If `True`, the potential function is used. If a callable, it should take a JAX array and a time array
+        as input and return the potential. If `False`, no potential is applied.
+
+    internal : Union[bool, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray], float]
+        If a float, represents the internal energy scale. If a callable, it should take a JAX array and a random key
+        as input and return the internal component. If `False`, no internal component is used.
+
+    interaction : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
+        If `True`, the interaction function is used. If a callable, it should take a JAX array as input
+        and return the interaction component. If `False`, no interaction is applied.
+
+    Methods
+    -------
+    forward_sampling(key: jnp.ndarray, init: jnp.ndarray) -> jnp.ndarray
+        Performs forward sampling of the SDE from the initial condition `init` using the provided random key.
+
 
     Usage:
     >>> simulator = SDESimulator(dt, n_timesteps, potential)
@@ -86,8 +161,27 @@ class SDESimulator_implicit_time:
         self.potential = potential
         self.sqrtdt = jnp.sqrt(2 * dt)
 
-        def potential_component_implicit(pp, t_array, key):
-            if potential:
+        def potential_component_implicit(pp: jnp.ndarray, t_array: jnp.ndarray, key: jnp.ndarray) -> jnp.ndarray:
+            """
+            Computes the implicit potential component using fixed-point iterations.
+
+            Parameters
+            ----------
+            pp : jnp.ndarray
+                The current state of the simulation.
+
+            t_array : jnp.ndarray
+                The time array for the current step.
+
+            key : jnp.ndarray
+                Random key used for sampling.
+
+            Returns
+            -------
+            jnp.ndarray
+                The implicit potential component to be added to the state.
+            """
+            if self.potential:
                 def fixed_point_iteration(x, pp, t_array):
                     concat_pos_time = jnp.concatenate([x, t_array], axis=-1)
                     gradient = jax.grad(potential)(concat_pos_time)
@@ -102,7 +196,28 @@ class SDESimulator_implicit_time:
             else:
                 return jnp.zeros(pp.shape)
 
-        def forward_sampling(key, init, timestep=1):
+        def forward_sampling(key, init):
+            """
+            Performs forward sampling of the SDE from the initial condition.
+
+            Parameters
+            ----------
+            key : jnp.ndarray
+                Random key used for sampling.
+
+            init : jnp.ndarray
+                Initial condition for the simulation.
+
+            timestep : int, optional
+                The timestep interval between simulation steps (default is 1).
+
+            Returns
+            -------
+            jnp.ndarray
+                The array of simulated trajectories with shape (n_timesteps + 1, ...) where
+                the first dimension represents the timestep and the remaining dimensions
+                represent the state variables.
+            """
             pp = jnp.copy(init)
             trajectories = [pp]
             for i in range(start_timestep, start_timestep + n_timesteps):

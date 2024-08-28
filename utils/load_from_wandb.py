@@ -1,8 +1,34 @@
 import re
+from typing import Dict
 
-def parse_name(run_name: str):
+def parse_name(run_name: str) -> Dict[str, str]:
     """
-    Parse the run name and return the model name and the potential type
+    Parses the run name and extracts model configuration details.
+
+    The run name is expected to follow a specific pattern which includes various configuration parameters.
+    This function uses regular expressions to extract these parameters and return them in a dictionary.
+
+    Parameters
+    ----------
+    run_name : str
+        The run name string containing the configuration parameters.
+
+    Returns
+    -------
+    Dict[str, str]
+        A dictionary with the extracted configuration details:
+        - 'method': The method used in the run.
+        - 'potential': Type of potential used.
+        - 'internal': Type of internal process used.
+        - 'beta': Beta parameter value.
+        - 'interaction': Type of interaction used.
+        - 'dt': Time step size.
+        - 'T': Total time or steps.
+        - 'dim': Dimensionality.
+        - 'N': Number of samples.
+        - 'gmm': Gaussian Mixture Model parameter.
+        - 'seed': Random seed used.
+        - 'split': Data split parameter.
     """
     # Regular expression to capture the values
     pattern = re.compile(r'(?P<method_value>.*?).potential_(?P<potential_value>.*?)_internal_(?P<internal_value>.*?)_beta_(?P<beta>[0-9.]+)_interaction_(?P<interaction_value>.*?)_dt_(?P<dt>[0-9.]+)_T_(?P<T>[0-9.]+)_dim_(?P<dim>[0-9.]+)_N_(?P<N>[0-9.]+)_gmm_(?P<gmm>[0-9.]+)_seed_(?P<seed>[0-9.]+)_split_(?P<split>[0-9.]+)')

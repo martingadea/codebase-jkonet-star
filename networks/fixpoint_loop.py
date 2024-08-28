@@ -6,22 +6,47 @@
 import functools
 import jax
 import jax.numpy as jnp
+from typing import Callable, Tuple, Any
+
 
 
 @functools.partial(jax.custom_vjp, nondiff_argnums=(0, 1, 2, 3, 4))
-def fixpoint_iter(cond_fn, body_fn, min_iterations, max_iterations,
-                  inner_iterations, constants, state):
-    """Implementation of a backprop friendly fixed point loop.
+def fixpoint_iter(
+    cond_fn: Callable[[int, Any, Any], bool],
+    body_fn: Callable[[int, Any, Any, bool], Any],
+    min_iterations: int,
+    max_iterations: int,
+    inner_iterations: int,
+    constants: Any,
+    state: Any
+) -> Any:
+    """
+    Implementation of a backprop-friendly fixed point loop.
 
-    :param cond_fn: termination condition function
-    :param body_fn: body loop instructions
-    :param min_iterations: lower bound on total amount of fixed point iters
-    :param max_iterations: upper bound on total amount of fixed point iters
-    :param inner_iterations: default number of iterations in inner loop
-    :param constants: constant (during loop) parameters passed on to body
-    :param state: state variable
+    Parameters
+    ----------
+    cond_fn : Callable[[int, Any, Any], bool]
+        A function that determines whether the loop should continue based on the
+        current iteration, constants, and state.
+    body_fn : Callable[[int, Any, Any, bool], Any]
+        A function that defines the operations to perform in each iteration. It
+        takes the current iteration number, constants, state, and a boolean indicating
+        whether to compute an error.
+    min_iterations : int
+        Lower bound on the total number of fixed point iterations.
+    max_iterations : int
+        Upper bound on the total number of fixed point iterations.
+    inner_iterations : int
+        Default number of iterations in the inner loop.
+    constants : Any
+        Constant parameters passed to the body function during the loop.
+    state : Any
+        The initial state of the loop.
 
-    :return: outputs state returned by body_fn after cond_fn-based termination
+    Returns
+    -------
+    Any
+        The final state after the loop terminates.
     """
 
     force_scan = (min_iterations == max_iterations)
@@ -56,9 +81,44 @@ def fixpoint_iter(cond_fn, body_fn, min_iterations, max_iterations,
     return state
 
 
-def fixpoint_iter_fwd(cond_fn, body_fn, min_iterations, max_iterations,
-                      inner_iterations, constants, state):
-    """Forward iteration of fixed point iteration."""
+def fixpoint_iter_fwd(
+    cond_fn: Callable[[int, Any, Any], bool],
+    body_fn: Callable[[int, Any, Any, bool], Any],
+    min_iterations: int,
+    max_iterations: int,
+    inner_iterations: int,
+    constants: Any,
+    state: Any
+) -> Tuple[Any, Tuple[Any, int, Any]]:
+    """
+    Forward pass for the fixed-point iteration loop, storing intermediate states.
+
+    Parameters
+    ----------
+    cond_fn : Callable[[int, Any, Any], bool]
+        A function that determines whether the loop should continue based on the
+        current iteration, constants, and state.
+    body_fn : Callable[[int, Any, Any, bool], Any]
+        A function that defines the operations to perform in each iteration. It
+        takes the current iteration number, constants, state, and a boolean indicating
+        whether to compute an error.
+    min_iterations : int
+        Lower bound on the total number of fixed point iterations.
+    max_iterations : int
+        Upper bound on the total number of fixed point iterations.
+    inner_iterations : int
+        Default number of iterations in the inner loop.
+    constants : Any
+        Constant parameters passed to the body function during the loop.
+    state : Any
+        The initial state of the loop.
+
+    Returns
+    -------
+    Tuple[Any, Tuple[Any, int, Any]]
+        The final state after the loop terminates, and a tuple containing the
+        constants, the final iteration number, and the recorded intermediate states.
+    """
 
     force_scan = (min_iterations == max_iterations)
 
@@ -106,9 +166,40 @@ def fixpoint_iter_fwd(cond_fn, body_fn, min_iterations, max_iterations,
     return state, (constants, iteration, states)
 
 
-def fixpoint_iter_bwd(cond_fn, body_fn, min_iterations, max_iterations,
-                      inner_iterations, res, g):
-    """Backward iteration of fixed point iteration."""
+def fixpoint_iter_bwd(
+    cond_fn: Callable[[int, Any, Any], bool],
+    body_fn: Callable[[int, Any, Any, bool], Any],
+    min_iterations: int,
+    max_iterations: int,
+    inner_iterations: int,
+    res: Tuple[Any, int, Any],
+    g: Any
+) -> Tuple[Any, Any]:
+    """
+    Backward pass for the fixed-point iteration loop.
+
+    Parameters
+    ----------
+    cond_fn : Callable[[int, Any, Any], bool]
+        A function that was used in the forward pass to determine whether the loop should continue.
+    body_fn : Callable[[int, Any, Any, bool], Any]
+        A function that defines the operations performed in each iteration during the forward pass.
+    min_iterations : int
+        The minimum number of iterations that was performed in the forward pass.
+    max_iterations : int
+        The maximum number of iterations that was performed in the forward pass.
+    inner_iterations : int
+        The number of iterations in each inner loop during the forward pass.
+    res : Tuple[Any, int, Any]
+        A tuple containing the constants, final iteration count, and recorded intermediate states from the forward pass.
+    g : Any
+        The gradient with respect to the final state.
+
+    Returns
+    -------
+    Tuple[Any, Any]
+        A tuple containing the gradients with respect to the constants and the initial state.
+    """
 
     del cond_fn
 

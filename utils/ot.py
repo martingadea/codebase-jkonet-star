@@ -5,9 +5,21 @@ import ot
 from ott.problems.linear import linear_problem
 from ott.solvers.linear import sinkhorn
 
-def wasserstein_couplings(xs, ys):
+def wasserstein_couplings(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
     """
-    Computes transport between xs and ys.
+    Computes the optimal transport plan (couplings) between two sets of points xs and ys.
+
+    Parameters
+    ----------
+    xs : jnp.ndarray
+        An array of shape (n_samples_x, n_features) representing the first set of points.
+    ys : jnp.ndarray
+        An array of shape (n_samples_y, n_features) representing the second set of points.
+
+    Returns
+    -------
+    jnp.ndarray
+        The optimal transport plan matrix of shape (n_samples_x, n_samples_y).
     """
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]
@@ -16,7 +28,7 @@ def wasserstein_couplings(xs, ys):
 
     return ot.emd(a, b, M, numItermax=1000000)
 
-def wasserstein_loss(xs, ys):
+def wasserstein_loss(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
     """
     Computes transport between xs and ys.
     """
@@ -28,9 +40,23 @@ def wasserstein_loss(xs, ys):
     return ot.emd2(a, b, M, numItermax=1000000)
 
 @jax.jit
-def sinkhorn_loss(xs, ys, epsilon=1):
+def sinkhorn_loss(xs: jnp.ndarray, ys: jnp.ndarray, epsilon: float = 1.0) -> float:
     """
-    Computes transport between xs and ys.
+    Computes the Sinkhorn divergence (a regularized Wasserstein distance) between two sets of points xs and ys.
+
+    Parameters
+    ----------
+    xs : jnp.ndarray
+        An array of shape (n_samples_x, n_features) representing the first set of points.
+    ys : jnp.ndarray
+        An array of shape (n_samples_y, n_features) representing the second set of points.
+    epsilon : float, optional
+        Regularization parameter for the Sinkhorn algorithm, by default 1.
+
+    Returns
+    -------
+    float
+        The Sinkhorn divergence between the two sets of points.
     """
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]
@@ -44,12 +70,31 @@ def sinkhorn_loss(xs, ys, epsilon=1):
     return out.reg_ot_cost
 
 
-def compute_couplings(batch, batch_next, time):
+def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: float):
     """
-    Computes transport between batch and batch_next.
+    Computes the couplings between particles in two consecutive batches.
 
-    Returns:
-    - for each particle in batch, the particle in batch_next it is coupled with together with the coupling weight
+    Parameters
+    ----------
+    batch : jnp.ndarray
+        The array of particles at the current timestep with shape (n_particles, n_features).
+
+    batch_next : jnp.ndarray
+        The array of particles at the next timestep with shape (n_particles, n_features).
+
+    time : float
+        The time step of batch_next.
+
+    Returns
+    -------
+    jnp.ndarray
+        An array of shape (n_relevant_couplings, 2 * n_features + 2) where each row contains:
+        - Particle from `batch` (shape: (n_features,))
+        - Particle from `batch_next` (shape: (n_features,))
+        - Time (float)
+        - Coupling weight (float)
+
+        Only the relevant couplings, where the weight is greater than a threshold, are included.
     """
     weights = wasserstein_couplings(batch, batch_next)
 
