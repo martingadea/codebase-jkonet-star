@@ -78,7 +78,7 @@ The `data_generator.py` script accepts the following parameters:
      - 0
 
 Using Custom Data
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~
 
 You can use custom data by loading snapshots from a file using the `--load-from-file` parameter. The snapshots should be in the form of a `(T, N, dim)` array. In this case, the script computes the couplings and fits the densities, but it does not generate new data.
 
@@ -104,7 +104,7 @@ Available options for `$potential` and `$interaction`:
 - sphere
 
 Generating All Data for the Paper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following script generates all data for the paper:
 
@@ -133,7 +133,7 @@ Note: This script will take significant time and disk space, as it generates a l
 
 
 Training 🚀
-----------
+-------------
 
 After generating data, you can train a model using the following command:
 
@@ -161,7 +161,7 @@ Example 1:
    python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0
 
 Training All Models on All Data for the Paper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following script trains all models on all the data generated:
 
@@ -192,7 +192,7 @@ The following script trains all models on all the data generated:
 Note: This script will take a while and consume significant compute resources. The `jkonet` family, in particular, will require days of computation. We recommend starting with individual experiments as described in Example 1. Consider combining this script with data generation and using the `--wandb` flag.
 
 Citation 🙏
-----------
+------------
 
 If you use this code in your research, please cite our paper:
 
