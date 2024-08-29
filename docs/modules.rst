@@ -8,7 +8,7 @@ codebase-jkonet-star
    dataset
    models
    networks
-   utils
-   preprocess_rna-seq
+   preprocess_rna_seq
    train
    train_test
+   utils

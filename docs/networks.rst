@@ -1,8 +1,5 @@
-networks package
+Networks
 ================
-
-Submodules
-----------
 
 networks.energies module
 ------------------------
@@ -40,14 +37,6 @@ networks.utils module
 ---------------------
 
 .. automodule:: networks.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: networks
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,8 +1,5 @@
-utils package
+Utils
 =============
-
-Submodules
-----------
 
 utils.density module
 --------------------
@@ -56,14 +53,6 @@ utils.sde\_simulator module
 ---------------------------
 
 .. automodule:: utils.sde_simulator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: utils
    :members:
    :undoc-members:
    :show-inheritance:

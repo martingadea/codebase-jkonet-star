@@ -280,9 +280,6 @@ class PopulationEvalDataset(Dataset):
         """
         Initialize the PopulationEvalDataset.
 
-        This dataset class loads and organizes population trajectory data for evaluation.
-        The dataset supports evaluation on test or training data, depending on the label.
-
         Parameters
         ----------
         key : Any

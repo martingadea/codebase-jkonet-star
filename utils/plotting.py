@@ -5,17 +5,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as clr
 import yaml
+from typing import Tuple, Optional, Callable, Dict, List, Literal, Union
 
-def plot_couplings(data):
+
+def plot_couplings(data: np.ndarray) -> Tuple[plt.Figure, plt.Axes]:
     """
     Plots circles at x coordinates, crosses at y coordinates,
-    and connects them with lines whose widths are proportional to weights w.
+    and connects them with lines whose widths are proportional to weights.
 
-    Args:
-    data (np.ndarray): An array of shape (n, 5) where each row contains:
-                       x0, x1 (coordinates of the circle), 
-                       y0, y1 (coordinates of the cross), 
-                       w (weight for line width).
+    Parameters
+    ----------
+    data : np.ndarray
+        An array of shape (n, 5) where each row contains:
+        - x0, x1 (coordinates of the circle),
+        - y0, y1 (coordinates of the cross),
+        - w (weight for line width).
+
+    Returns
+    -------
+    Tuple[plt.Figure, plt.Axes]
+        The matplotlib figure and axis objects of the plot.
     """
     # Extract coordinates and weights
     weights = data[:, -1]
@@ -47,7 +56,22 @@ def plot_couplings(data):
     return fig, ax
 
 
-def domain_from_data(data):
+def domain_from_data(data: np.ndarray) -> Tuple[Tuple[float, float], Tuple[float, float]]:
+    """
+    Calculate the domain boundaries from the data for plotting purposes.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        An array where each row contains at least two coordinates (x, y).
+
+    Returns
+    -------
+    Tuple[Tuple[float, float], Tuple[float, float]]
+        A tuple containing two tuples:
+        - The minimum (x_min, y_min) and
+        - The maximum (x_max, y_max) coordinates, with additional padding.
+    """
     # set max and min values
     x_min = np.amin(data, axis=0)[:, 0].min() - 2.0
     x_max = np.amax(data, axis=0)[:, 0].max() + 2.0
@@ -58,7 +82,32 @@ def domain_from_data(data):
     return ((x_min, y_min), (x_max, y_max))
 
 
-def grid_from_domain(domain, n_samples=100):
+def grid_from_domain(
+    domain: Tuple[Tuple[float, float], Tuple[float, float]],
+    n_samples: int = 100
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Create a grid of points within a specified domain.
+
+    Parameters
+    ----------
+    domain : Tuple[Tuple[float, float], Tuple[float, float]]
+        The domain within which to create the grid. It is a tuple containing two tuples:
+        - The lower bounds (x_min, y_min) of the domain.
+        - The upper bounds (x_max, y_max) of the domain.
+    n_samples : int, optional
+        The number of samples (grid points) along each axis. Default is 100.
+
+    Returns
+    -------
+    Tuple[np.ndarray, np.ndarray, np.ndarray]
+        - x : np.ndarray
+            The x-coordinates of the grid points.
+        - y : np.ndarray
+            The y-coordinates of the grid points.
+        - grid : np.ndarray
+            The grid of points in (x, y) space. If the domain has more than 2 dimensions, extra dimensions are filled with zeros.
+    """
     # create grid
     x, y = np.meshgrid(np.linspace(domain[0][0], domain[1][0], n_samples),
                        np.linspace(domain[0][1], domain[1][1], n_samples))
@@ -71,7 +120,37 @@ def grid_from_domain(domain, n_samples=100):
     return x, y, grid
 
 
-def plot_level_curves(function, domain, n_samples=100, dimensions=2, save_to=None):
+def plot_level_curves(
+    function: Callable[[np.ndarray], np.ndarray],
+    domain: Tuple[Tuple[float, float], Tuple[float, float]],
+    n_samples: int = 100,
+    dimensions: int = 2,
+    save_to: Optional[str] = None
+)-> plt.Figure:
+    """
+    Plot level curves of a function over a specified domain.
+
+    Parameters
+    ----------
+    function : Callable[[np.ndarray], np.ndarray]
+        A function that takes a numpy array of input values and returns a scalar value.
+        The function is expected to be vectorized over the input.
+    domain : Tuple[Tuple[float, float], Tuple[float, float]]
+        The domain over which to plot the function. It is a tuple containing:
+        - The lower bounds (x_min, y_min) of the domain.
+        - The upper bounds (x_max, y_max) of the domain.
+    n_samples : int, optional
+        The number of samples (grid points) along each axis. Default is 100.
+    dimensions : int, optional
+        The number of dimensions of the function output. Default is 2.
+    save_to : Optional[str], optional
+        If provided, the file path to save the plot image and data. If None, the plot is not saved. Default is None.
+
+    Returns
+    -------
+    plt.Figure
+        The matplotlib figure object containing the plot.
+    """
     f = jax.vmap(function)
     x, y, grid = grid_from_domain(domain, n_samples)
 
@@ -112,7 +191,38 @@ def plot_level_curves(function, domain, n_samples=100, dimensions=2, save_to=Non
     return fig
 
 
-def plot_predictions(predicted, data_dict, interval, model, save_to=None, n_particles=200):
+def plot_predictions(predicted: np.ndarray,
+    data_dict: Dict[int, np.ndarray],
+    interval: Optional[Tuple[int, int]],
+    model: str,
+    save_to: Optional[str] = None,
+    n_particles: int = 200
+) -> plt.Figure:
+    """
+    Plot predictions and ground truth data for each timestep.
+
+    Parameters
+    ----------
+    predicted : np.ndarray
+        An array of shape (num_timesteps, num_particles, num_dimensions) containing
+        the predicted particle positions.
+    data_dict : Dict[int, np.ndarray]
+        A dictionary mapping timesteps to arrays of shape (num_particles, num_dimensions)
+        containing the ground truth particle positions.
+    interval : Optional[Tuple[int, int]]
+        A tuple specifying the start and end timesteps to plot. If None, plots all timesteps.
+    model : str
+        A string specifying the model type used to determine color mapping.
+    save_to : Optional[str]
+        If provided, a path to save the plot image and data files. If None, the plot is not saved.
+    n_particles : int
+        The number of particles to consider for each timestep. Default is 200.
+
+    Returns
+    -------
+    plt.Figure
+        The matplotlib figure object containing the plot.
+    """
     if interval is None:
         start, end = 0, max(data_dict.keys())
     else:
@@ -170,12 +280,58 @@ def plot_predictions(predicted, data_dict, interval, model, save_to=None, n_part
         fig.savefig(save_to + '.png')
     return fig
 
-def colormap_from_config(config):
+def colormap_from_config(config: Dict[str, str]) -> clr.LinearSegmentedColormap:
+    """
+    Create a colormap from the provided configuration.
+
+    Parameters
+    ----------
+    config : Dict[str, str]
+        A dictionary containing 'light' and 'dark' color codes for the colormap.
+
+    Returns
+    -------
+    clr.LinearSegmentedColormap
+        The custom colormap created from the given colors.
+    """
     light = config['light']
     dark = config['dark']
     return clr.LinearSegmentedColormap.from_list('custom', [light, dark])
 
-def plot_heatmap(X, Y, Z, labels, title, colormap, save_to=None):
+def plot_heatmap(
+    X: np.ndarray,
+    Y: np.ndarray,
+    Z: np.ndarray,
+    labels: Dict[str, str],
+    title: str,
+    colormap: str,
+    save_to: Optional[str] = None
+) -> plt.Figure:
+    """
+    Plot a heatmap with color mapping and save the figure and data to files if requested.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        2D array of shape (m, n) representing the x-coordinates of the heatmap grid.
+    Y : np.ndarray
+        2D array of shape (m, n) representing the y-coordinates of the heatmap grid.
+    Z : np.ndarray
+        2D array of shape (m, n) representing the values for the heatmap.
+    labels : Dict[str, str]
+        Dictionary with keys 'X', 'Y', and 'Z' mapping to axis labels and colorbar label.
+    title : str
+        Title of the heatmap plot.
+    colormap : str
+        Name of the colormap to use for the heatmap.
+    save_to : Optional[str]
+        If provided, the base path to save the plot as a PNG file and the data as a CSV file.
+
+    Returns
+    -------
+    plt.Figure
+        The matplotlib figure object containing the plot.
+    """
     fig = plt.figure()
     plt.pcolormesh(X, Y, Z, shading='auto', cmap=colormap)
     plt.colorbar(label=labels['Z'])
@@ -195,7 +351,34 @@ def plot_heatmap(X, Y, Z, labels, title, colormap, save_to=None):
                 file.write('\n')
     return fig
 
-def plot_boxplot_comparison_models(data, model_names, title, save_to=None, yscale='linear'):
+def plot_boxplot_comparison_models(
+    data: List[np.ndarray],
+    model_names: List[str],
+    title: str,
+    save_to: Optional[str] = None,
+    yscale: Literal['linear', 'log'] = 'linear'
+) -> plt.Figure:
+    """
+    Create a boxplot to compare execution times of different models.
+
+    Parameters
+    ----------
+    data : List[np.ndarray]
+        List of 1D arrays, each containing execution times for a model.
+    model_names : List[str]
+        List of names for each model, corresponding to the data list.
+    title : str
+        Title of the boxplot.
+    save_to : Optional[str]
+        If provided, the base path to save the plot as a PNG file and the data as text files.
+    yscale : Literal['linear', 'log']
+        Scale type for the y-axis; 'linear' or 'log'.
+
+    Returns
+    -------
+    plt.Figure
+        The matplotlib figure object containing the plot.
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111)
 
@@ -223,7 +406,46 @@ def plot_boxplot_comparison_models(data, model_names, title, save_to=None, yscal
     return fig
     
 
-def plot_comparison_models(error1, error2, labels, model_names, title, save_to=None, cmaps=None, insert_inset=False, size=100):
+def plot_comparison_models(
+    error1: np.ndarray,
+    error2: np.ndarray,
+    labels: np.ndarray,
+    model_names: List[str],
+    title: str,
+    save_to: Optional[str] = None,
+    cmaps: Optional[List[str]] = None,
+    insert_inset: bool = False,
+    size: int = 100
+) -> plt.Figure:
+    """
+    Plot a comparison between two sets of errors, with optional insets to highlight details.
+
+    Parameters
+    ----------
+    error1 : np.ndarray
+        Array of errors for the first set of predictions.
+    error2 : np.ndarray
+        Array of errors for the second set of predictions.
+    labels : np.ndarray
+        Array of labels used to group errors.
+    model_names : List[str]
+        List of model names for the axes labels.
+    title : str
+        Title of the plot.
+    save_to : Optional[str]
+        If provided, the base path to save the plot as a PNG file.
+    cmaps : Optional[List[str]]
+        List of color maps to use for each label. If None, a default colormap is used.
+    insert_inset : bool
+        Whether to include an inset plot for detailed views.
+    size : int
+        Marker size for scatter points.
+
+    Returns
+    -------
+    plt.Figure
+        The matplotlib figure object containing the plot.
+    """
     error1 = np.asarray(error1)
     error2 = np.asarray(error2)
     labels = np.asarray(labels)
@@ -329,7 +551,31 @@ def plot_comparison_models(error1, error2, labels, model_names, title, save_to=N
 
     return fig
 
-def plot_loss(data, parameter, title, save_to=None):
+def plot_loss(
+    data: List[Dict[str, Union[np.ndarray, str]]],
+    parameter: Dict[str, Union[str, np.ndarray]],
+    title: str,
+    save_to: Optional[str] = None
+) -> plt.Figure:
+    """
+    Plot the loss values for different models over varying parameter values.
+
+    Parameters
+    ----------
+    data : List[Dict[str, Union[np.ndarray, str]]]
+        List of dictionaries, each containing 'losses' (array of shape (n, m)) and 'method' (name of the model).
+    parameter : Dict[str, Union[str, np.ndarray]]
+        Dictionary with 'name' (name of the parameter) and 'values' (array of parameter values).
+    title : str
+        Title of the plot.
+    save_to : Optional[str]
+        If provided, the base path to save the plot as a PNG file.
+
+    Returns
+    -------
+    plt.Figure
+        The matplotlib figure object containing the plot.
+    """
     parameter_values = parameter['values']
     fig = plt.figure()
     ax = fig.add_subplot(111)

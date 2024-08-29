@@ -1,4 +1,4 @@
-data\_generator module
+Data generator
 ======================
 
 .. automodule:: data_generator

@@ -1,4 +1,4 @@
-preprocess\_rna\_seq module
+Preprocessing RNA
 ===========================
 
 .. automodule:: preprocess_rna_seq

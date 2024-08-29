@@ -433,17 +433,77 @@ class JKOnetMongeGap(JKOnetVanilla):
 
 
 # Source: https://github.com/bunnech/jkonet
-def get_optimize_psi_fn(loss_fn_psi, 
-                        optimizer_psi, n_iter=100,
-                        min_iter=50, max_iter=200, inner_iter=10,
-                        threshold=1e-5,
-                        fploop=False):
-    """Create a training function of Psi."""
+def get_optimize_psi_fn(
+    loss_fn_psi: Callable[[jnp.ndarray, jnp.ndarray, jnp.ndarray], Tuple[jnp.ndarray, jnp.ndarray]],
+    optimizer_psi: optax.GradientTransformation,
+    n_iter: int = 100,
+    min_iter: int = 50,
+    max_iter: int = 200,
+    inner_iter: int = 10,
+    threshold: float = 1e-5,
+    fploop: bool = False
+) -> Callable:
+    """
+    Create a training function for optimizing the parameters of Psi.
+
+    Parameters
+    ----------
+    loss_fn_psi : Callable[[jnp.ndarray, jnp.ndarray, jnp.ndarray], Tuple[jnp.ndarray, jnp.ndarray]]
+        Function to compute the loss and predictions given the parameters for Psi and Energy.
+    optimizer_psi : optax.GradientTransformation
+        Optimizer for updating the Psi parameters.
+    n_iter : int
+        Number of iterations for the optimizer.
+    min_iter : int
+        Minimum number of iterations for the fixed-point loop.
+    max_iter : int
+        Maximum number of iterations for the fixed-point loop.
+    inner_iter : int
+        Number of inner iterations for each fixed-point step.
+    threshold : float
+        Convergence threshold for the fixed-point loop.
+    fploop : bool
+        Whether to use the fixed-point loop for optimization.
+
+    Returns
+    -------
+    Callable
+        The function to optimize Psi based on the specified configuration.
+    """
 
     @jax.jit
-    def step_fn_fpl(params_energy, params_psi, opt_state_psi, data):
-        def cond_fn(iteration, constants, state):
-            """Condition function for optimization of convex potential Psi.
+    def step_fn_fpl(
+        params_energy: jnp.ndarray,
+        params_psi: jnp.ndarray,
+        opt_state_psi: optax.OptState,
+        data: jnp.ndarray
+    ) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+        """
+        Fixed-point loop for optimizing Psi.
+
+        Parameters
+        ----------
+        params_energy : jnp.ndarray
+            Parameters for the energy function.
+        params_psi : jnp.ndarray
+            Parameters for Psi to be optimized.
+        opt_state_psi : optax.OptState
+            State of the optimizer for Psi.
+        data : jnp.ndarray
+            Input data.
+
+        Returns
+        -------
+        Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]
+            Updated parameters for Psi, predictions, and loss history.
+        """
+        def cond_fn(
+            iteration: int,
+            constants: Tuple[jnp.ndarray, jnp.ndarray],
+            state: Tuple[jnp.ndarray, optax.OptState, jnp.ndarray, jnp.ndarray, jnp.ndarray]
+        ) -> jnp.ndarray:
+            """
+            Condition function for optimization of convex potential Psi.
             """
             _, _ = constants
             _, _, _, _, grad = state
@@ -456,8 +516,14 @@ def get_optimize_psi_fn(loss_fn_psi,
                                   jnp.logical_and(jnp.isfinite(norm),
                                                   norm > threshold))
 
-        def body_fn(iteration, constants, state, compute_error):
-            """Body loop for gradient update of convex potential Psi.
+        def body_fn(
+            iteration: int,
+            constants: Tuple[jnp.ndarray, jnp.ndarray],
+            state: Tuple[jnp.ndarray, optax.OptState, jnp.ndarray, jnp.ndarray, jnp.ndarray],
+            compute_error: jnp.ndarray
+        ) -> Tuple[jnp.ndarray, optax.OptState, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+            """
+            Body loop for gradient update of convex potential Psi.
             """
             params_energy, data = constants
             params_psi, opt_state_psi, loss_psi, predicted, _ = state
@@ -491,9 +557,37 @@ def get_optimize_psi_fn(loss_fn_psi,
         return params_psi, predicted, loss_psi
 
     @jax.jit
-    def step_fn(params_energy, params_psi, opt_state_psi, data):
+    def step_fn(
+        params_energy: jnp.ndarray,
+        params_psi: jnp.ndarray,
+        opt_state_psi: optax.OptState,
+        data: jnp.ndarray
+    ) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+        """
+        Direct optimization for Psi using scan.
+
+        Parameters
+        ----------
+        params_energy : jnp.ndarray
+            Parameters for the energy function.
+        params_psi : jnp.ndarray
+            Parameters for Psi to be optimized.
+        opt_state_psi : optax.OptState
+            State of the optimizer for Psi.
+        data : jnp.ndarray
+            Input data.
+
+        Returns
+        -------
+        Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]
+            Updated parameters for Psi, final predictions, and final loss.
+        """
         # iteratively optimize psi
-        def apply_psi_update(state_psi, i):
+        def apply_psi_update(
+            state_psi: Tuple[jnp.ndarray, optax.OptState],
+            i: int
+        ) -> Tuple[Tuple[jnp.ndarray, optax.OptState], Tuple[jnp.ndarray, jnp.ndarray]]:
+
             params_psi, opt_state_psi = state_psi
 
             # compute gradient of jko step

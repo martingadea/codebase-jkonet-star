@@ -1,4 +1,4 @@
-dataset module
+Data loaders
 ==============
 
 .. automodule:: dataset
