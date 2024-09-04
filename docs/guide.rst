@@ -1,4 +1,4 @@
-Tutorial
+Guide
 ============
 
 Generating the data 🧩
@@ -149,6 +149,7 @@ Where `$solver` can be one of the following:
 - jkonet-star
 - jkonet-star-potential
 - jkonet-star-potential-internal
+- jkonet-star-time-potential
 - jkonet-star-linear
 - jkonet-star-linear-potential
 - jkonet-star-linear-potential-internal
@@ -191,6 +192,39 @@ The following script trains all models on all the data generated:
 
 Note: This script will take a while and consume significant compute resources. The `jkonet` family, in particular, will require days of computation. We recommend starting with individual experiments as described in Example 1. Consider combining this script with data generation and using the `--wandb` flag.
 
+
+Selecting features for Linear Parametrization
+----------------------------------------------
+Here is a snippet of the configuration file showing how features are chosen. One may select how much regularization
+to use, the degree of the polynomials, the use of sines and cosines and finally the RBFS. In the case of RBFS, the
+parameters one may play around with are the number of centers per dimension, the domain, the sigma, and finally,
+the type of RBFS. For more information on the RBFS features refer to :ref:`utils_features_label`.
+
+.. code-block:: yaml
+
+    linear:
+        reg: 0.01
+        features:
+            polynomials:
+                degree: 4
+                sines: False # Mix also with sines
+                cosines: False # Mix also with cosines
+            rbfs:
+                n_centers_per_dim: 10
+                domain: [-4, 4]
+                sigma: 0.5
+                # types of rbfs to include
+                types: [
+                    # 'linear',
+                    # 'thin_plate_spline',
+                    # 'cubic',
+                    # 'quintic',
+                    'const',
+                    # 'multiquadric',
+                    # 'inverse_multiquadric',
+                    # 'inverse_quadratic'
+                ]
+
 Citation 🙏
 ------------
 
@@ -200,7 +234,7 @@ If you use this code in your research, please cite our paper:
 
    @article{terpin2024learning,
      title={{Learning Diffusion at Lightspeed}},
-     author={Terpin, Antonio and Lanzetti, Nicolas and D\"orfler, Florian},
+     author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martín and D\"orfler, Florian},
      journal={},
      year={2024},
    }

@@ -29,7 +29,12 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.mathjax",
+    "sphinxcontrib.bibtex",
 ]
+
+bibtex_bibfiles = ['bibliography.bib']
 
 # Napoleon settings
 napoleon_google_docstring = True

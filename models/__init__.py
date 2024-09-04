@@ -55,6 +55,7 @@ class EnumMethod(Enum):
         str
             The string value of the enumeration item.
         """
+        return self.value
 
 def get_model(
         solver: EnumMethod,

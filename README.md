@@ -1,7 +1,7 @@
 # Learning Diffusion at Lightspeed
 <h3><a href="">Paper</a> | <a href="https://www.antonioterpin.com/projects/learning-diffusion-lightspeed">Project Page</a> </h3>
 
-**Authors:** Antonio Terpin, Nicolas Lanzetti, Florian Dörfler
+**Authors:** Antonio Terpin, Nicolas Lanzetti, Martin Gadea, Florian Dörfler
 
 This repo contains a JAX implementation of the JKOnet* architecture presented in "Learning Diffusion at Lightspeed". 
 
@@ -9,10 +9,9 @@ This repo contains a JAX implementation of the JKOnet* architecture presented in
 ## Abstract 🤓
 <p align='center'><img src='media/cover.png' alt='Cover.' width='45%'> <img src='media/preview.png' alt='Cover.' width='45%'></p>
 
-Diffusion regulates a phenomenal number of natural processes and the dynamics of many successful generative models. Existing models to learn the diffusion terms from observational data rely on complex bilevel optimization problems and properly model only the drift of the system.
-We propose a new simple model, `JKOnet`, which bypasses altogether the complexity of existing architectures while presenting significantly enhanced representational capacity: `JKOnet` recovers the potential, interaction, and internal energy components of the underlying diffusion process. `JKOnet` minimizes a simple quadratic loss, runs at lightspeed, and drastically outperforms other baselines in practice. Additionally, `JKOnet` provides a closed-form optimal solution for linearly parametrized functionals. 
-Our methodology is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the so-called JKO scheme, which we study via its first-order optimality conditions, in light of few-weeks-old advancements in optimization in the probability space.
-
+Diffusion regulates numerous natural processes and the dynamics of many successful generative models. Existing models to learn the diffusion terms from observational data rely on complex bilevel optimization problems and model only the drift of the system.
+We propose a new simple model, 'JKOnet*', which bypasses the complexity of existing architectures while presenting significantly enhanced representational capabilities: 'JKOnet*' recovers the potential, interaction, and internal energy components of the underlying diffusion process. 'JKOnet*' minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally,'JKOnet*' provides a closed-form optimal solution for linearly parametrized functionals, and, when applied to predict the evolution of cellular processes from real-world data, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods.
+Our methodology is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the so-called JKO scheme, which we study via its first-order optimality conditions.
 
 ## Getting started 🛠️
 The following works on macOS 13.2.1 and should work also on Ubuntu. Windows may require additional packages.
@@ -149,7 +148,7 @@ Note that this script will take a while and quite some disk space, as it runs qu
 ```
 @article{terpin2024learning,
   title={{Learning Diffusion at Lightspeed}},
-  author={Terpin, Antonio and Lanzetti, Nicolas and D\"orfler, Florian},
+  author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martí and D\"orfler, Florian},
   journal={}
   year={2024},
 }

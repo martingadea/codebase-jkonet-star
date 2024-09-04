@@ -16,20 +16,35 @@ def plot_couplings(data: np.ndarray) -> Tuple[plt.Figure, plt.Axes]:
     Parameters
     ----------
     data : np.ndarray
-        An array of shape (n, 5) where each row contains:
+        An array of shape (n, 6) where each row contains:
+
         - x0, x1 (coordinates of the circle),
         - y0, y1 (coordinates of the cross),
+        - time label
         - w (weight for line width).
 
     Returns
     -------
     Tuple[plt.Figure, plt.Axes]
         The matplotlib figure and axis objects of the plot.
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+    >>> data = np.array([[0. , 0. , 0. , 1. , 5. , 0.5],
+    ...             [1. , 0. , 2. , 2. , 5. , 0.5]])
+    >>> fig, ax = plot_couplings(data)
+    >>> plt.show()  # This will display the plot
+
+    .. image:: ../media/plotting_documentation/plot_couplings.png
+       :align: center
+       :alt: Example plot showing circles connected to crosses with weighted lines.
     """
     # Extract coordinates and weights
     weights = data[:, -1]
     x_coords = data[:, :(data.shape[1] - 1) // 2]
-    y_coords = data[:, (data.shape[1] - 1) // 2:-1]
+    y_coords = data[:, (data.shape[1] - 1) // 2:-2]
 
     # Normalize weights for line width between a minimum and a maximum
     line_widths = 2 * (weights / weights.max())  # Normalize and scale line width by weight
@@ -69,8 +84,17 @@ def domain_from_data(data: np.ndarray) -> Tuple[Tuple[float, float], Tuple[float
     -------
     Tuple[Tuple[float, float], Tuple[float, float]]
         A tuple containing two tuples:
+
         - The minimum (x_min, y_min) and
         - The maximum (x_max, y_max) coordinates, with additional padding.
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> data = np.array([[0., 0.], [2., 2.]])
+    >>> domain_from_data(data)
+    ((-2.0, -2.0), (4.0, 4.0))
+
     """
     # set max and min values
     x_min = np.amin(data, axis=0)[:, 0].min() - 2.0
@@ -93,6 +117,7 @@ def grid_from_domain(
     ----------
     domain : Tuple[Tuple[float, float], Tuple[float, float]]
         The domain within which to create the grid. It is a tuple containing two tuples:
+
         - The lower bounds (x_min, y_min) of the domain.
         - The upper bounds (x_max, y_max) of the domain.
     n_samples : int, optional
@@ -107,6 +132,15 @@ def grid_from_domain(
             The y-coordinates of the grid points.
         - grid : np.ndarray
             The grid of points in (x, y) space. If the domain has more than 2 dimensions, extra dimensions are filled with zeros.
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> domain = ((-2.0, -2.0), (4.0, 4.0))
+    >>> x, y, grid = grid_from_domain(domain)
+    >>> x.shape, y.shape, grid.shape
+    ((100, 100), (100, 100), (10000, 2))
+
     """
     # create grid
     x, y = np.meshgrid(np.linspace(domain[0][0], domain[1][0], n_samples),
@@ -150,6 +184,38 @@ def plot_level_curves(
     -------
     plt.Figure
         The matplotlib figure object containing the plot.
+
+    Example
+    -------
+    Here is an example of how to use `plot_level_curves` to visualize the Styblinski-Tang function:
+
+    .. code-block:: python
+
+        import jax.numpy as jnp
+
+        # Define the Styblinski-Tang function
+        def styblinski_tang(v: jnp.ndarray) -> jnp.ndarray:
+            u = jnp.square(v)
+            return 0.5 * jnp.sum(jnp.square(u) - 16 * u + 5 * v)
+
+        # Define the domain for plotting
+        domain = ((-4.0, -4.0), (4.0, 4.0))
+
+        # Plot and save the level curves
+        fig = plot_level_curves(
+            function=styblinski_tang,
+            domain=domain,
+            n_samples=200
+        )
+
+        # Display the plot
+        plt.show()
+
+
+    .. image:: ../media/plotting_documentation/plot_level_curves.png
+       :align: center
+       :alt: Example plot showing level curves of the Styblinski-Tang function.
+
     """
     f = jax.vmap(function)
     x, y, grid = grid_from_domain(domain, n_samples)

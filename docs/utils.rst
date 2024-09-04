@@ -12,6 +12,8 @@ utils.density module
 utils.features module
 ---------------------
 
+.. _utils_features_label:
+
 .. automodule:: utils.features
    :members:
    :undoc-members:
@@ -21,14 +23,6 @@ utils.functions module
 ----------------------
 
 .. automodule:: utils.functions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-utils.load\_from\_wandb module
-------------------------------
-
-.. automodule:: utils.load_from_wandb
    :members:
    :undoc-members:
    :show-inheritance:
@@ -46,7 +40,7 @@ utils.plotting module
 
 .. automodule:: utils.plotting
    :members:
-   :undoc-members:
+   :exclude-members: plot_loss, plot_heatmap, plot_comparison_models, plot_boxplot_comparison_models
    :show-inheritance:
 
 utils.sde\_simulator module

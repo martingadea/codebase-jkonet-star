@@ -265,7 +265,8 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--eval',
-        type=str, default='train_data',
+        type=str,
+        default='train_data',
         choices=['train_data', 'test_data'],
         help=f"""Option to validate on train or test.""",
     )

@@ -16,28 +16,17 @@ Learning Diffusion at lightspeed
    :width: 45%
    :alt: Preview
 
-Diffusion regulates a phenomenal number of natural processes and the dynamics of
-many successful generative models. Existing models to learn the diffusion terms from
-observational data rely on complex bilevel optimization problems and properly model
-only the drift of the system. We propose a new simple model, JKOnet, which bypasses
-altogether the complexity of existing architectures while presenting significantly
-enhanced representational capacity: JKOnet recovers the potential, interaction, and
-internal energy components of the underlying diffusion process. JKOnet minimizes a
-simple quadratic loss, runs at lightspeed, and drastically outperforms other baselines
-in practice. Additionally, JKOnet provides a closed-form optimal solution for linearly
-parametrized functionals. Our methodology is based on the interpretation of diffusion
-processes as energy-minimizing trajectories in the probability space via the so-called
-JKO scheme, which we study via its first-order optimality conditions, in light of
-few-weeks-old advancements in optimization in the probability space.
-
+Diffusion regulates numerous natural processes and the dynamics of many successful generative models. Existing models to learn the diffusion terms from observational data rely on complex bilevel optimization problems and properly model only the drift of the system. We propose a new simple model, JKOnet∗, which bypasses altogether the complexity of existing architectures while presenting significantly enhanced representational capabilities: JKOnet∗
+recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet∗ minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally, JKOnet∗ provides a closed-form optimal solution for linearly
+parametrized functionals, and, when applied to predict the evolution of cellular processes, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods. Our methodology is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the
+so-called JKO scheme, which we study via its first-order optimality conditions.
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   installation
-   tutorial
-   api
+   getting_started
+   developer_resources
 
 

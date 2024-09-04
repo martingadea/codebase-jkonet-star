@@ -41,7 +41,7 @@ def train_test_split(
     sample_labels: jnp.ndarray,
     test_size: float = 0.4
 ) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
-    """"
+    """
     Splits the dataset into training and testing sets while preserving the distribution of labels.
 
     This function ensures that the proportion of each label in the dataset is preserved in both the

@@ -3,7 +3,55 @@ import jax.numpy as jnp
 import jax.random as jrandom
 from typing import Callable, Union
 
-def get_SDE_predictions(model, dt, n_timesteps, start_timestep, potential, internal, interaction, key, init_pp):
+def get_SDE_predictions(
+    model: str,
+    dt: float,
+    n_timesteps: int,
+    start_timestep: int,
+    potential: Union[bool, Callable[[jnp.ndarray], jnp.ndarray]],
+    internal: Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float],
+    interaction: Union[bool, Callable[[jnp.ndarray], jnp.ndarray]],
+    key: jax.random.PRNGKey,
+    init_pp: jnp.ndarray
+) -> jnp.ndarray:
+    """
+    Get predictions from a Stochastic Differential Equation (SDE) simulator based on the specified model type.
+
+    Depending on the model type, it selects the appropriate SDE simulator (`SDESimulator` or `SDESimulator_implicit_time`)
+    and performs forward sampling to generate predictions.
+
+    Parameters
+    ----------
+    model : str
+        The name of the model to use for simulation. If 'jkonet-star-time-potential' is specified,
+        `SDESimulator_implicit_time` is used; otherwise, `SDESimulator` is used.
+    dt : float
+        The time step size for the SDE simulation.
+    n_timesteps : int
+        The total number of time steps to simulate.
+    start_timestep : int
+        The initial time step index for the simulation.
+    potential : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
+        If `True`, a potential function is used in the simulation. If a callable is provided, it should accept
+        a JAX array as input and return the potential. If `False`, no potential is applied.
+    internal : Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float]
+        If a float, represents the internal energy scale used in the simulation. If a callable is provided, it should
+        accept a JAX array, returning the internal component. If `False`, no internal component is used.
+    interaction : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
+        If `True`, an interaction function is used in the simulation. If a callable is provided, it should accept
+        a JAX array as input and return the interaction component. If `False`, no interaction is applied.
+    key : jax.random.PRNGKey
+        A JAX random key used for stochastic processes in the SDE simulation.
+    init_pp : jnp.ndarray
+        The initial state for the simulation, typically a JAX array representing the starting point of the system.
+
+    Returns
+    -------
+    jnp.ndarray
+        An array representing the simulated trajectories of the system, with shape (n_timesteps + 1, ...),
+        where the first dimension corresponds to the time steps and the remaining dimensions correspond
+        to the state variables of the system.
+    """
     if model == 'jkonet-star-time-potential':
         sde = SDESimulator_implicit_time
     else:
@@ -29,9 +77,9 @@ class SDESimulator:
         If `True`, the potential function is used. If a callable, it should take a JAX array as input
         and return the potential. If `False`, no potential is applied.
 
-    internal : Union[bool, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray], float]
+    internal : Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float]
         If a float, represents the internal energy scale. If a callable, it should take a JAX array and
-        a JAX random key as input and return the internal component. If `False`, no internal component is used.
+        return the internal component. If `False`, no internal component is used.
 
     interaction : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
         If `True`, the interaction function is used. If a callable, it should take a JAX array as input
@@ -39,10 +87,11 @@ class SDESimulator:
 
     Methods
     -------
-    forward_sampling(key: jnp.ndarray, init: jnp.ndarray) -> jnp.ndarray
+    forward_sampling(key: jax.random.PRNGKey, init: jnp.ndarray) -> jnp.ndarray
         Performs forward sampling of the SDE from the initial condition `init` using the provided random key.
 
-    Usage:
+    Example:
+    --------
     >>> simulator = SDESimulator(dt, n_timesteps, potential, internal, interaction)
     >>> simulator.forward_sampling(key, init)
     """
@@ -51,9 +100,9 @@ class SDESimulator:
             dt: float,
             n_timesteps: int,
             start_timestep: int,
-            potential: Union[bool, Callable],
-            internal: Union[bool, Callable, float],
-            interaction: Union[bool, Callable]):
+            potential: Union[bool, Callable[[jnp.ndarray], jnp.ndarray]],
+            internal: Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float],
+            interaction: Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]):
 
         sqrtdt = jnp.sqrt(2 * dt)
         potential_component = lambda pp, key: jnp.zeros(pp.shape)
@@ -80,13 +129,13 @@ class SDESimulator:
             interaction_component = lambda pp, _: jax.vmap(get_interaction_component(pp))(pp) * dt
             
         
-        def forward_sampling(key: jnp.ndarray, init: jnp.ndarray) -> jnp.ndarray:
+        def forward_sampling(key: jax.random.PRNGKey, init: jnp.ndarray) -> jnp.ndarray:
             """
             Performs forward sampling of the SDE from the initial condition.
 
             Parameters
             ----------
-            key : jnp.ndarray
+            key : jax.random.PRNGKey
                 Random key used for sampling.
 
             init : jnp.ndarray
@@ -123,14 +172,15 @@ class SDESimulator_implicit_time:
         The number of timesteps to simulate.
 
     start_timestep : int
-        The initial timestep index for the simulation.
+        The initial timestep index for the simulation. In the case that we are working with time-varying potentials
+        the start time of the simulation is necessary.
 
     potential : Union[bool, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]]
         If `True`, the potential function is used. If a callable, it should take a JAX array and a time array
         as input and return the potential. If `False`, no potential is applied.
 
-    internal : Union[bool, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray], float]
-        If a float, represents the internal energy scale. If a callable, it should take a JAX array and a random key
+    internal : Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float]
+        If a float, represents the internal energy scale. If a callable, it should take a JAX array
         as input and return the internal component. If `False`, no internal component is used.
 
     interaction : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
@@ -139,7 +189,7 @@ class SDESimulator_implicit_time:
 
     Methods
     -------
-    forward_sampling(key: jnp.ndarray, init: jnp.ndarray) -> jnp.ndarray
+    forward_sampling(key: jax.random.PRNGKey, init: jnp.ndarray) -> jnp.ndarray
         Performs forward sampling of the SDE from the initial condition `init` using the provided random key.
 
 
@@ -153,9 +203,9 @@ class SDESimulator_implicit_time:
             dt: float,
             n_timesteps: int,
             start_timestep: int,
-            potential: Union[bool, Callable],
-            internal: Union[bool, Callable, float],
-            interaction: Union[bool, Callable]):
+            potential: Union[bool, Callable[[jnp.ndarray], jnp.ndarray]],
+            internal: Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float],
+            interaction: Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]):
         self.dt = dt
         self.n_timesteps = n_timesteps
         self.potential = potential
@@ -173,7 +223,7 @@ class SDESimulator_implicit_time:
             t_array : jnp.ndarray
                 The time array for the current step.
 
-            key : jnp.ndarray
+            key : jax.random.PRNGKey
                 Random key used for sampling.
 
             Returns
@@ -202,14 +252,11 @@ class SDESimulator_implicit_time:
 
             Parameters
             ----------
-            key : jnp.ndarray
+            key : jax.random.PRNGKey
                 Random key used for sampling.
 
             init : jnp.ndarray
                 Initial condition for the simulation.
-
-            timestep : int, optional
-                The timestep interval between simulation steps (default is 1).
 
             Returns
             -------

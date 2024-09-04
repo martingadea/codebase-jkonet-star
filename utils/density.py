@@ -3,36 +3,29 @@ from sklearn.mixture import GaussianMixture
 import pickle
 
 class GaussianMixtureModel:
-    def __init__(self):
-        """
-        Initializes the Gaussian Mixture Model with empty lists for storing parameters.
-        """
-        self.gms_means = []
-        self.gms_covs_invs = []
-        self.gms_den = []
-        self.gms_weights = []
 
-    def fit(self, grouped_values, n_components: int):
+    gms_means = []
+    gms_covs_invs = []
+    gms_den = []
+    gms_weights = []
+
+    def fit(self, trajectory, n_components: int):
         """
-        Fits a Gaussian Mixture Model to the provided grouped values.
+        Fits a Gaussian Mixture Model to the provided trajectory.
 
         Parameters
         ----------
-        grouped_values : dict
+        trajectory : dict
             Dictionary where the trajectories are stored. The keys of the dictionary are the timesteps and the values are arrays of data points.
             Each array should have shape (n_samples, n_features).
 
         n_components : int
             Number of components (clusters) to use in the Gaussian Mixture Model.
 
-        Notes
-        -----
-        This method fits a Gaussian Mixture Model to each group of data points separately.
-        Components with small determinants are discarded to avoid numerical instability.
         """
-        data_dim = list(grouped_values.values())[0].shape[1]
-        for label in sorted(grouped_values.keys()):
-            data = grouped_values[label]
+        data_dim = list(trajectory.values())[0].shape[1]
+        for label in sorted(trajectory.keys()):
+            data = trajectory[label]
             gm = GaussianMixture(n_components=n_components)
             gm.fit(data)
 
@@ -88,7 +81,7 @@ class GaussianMixtureModel:
         Parameters
         ----------
         t : int
-            Time index corresponding to the group of components to use for the density calculation.
+            Time index corresponding to Gaussian Mixture Model at time-step t.
 
         x : jnp.ndarray
             State (data point) at which the density should be computed. Should have shape (n_features,).
