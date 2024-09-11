@@ -26,7 +26,7 @@ not perform any train-test split.
 
    python data_generator.py --load-from-file RNA_PCA_5 --train-test-split 0.4
 
-Training:
+Training
 ~~~~~~~~~~
 
 Finally, in order to train and evaluate the model we run the last script.

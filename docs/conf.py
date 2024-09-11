@@ -32,6 +32,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
     "sphinxcontrib.bibtex",
+    "sphinx_togglebutton"
 ]
 
 bibtex_bibfiles = ['bibliography.bib']

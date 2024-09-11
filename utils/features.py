@@ -78,8 +78,8 @@ def rbf_multiquadric(x, c):
     Computes the multiquadric radial basis function (RBF).
 
     .. math::
-        \mathrm{RBF}(x, c) = -\sqrt{\sum_{i} (x_i - c_i)^2 + 1}
 
+        \mathrm{RBF}(x, c) = -\sqrt{\sum_{i} (x_i - c_i)^2 + 1}
 
     Args:
         x (jnp.ndarray): Input data point.
@@ -95,6 +95,7 @@ def rbf_inverse_multiquadric(x, c):
     Computes the inverse multiquadric radial basis function (RBF).
 
     .. math::
+
         \mathrm{RBF}(x, c) = \frac{1}{\sqrt{\sum_{i} (x_i - c_i)^2 + 1}}
 
     Args:
@@ -111,6 +112,7 @@ def rbf_inverse_quadratic(x, c):
     Computes the inverse quadratic radial basis function (RBF).
 
     .. math::
+
         \mathrm{RBF}(x, c) = \frac{1}{\sum_{i} (x_i - c_i)^2 + 1}
 
     Args:

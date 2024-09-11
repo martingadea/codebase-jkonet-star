@@ -90,10 +90,6 @@ class SDESimulator:
     forward_sampling(key: jax.random.PRNGKey, init: jnp.ndarray) -> jnp.ndarray
         Performs forward sampling of the SDE from the initial condition `init` using the provided random key.
 
-    Example:
-    --------
-    >>> simulator = SDESimulator(dt, n_timesteps, potential, internal, interaction)
-    >>> simulator.forward_sampling(key, init)
     """
     def __init__(
             self, 

@@ -5,5 +5,5 @@ Developer resources
    :maxdepth: 2
 
    api
-   rna
    tutorials
+   design_choices

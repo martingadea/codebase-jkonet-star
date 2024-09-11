@@ -12,8 +12,6 @@ utils.density module
 utils.features module
 ---------------------
 
-.. _utils_features_label:
-
 .. automodule:: utils.features
    :members:
    :undoc-members:
@@ -40,7 +38,7 @@ utils.plotting module
 
 .. automodule:: utils.plotting
    :members:
-   :exclude-members: plot_loss, plot_heatmap, plot_comparison_models, plot_boxplot_comparison_models
+   :exclude-members: plot_loss, plot_heatmap, plot_comparison_models, plot_boxplot_comparison_models, colormap_from_config
    :show-inheritance:
 
 utils.sde\_simulator module

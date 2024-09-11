@@ -1,7 +1,7 @@
 Guide
 ============
 
-Generating the data 🧩
+Generating synthetic data 🧩
 ----------------------
 
 .. code-block:: bash
@@ -103,7 +103,9 @@ Available options for `$potential` and `$interaction`:
 - oakley_ohagan
 - sphere
 
-Generating All Data for the Paper
+For more information on the different functions refer to :mod:`utils.functions`.
+
+Generating All Synthetic Data for the Paper
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following script generates all data for the paper:
@@ -161,7 +163,7 @@ Example 1:
 
    python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0
 
-Training All Models on All Data for the Paper
+Training All Models on All Synthetic Data for the Paper
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following script trains all models on all the data generated:
@@ -192,13 +194,54 @@ The following script trains all models on all the data generated:
 
 Note: This script will take a while and consume significant compute resources. The `jkonet` family, in particular, will require days of computation. We recommend starting with individual experiments as described in Example 1. Consider combining this script with data generation and using the `--wandb` flag.
 
+Configuration file
+-------------------
+In the configuration file (config.yaml) most of the hyperparameters of the network are specified.
+Furthermore, the file also contains the option to save files or not, either locally or in wandb and
+the metrics to use. Finally, it also contains parameters about the linear parametrization which are shown
+below.
+
+.. code-block:: yaml
+
+    # training
+    train:
+      eval_freq: 100
+      batch_size: 250
+      epochs: 300
+      save_locally: True
+
+    metrics:
+      w_one_ahead: True
+      w_cumulative: True
+
+    #WandB
+    wandb:
+      save_plots: True
+      save_model: False
+
+    # models
+    energy:
+      # optimization
+      optim:
+        weight_decay: 0.0
+        optimizer: Adam
+        lr: 0.001
+        beta1: 0.9
+        beta2: 0.999
+        eps: 0.00000001
+        grad_clip: 10.0
+
+      # model architecture
+      model:
+        layers: [64, 64]
+
 
 Selecting features for Linear Parametrization
 ----------------------------------------------
-Here is a snippet of the configuration file showing how features are chosen. One may select how much regularization
+Here is a snippet of the configuration file (config.yaml) showing how features are chosen. One may select how much regularization
 to use, the degree of the polynomials, the use of sines and cosines and finally the RBFS. In the case of RBFS, the
 parameters one may play around with are the number of centers per dimension, the domain, the sigma, and finally,
-the type of RBFS. For more information on the RBFS features refer to :ref:`utils_features_label`.
+the type of RBFS. For more information on the RBFS features refer to :mod:`utils.features` module.
 
 .. code-block:: yaml
 
@@ -225,21 +268,3 @@ the type of RBFS. For more information on the RBFS features refer to :ref:`utils
                     # 'inverse_quadratic'
                 ]
 
-Citation 🙏
-------------
-
-If you use this code in your research, please cite our paper:
-
-.. code-block:: latex
-
-   @article{terpin2024learning,
-     title={{Learning Diffusion at Lightspeed}},
-     author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martín and D\"orfler, Florian},
-     journal={},
-     year={2024},
-   }
-
-Contact and Contributing
--------------------------
-
-If you have any questions or would like to contribute to the project, feel free to reach out to [Antonio Terpin](mailto:aterpin@ethz.ch).

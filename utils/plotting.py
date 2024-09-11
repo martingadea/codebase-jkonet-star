@@ -131,7 +131,8 @@ def grid_from_domain(
         - y : np.ndarray
             The y-coordinates of the grid points.
         - grid : np.ndarray
-            The grid of points in (x, y) space. If the domain has more than 2 dimensions, extra dimensions are filled with zeros.
+            The grid of points in (x, y) space. If the domain has more than 2 dimensions, extra dimensions are filled
+            with zeros as to project into the other dimensions.
 
     Example
     -------
@@ -211,10 +212,11 @@ def plot_level_curves(
         # Display the plot
         plt.show()
 
+    .. toggle:: Click to show/hide example plot
 
-    .. image:: ../media/plotting_documentation/plot_level_curves.png
-       :align: center
-       :alt: Example plot showing level curves of the Styblinski-Tang function.
+        .. image:: ../media/plotting_documentation/plot_level_curves.png
+           :align: center
+           :alt: Example plot showing level curves of the Styblinski-Tang function.
 
     """
     f = jax.vmap(function)
@@ -273,7 +275,7 @@ def plot_predictions(predicted: np.ndarray,
         An array of shape (num_timesteps, num_particles, num_dimensions) containing
         the predicted particle positions.
     data_dict : Dict[int, np.ndarray]
-        A dictionary mapping timesteps to arrays of shape (num_particles, num_dimensions)
+        A dictionary mapping time steps to arrays of shape (num_particles, num_dimensions)
         containing the ground truth particle positions.
     interval : Optional[Tuple[int, int]]
         A tuple specifying the start and end timesteps to plot. If None, plots all timesteps.
@@ -282,12 +284,50 @@ def plot_predictions(predicted: np.ndarray,
     save_to : Optional[str]
         If provided, a path to save the plot image and data files. If None, the plot is not saved.
     n_particles : int
-        The number of particles to consider for each timestep. Default is 200.
+        The number of particles to consider for each timestep. Default is 200. If there are less
+        particles either in predictions or in ground truth, that will be the number of
+        particles plotted.
 
     Returns
     -------
     plt.Figure
         The matplotlib figure object containing the plot.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        import numpy as np
+        import matplotlib.pyplot as plt
+
+        # Define the ground truth particle positions
+        data_dict = {
+            0: np.array([
+                [0., 0.],  [1., 0.],  [2., 1.],  [3., 1.],  [4., 2.],  [5., 3.]]),  # Ground truth at t=0
+            1: np.array([
+                [0., 1.],  [1., 1.],  [2., 2.],  [3., 2.],  [4., 3.],  [5., 4.]])   # Ground truth at t=1
+        }
+
+        # Define the predicted particle positions
+        predicted = np.array([
+            [[0.05, 0.0], [0.95, 0.0], [2.1, 1.05], [2.9, 1.1], [4.0, 2.1], [5.1, 3.0]],  # Predicted positions at t=0
+            [[0.0, 1.02], [1.1, 1.0], [2.05, 2.0], [3.05, 2.05], [4.05, 3.02], [5.05, 4.1]]  # Predicted positions at t=1
+        ])
+
+        # Call the function to plot the predictions and ground truth
+        fig = plot_predictions(predicted=predicted,
+                               data_dict=data_dict,
+                               interval=(0, 1),
+                               model='jkonet-star',
+                               )
+
+        # Display the plot
+        plt.show()
+
+    .. image:: ../media/plotting_documentation/plot_predictions.png
+       :align: center
+       :alt: Example plot showing predictions.
     """
     if interval is None:
         start, end = 0, max(data_dict.keys())
@@ -295,7 +335,10 @@ def plot_predictions(predicted: np.ndarray,
         start, end = interval
 
     filtered_timesteps = range(start, end + 1)
-    data = np.zeros((len(filtered_timesteps), n_particles, predicted.shape[2]))
+
+    min_particles = min(n_particles, predicted.shape[1], len(next(iter(data_dict.values()))))
+
+    data = np.zeros((len(filtered_timesteps), min_particles, predicted.shape[2]))
 
     # set max and min values
     data = data[:, :n_particles, :]
