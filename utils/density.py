@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 from sklearn.mixture import GaussianMixture
 import pickle
+import chex
 
 class GaussianMixtureModel:
 
@@ -9,7 +10,7 @@ class GaussianMixtureModel:
     gms_den = []
     gms_weights = []
 
-    def fit(self, trajectory, n_components: int):
+    def fit(self, trajectory: dict, n_components: int) -> None:
         """
         Fits a Gaussian Mixture Model to the provided trajectory.
 
@@ -23,6 +24,10 @@ class GaussianMixtureModel:
             Number of components (clusters) to use in the Gaussian Mixture Model.
 
         """
+        for key, val in trajectory.items():
+            chex.assert_type(val, float)
+            chex.assert_rank(val, 2)  # Check that each value in trajectory is a 2D array
+
         data_dim = list(trajectory.values())[0].shape[1]
         for label in sorted(trajectory.keys()):
             data = trajectory[label]
@@ -74,7 +79,7 @@ class GaussianMixtureModel:
             self.gms_den = data['gms_den']
             self.gms_weights = data['gms_weights']
 
-    def gmm_density(self, t, x):
+    def gmm_density(self, t: int, x: jnp.ndarray) -> jnp.ndarray:
         """
         Computes the density of the Gaussian Mixture Model at a given time t and state x.
 
@@ -88,7 +93,7 @@ class GaussianMixtureModel:
 
         Returns
         -------
-        float
+        jnp.ndarray
             Density of the Gaussian Mixture Model at the specified time and state.
         """
         diffs = x - self.gms_means[t]  # (n_components, dim)

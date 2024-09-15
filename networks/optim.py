@@ -6,7 +6,7 @@ from flax import linen as nn
 from flax.core import freeze, FrozenDict
 import optax
 from typing import Dict, Callable, Any
-
+import chex
 
 
 def get_optimizer(config: Dict[str, Any]) -> optax.GradientTransformation:
@@ -34,6 +34,12 @@ def get_optimizer(config: Dict[str, Any]) -> optax.GradientTransformation:
     NotImplementedError
         If the optimizer name is not supported.
     """
+
+    chex.assert_type([config['lr'], config['beta1'], config['beta2'], config['eps']], [float] * 4)
+
+    if 'grad_clip' in config and config['grad_clip'] is not None:
+        chex.assert_type(config['grad_clip'], float)
+
     optimizer_name = config['optimizer']
     if optimizer_name == 'Adam':
         optimizer = optax.adam(learning_rate=config['lr'],
@@ -78,6 +84,7 @@ def create_train_state(
     train_state.TrainState
         The initialized train state containing model parameters and optimizer.
     """
+
     params = model.init(rng, jnp.ones(input_shape))['params']
     return train_state.TrainState.create(
         apply_fn=model.apply, params=params, tx=optimizer)

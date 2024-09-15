@@ -4,6 +4,7 @@ from ott.geometry import pointcloud
 import ot
 from ott.problems.linear import linear_problem
 from ott.solvers.linear import sinkhorn
+import chex
 
 def wasserstein_couplings(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
     """
@@ -36,6 +37,11 @@ def wasserstein_couplings(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
     DeviceArray([[0.5, 0. ],
                  [0. , 0.5]], dtype=float32)
     """
+
+    chex.assert_rank(xs, 2)
+    chex.assert_rank(ys, 2)
+    chex.assert_axis_dimension(xs, axis=1, expected=ys.shape[1])
+    chex.assert_type([xs, ys], float)
 
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]
@@ -79,10 +85,16 @@ def wasserstein_loss(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
     ----------
     - POT library documentation: https://pythonot.github.io/
     """
+    chex.assert_rank(xs, 2)
+    chex.assert_rank(ys, 2)
+    chex.assert_axis_dimension(xs, axis=1, expected=ys.shape[1])
+    chex.assert_type([xs, ys], float)
+
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]
 
-    M = ot.dist(xs, ys)
+    # M = ot.dist(xs, ys)
+    M = ot.dist(xs, ys, metric='euclidean')
 
     return ot.emd2(a, b, M, numItermax=1000000)
 
@@ -124,6 +136,13 @@ def sinkhorn_loss(xs: jnp.ndarray, ys: jnp.ndarray, epsilon: float = 1.0) -> flo
     - JAX-OTT library documentation: https://ott-jax.readthedocs.io/
 
     """
+
+    chex.assert_rank(xs, 2)
+    chex.assert_rank(ys, 2)
+    chex.assert_axis_dimension(xs, axis=1, expected=ys.shape[1])
+    chex.assert_type([xs, ys], float)
+    chex.assert_type(epsilon, float)
+
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]
 
@@ -136,7 +155,7 @@ def sinkhorn_loss(xs: jnp.ndarray, ys: jnp.ndarray, epsilon: float = 1.0) -> flo
     return out.reg_ot_cost
 
 
-def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: float) -> jnp.ndarray:
+def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: int) -> jnp.ndarray:
     """
     Computes the couplings between particles in two consecutive batches.
 
@@ -151,7 +170,7 @@ def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: float) 
     batch_next : jnp.ndarray
         The array of particles at the next timestep with shape (n_particles, n_features).
 
-    time : float
+    time : int
         The time step of batch_next.
 
     Returns
@@ -181,6 +200,13 @@ def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: float) 
     - POT library documentation: https://pythonot.github.io/
 
     """
+
+    chex.assert_rank(batch, 2)
+    chex.assert_rank(batch_next, 2)
+    chex.assert_axis_dimension(batch, axis=1, expected=batch_next.shape[1])
+    chex.assert_type([batch, batch_next], float)
+    chex.assert_type(time, int)
+
     weights = wasserstein_couplings(batch, batch_next)
 
     # Create particle indices

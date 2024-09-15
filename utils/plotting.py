@@ -212,6 +212,8 @@ def plot_level_curves(
         # Display the plot
         plt.show()
 
+    Click to show example plot
+
     .. toggle:: Click to show/hide example plot
 
         .. image:: ../media/plotting_documentation/plot_level_curves.png

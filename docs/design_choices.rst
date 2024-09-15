@@ -12,5 +12,3 @@ Precomputation of couplings
 Linear vs Non-Linear parametrization
 -------------------------------------
 
-SDE prediction vs JKO step prediction
---------------------------------------

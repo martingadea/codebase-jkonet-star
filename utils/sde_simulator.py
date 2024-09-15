@@ -73,18 +73,17 @@ class SDESimulator:
     start_timestep : int
         The initial timestep index for the simulation.
 
-    potential : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
-        If `True`, the potential function is used. If a callable, it should take a JAX array as input
-        and return the potential. If `False`, no potential is applied.
+    potential : Optional[Callable[[jnp.ndarray, jnp.ndarray]
+        If a callable, it should take a JAX array as input and return the potential. If `False`,
+         no potential is applied.
 
-    internal : Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float]
-        If a float, represents the internal energy scale. If a callable, it should take a JAX array and
-        return the internal component. If `False`, no internal component is used.
+    internal : Optional[Callable[[jnp.ndarray, jnp.ndarray]
+        If a callable, it should take a JAX array as input and return the internal component. If `False`,
+         no internal component is used.
 
-    interaction : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
-        If `True`, the interaction function is used. If a callable, it should take a JAX array as input
-        and return the interaction component. If `False`, no interaction is applied.
-
+    interaction : Optional[Callable[[jnp.ndarray, jnp.ndarray]
+        If a callable, it should take a JAX array as input and return the interaction component. If `False`,
+         no interaction is applied.
     Methods
     -------
     forward_sampling(key: jax.random.PRNGKey, init: jnp.ndarray) -> jnp.ndarray
@@ -171,17 +170,17 @@ class SDESimulator_implicit_time:
         The initial timestep index for the simulation. In the case that we are working with time-varying potentials
         the start time of the simulation is necessary.
 
-    potential : Union[bool, Callable[[jnp.ndarray, jnp.ndarray], jnp.ndarray]]
-        If `True`, the potential function is used. If a callable, it should take a JAX array and a time array
+    potential : Optional[Callable[[jnp.ndarray, jnp.ndarray]
+        If a callable, it should take a JAX array and a time array
         as input and return the potential. If `False`, no potential is applied.
 
-    internal : Union[bool, Callable[[jnp.ndarray], jnp.ndarray], float]
-        If a float, represents the internal energy scale. If a callable, it should take a JAX array
-        as input and return the internal component. If `False`, no internal component is used.
+    internal : Optional[Callable[[jnp.ndarray, jnp.ndarray]
+        If a callable, it should take a JAX array as input and return the internal component. If `False`,
+         no internal component is used.
 
-    interaction : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
-        If `True`, the interaction function is used. If a callable, it should take a JAX array as input
-        and return the interaction component. If `False`, no interaction is applied.
+    interaction : Optional[Callable[[jnp.ndarray, jnp.ndarray]
+        If a callable, it should take a JAX array as input and return the interaction component. If `False`,
+         no interaction is applied.
 
     Methods
     -------
