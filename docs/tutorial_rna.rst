@@ -5,7 +5,7 @@ Tutorial RNA
 Generating the data 🧩
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The dataset that will be used is the one from Moon :cite:`RNA_dataset`. The dataset is publicly available as ``scRNAseq.zip`` at Mendeley Datasets at `this link <https://data.mendeley.com/datasets/v6n743h5ng/>`_. This dataset tracks the differentiation of human embryonic stem cells over a 27-day period, with cell snapshots collected at the following time intervals: *t\ :math:`_{0}`*: day 0 to 3, *t\ :math:`_{1}`*: day 6 to 9, *t\ :math:`_{2}`*: day 12 to 15, *t\ :math:`_{3}`*: day 18 to 21, and *t\ :math:`_{4}`*: day 24 to 27.
+The dataset that will be used is the one from Moon :cite:`RNA_dataset`. The dataset is publicly available as ``scRNAseq.zip`` at Mendeley Datasets at `this link <https://data.mendeley.com/datasets/v6n743h5ng/>`_. This dataset tracks the differentiation of human embryonic stem cells over a 27-day period, with cell snapshots collected at the following time intervals: :math:`t_{0}`: day 0 to 3, :math:`t_{1}`: day 6 to 9, :math:`t_{2}`: day 12 to 15, :math:`t_{3}`: day 18 to 21, and :math:`t_{4}`: day 24 to 27.
 
 We follow the data pre-processing in :cite:`tong2020trajectorynet` and :cite:`tong2023improving`; in particular, we use the same processed artifacts of the embryoid data provided in their work, which contains the first 100 components of the principal components analysis (PCA) of the data.
 The data is located in "/data/TrajectoryNet/eb_velocity_v5_npz".

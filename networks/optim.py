@@ -36,9 +36,14 @@ def get_optimizer(config: Dict[str, Any]) -> optax.GradientTransformation:
     """
 
     chex.assert_type([config['lr'], config['beta1'], config['beta2'], config['eps']], [float] * 4)
+    chex.assert_scalar_positive(config['lr'])
+    chex.assert_scalar_positive(config['beta1'])
+    chex.assert_scalar_positive(config['beta2'])
+    chex.assert_scalar_positive(config['eps'])
 
     if 'grad_clip' in config and config['grad_clip'] is not None:
         chex.assert_type(config['grad_clip'], float)
+        chex.assert_scalar_positive(config['grad_clip'])
 
     optimizer_name = config['optimizer']
     if optimizer_name == 'Adam':

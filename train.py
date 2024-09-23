@@ -4,6 +4,7 @@ import yaml
 import torch
 import wandb
 import argparse
+import chex
 from time import time
 from tqdm import tqdm
 import numpy as np
@@ -54,7 +55,12 @@ def main(args: argparse.Namespace) -> None:
     config = yaml.safe_load(open('config.yaml'))
     batch_size = config['train']['batch_size']
     epochs = config['train']['epochs']
+    eval_freq = config['train']['eval_freq']
     save_locally = config['train']['save_locally']
+
+    chex.assert_scalar_positive(epochs)
+    chex.assert_scalar_positive(batch_size)
+    chex.assert_scalar_positive(eval_freq)
 
     # Load also JKOnet configs, although they may not be used
     jkonet_config = yaml.safe_load(open('config-jkonet-extra.yaml'))
@@ -92,6 +98,8 @@ def main(args: argparse.Namespace) -> None:
         loss = 0
         t_start = time()
         for sample in loader_train:
+            # if len(sample[0])%batch_size!=0:
+            #     continue
             l, state = train_step(state, sample)
             loss += l
 

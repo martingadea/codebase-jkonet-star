@@ -141,7 +141,6 @@ def sinkhorn_loss(xs: jnp.ndarray, ys: jnp.ndarray, epsilon: float = 1.0) -> flo
     chex.assert_rank(ys, 2)
     chex.assert_axis_dimension(xs, axis=1, expected=ys.shape[1])
     chex.assert_type([xs, ys], float)
-    chex.assert_type(epsilon, float)
 
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]

@@ -39,7 +39,27 @@ class PopulationDataset(Dataset):
             The name of the dataset to load. The dataset should be located in
             'data/{dataset_name}' and should contain a .npy file named 'data.npy'.
         """
-        self.trajectory = np.load(os.path.join('data', dataset_name, 'data.npy'))
+        self.data = np.load(os.path.join('data', dataset_name, 'data.npy'))
+        self.sample_labels = np.load(os.path.join('data', dataset_name, 'sample_labels.npy'))
+
+        # Group particles by their timestep using a defaultdict
+        self.trajectory = defaultdict(list)
+        for value, label in zip(self.data, self.sample_labels):
+            self.trajectory[label].append(value)
+        # Convert lists to numpy arrays
+        for label in self.trajectory:
+            self.trajectory[label] = np.array(self.trajectory[label])
+
+        # Find the maximum number of particles in any timestep
+        self.max_particles = max([particles.shape[0] for particles in self.trajectory.values()])
+
+        # Pad the particles for each timestep so that all timesteps have `self.max_particles` particles
+        for label in self.trajectory:
+            num_particles = self.trajectory[label].shape[0]
+            if num_particles < self.max_particles:
+                padding_needed = self.max_particles - num_particles
+                repeated_particles = np.tile(self.trajectory[label], (padding_needed, 1))
+                self.trajectory[label] = np.vstack((self.trajectory[label], repeated_particles[:padding_needed]))
 
     def __len__(self) -> int:
         """
@@ -50,8 +70,7 @@ class PopulationDataset(Dataset):
         int
             The number of timesteps in the dataset.
         """
-        return self.trajectory.shape[1]
-
+        return self.max_particles
     def __getitem__(self, idx: int) -> list:
         """
         Retrieve particle data for each timestep at the given index.
@@ -69,10 +88,7 @@ class PopulationDataset(Dataset):
             number of timesteps, and each array represents the particle state
             at a specific timestep.
         """
-        # returns a particle for each timestep
-        # batching means getting more particles per timestep
-        return [self.trajectory[t, idx, :] 
-                for t in range(self.trajectory.shape[0])]
+        return [self.trajectory[timestep][idx] for timestep in sorted(self.trajectory.keys())]
 
 
 class CouplingsDataset(Dataset):

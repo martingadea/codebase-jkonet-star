@@ -338,16 +338,15 @@ def plot_predictions(predicted: np.ndarray,
 
     filtered_timesteps = range(start, end + 1)
 
-    min_particles = min(n_particles, predicted.shape[1], len(next(iter(data_dict.values()))))
-
+    min_particles = min(n_particles, predicted.shape[1], min(array.shape[0] for array in data_dict.values()))
     data = np.zeros((len(filtered_timesteps), min_particles, predicted.shape[2]))
 
     # set max and min values
-    data = data[:, :n_particles, :]
-    predicted = predicted[:, :n_particles, :]
+    data = data[:, :min_particles, :]
+    predicted = predicted[:, :min_particles, :]
     for i, t in enumerate(filtered_timesteps):
         if t in data_dict:
-            data[i, :, :] = data_dict[t][:n_particles, :]
+            data[i, :, :] = data_dict[t][:min_particles, :]
 
     x_min = np.min((np.amin(data, axis=0)[:, 0].min(), np.amin(predicted, axis=0)[:, 0].min())) - 2.0
     x_max = np.max((np.amax(data, axis=0)[:, 0].max(), np.amax(predicted, axis=0)[:, 0].max())) + 2.0
