@@ -59,7 +59,7 @@ class JKOnet(LearningDiffusionModel):
         PopulationDataset
             The loaded dataset.
         """
-        return PopulationDataset(dataset_name)
+        return PopulationDataset(dataset_name, self.batch_size)
     
     def __init__(self, config: Dict, data_dim: int, tau: float) -> None:
         """
@@ -78,8 +78,10 @@ class JKOnet(LearningDiffusionModel):
         super().__init__()
         self.tau = tau
         self.data_dim = data_dim
+        self.batch_size = config['train']['batch_size']
         self.potential_optimizer = config['energy']['optim']
         self.model_potential = MLP(config['energy']['model']['layers'])
+
 
         # otmap
         self.config_settings = config['settings']

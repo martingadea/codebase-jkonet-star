@@ -1,5 +1,6 @@
 import glob
 import os
+import math
 import numpy as np
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
@@ -29,7 +30,7 @@ class PopulationDataset(Dataset):
         the particle trajectories. Each entry in the array represents a particle's
         state at a given timestep.
     """
-    def __init__(self, dataset_name: str) -> None:
+    def __init__(self, dataset_name: str, batch_size: int) -> None:
         """
         Initialize the PopulationDataset by loading data from 'data.npy'.
 
@@ -41,6 +42,7 @@ class PopulationDataset(Dataset):
         """
         self.data = np.load(os.path.join('data', dataset_name, 'data.npy'))
         self.sample_labels = np.load(os.path.join('data', dataset_name, 'sample_labels.npy'))
+        self.batch_size = batch_size
 
         # Group particles by their timestep using a defaultdict
         self.trajectory = defaultdict(list)
@@ -52,14 +54,16 @@ class PopulationDataset(Dataset):
 
         # Find the maximum number of particles in any timestep
         self.max_particles = max([particles.shape[0] for particles in self.trajectory.values()])
+        if self.max_particles % self.batch_size != 0:
+            self.max_particles = math.ceil(self.max_particles / self.batch_size) * self.batch_size
 
         # Pad the particles for each timestep so that all timesteps have `self.max_particles` particles
-        for label in self.trajectory:
-            num_particles = self.trajectory[label].shape[0]
-            if num_particles < self.max_particles:
-                padding_needed = self.max_particles - num_particles
-                repeated_particles = np.tile(self.trajectory[label], (padding_needed, 1))
-                self.trajectory[label] = np.vstack((self.trajectory[label], repeated_particles[:padding_needed]))
+        # for label in self.trajectory:
+        #     num_particles = self.trajectory[label].shape[0]
+        #     if num_particles < self.max_particles:
+        #         padding_needed = self.max_particles - num_particles
+        #         repeated_particles = np.tile(self.trajectory[label], (padding_needed, 1))
+        #         self.trajectory[label] = np.vstack((self.trajectory[label], repeated_particles[:padding_needed]))
 
     def __len__(self) -> int:
         """
@@ -70,6 +74,7 @@ class PopulationDataset(Dataset):
         int
             The number of timesteps in the dataset.
         """
+
         return self.max_particles
     def __getitem__(self, idx: int) -> list:
         """
@@ -88,7 +93,11 @@ class PopulationDataset(Dataset):
             number of timesteps, and each array represents the particle state
             at a specific timestep.
         """
-        return [self.trajectory[timestep][idx] for timestep in sorted(self.trajectory.keys())]
+        # return [self.trajectory[timestep][idx] for timestep in sorted(self.trajectory.keys())]
+        particle_index = idx % self.max_particles
+        # Retrieve the state of this particle index for each timestep
+        return [self.trajectory[timestep][particle_index % len(self.trajectory[timestep])]
+                for timestep in sorted(self.trajectory.keys())]
 
 
 class CouplingsDataset(Dataset):

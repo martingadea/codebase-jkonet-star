@@ -98,8 +98,6 @@ def main(args: argparse.Namespace) -> None:
         loss = 0
         t_start = time()
         for sample in loader_train:
-            # if len(sample[0])%batch_size!=0:
-            #     continue
             l, state = train_step(state, sample)
             loss += l
 

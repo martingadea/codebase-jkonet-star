@@ -84,7 +84,7 @@ def train_test_split(
     return values[train_indices], sample_labels[train_indices], values[test_indices], sample_labels[test_indices]
 
 def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_labels: jnp.ndarray,
-                                  n_gmm_components: int = 10, data_type: str = 'train') -> None:
+                                  n_gmm_components: int = 10, batch_size: int = 1000, data_type: str = 'train') -> None:
     """
     Fits Gaussian Mixture Models (GMM) to the trajectory data, computes couplings,
     and saves the results to disk. This function also plots the data and saves the plots.
@@ -108,21 +108,25 @@ def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_label
     """
     sample_labels = [int(label) for label in sample_labels]
     # Group the values by sample labels
-    grouped_values = defaultdict(list)
+    trajectory = defaultdict(list)
     for value, label in zip(values, sample_labels):
-        grouped_values[label].append(value)
+        trajectory[label].append(value)
 
     # Convert lists to arrays
-    grouped_values = {label: jnp.array(values) for label, values in grouped_values.items()}
-    sorted_labels = sorted(grouped_values.keys())
+    trajectory = {label: jnp.array(values) for label, values in trajectory.items()}
+    sorted_labels = sorted(trajectory.keys())
+
+    # Check if the dataset is unbalanced (i.e., varying number of particles at each timestep)
+    num_particles_per_step = [trajectory[label].shape[0] for label in sorted_labels]
+    is_unbalanced = len(set(num_particles_per_step)) > 1
 
     if n_gmm_components > 0:
         print("Fitting Gaussian Mixture Model...")
         gmm = GaussianMixtureModel()
-        gmm.fit(grouped_values, n_gmm_components)
+        gmm.fit(trajectory, n_gmm_components)
         cmap = plt.get_cmap('Spectral')
 
-        all_values = jnp.vstack([grouped_values[label] for label in sorted_labels])
+        all_values = jnp.vstack([trajectory[label] for label in sorted_labels])
         x_min = jnp.min(all_values[:, 0]) * 0.9
         x_max = jnp.max(all_values[:, 0]) * 1.1
         y_min = jnp.min(all_values[:, 1]) * 0.9
@@ -130,7 +134,7 @@ def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_label
 
         for label in sorted_labels:
             # Plot particles
-            plt.scatter(grouped_values[label][:, 0], grouped_values[label][:, 1],
+            plt.scatter(trajectory[label][:, 0], trajectory[label][:, 1],
                         c=[cmap(float(label) / len(sorted_labels))], marker='o', s=4)
             plt.xlim(x_min, x_max)
             plt.ylim(y_min, y_max)
@@ -138,13 +142,30 @@ def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_label
             plt.clf()
 
     print("Computing couplings...")
+
     for t, label in enumerate(sorted_labels[:-1]):
         next_label = sorted_labels[t + 1]
-        values_t = grouped_values[label]
-        values_t1 = grouped_values[next_label]
+        values_t = trajectory[label]
+        values_t1 = trajectory[next_label]
 
         # Compute couplings
-        couplings = compute_couplings(values_t, values_t1, next_label)
+        if is_unbalanced or batch_size == -1:
+            couplings = compute_couplings(
+                values_t,
+                values_t1,
+                next_label)
+        else:
+            couplings = []
+            for i in range(int(jnp.ceil(trajectory[0].shape[0]/ batch_size))):
+                idxs = jnp.arange(i * batch_size, min(
+                    trajectory[0].shape[0], (i + 1) * batch_size
+                ))
+                couplings.append(compute_couplings(
+                    trajectory[t][idxs, :],
+                    trajectory[t + 1][idxs, :],
+                    next_label
+                ))
+            couplings = jnp.concatenate(couplings, axis=0)
         jnp.save(os.path.join('data', folder, f'couplings_{data_type}_{label}_to_{next_label}.npy'), couplings)
         # Save densities and gradients
         ys = couplings[:, (couplings.shape[1] - 1) // 2:-2] #Changed the 2 to match the new shape of couplings
@@ -271,13 +292,15 @@ def main(args: argparse.Namespace) -> None:
     # Generate data for train set
     jax.numpy.save(os.path.join('data', folder, 'train_data.npy'), train_values)
     jax.numpy.save(os.path.join('data', folder, 'train_sample_labels.npy'), train_labels)
-    generate_data_from_trajectory(folder, train_values, train_labels, args.n_gmm_components, data_type='train')
+    generate_data_from_trajectory(folder, train_values, train_labels, args.n_gmm_components, args.batch_size,
+                                  data_type='train')
 
     if args.train_test_split != 0:
         # Generate data for test set
         jax.numpy.save(os.path.join('data', folder, 'test_data.npy'), test_values)
         jax.numpy.save(os.path.join('data', folder, 'test_sample_labels.npy'), test_labels)
-        generate_data_from_trajectory(folder, test_values, test_labels, args.n_gmm_components, data_type='test')
+        generate_data_from_trajectory(folder, test_values, test_labels, args.n_gmm_components, args.batch_size,
+                                      data_type='test')
 
     print("Done.")
 

@@ -11,6 +11,8 @@ If we consider the internal energy term of the energy functional :math:`J` (:mat
 Precomputation of couplings
 ----------------------------
 
+The couplings are not optimization variables for this method, so they can be precomputed. However, if there are too many couplings, this may require excessive memory. In such cases, it may be more efficient to compute them dynamically within the optimization loop.
+
 Linear vs Non-Linear parametrization
 -------------------------------------
 
