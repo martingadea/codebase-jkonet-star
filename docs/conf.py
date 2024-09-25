@@ -56,6 +56,8 @@ napoleon_attr_annotations = True
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+togglebutton_hint = "Click to show example plot."
+togglebutton_hint_hide = "Click to hide example plot."
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -431,7 +431,7 @@ if __name__ == '__main__':
 
     #Train-test split
     parser.add_argument(
-        '--train-test-split', 
+        '--test-split',
         type=float, 
         default=0,
         help='Train test split.'

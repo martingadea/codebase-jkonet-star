@@ -76,6 +76,10 @@ The `data_generator.py` script accepts the following parameters:
      - Seed for the random number generator to ensure reproducibility.
      - int
      - 0
+   * - `--test-split
+     - Proportion of the dataset to include in the testing split. A value between 0 and 1.
+     - float
+     - 0
 
 Using Custom Data
 ~~~~~~~~~~~~~~~~~~~

@@ -510,7 +510,7 @@ class JKOnetStarPotentialInternal(JKOnetStar):
                     internal_params, xs, ys, ws, rho, rho_grad)
             ) + (ys - xs)) ** 2, axis=1))
     
-    def get_interaction(self, _) -> Callable[[jnp.ndarray], float]:
+    def get_interaction(self, _) -> Callable[[jnp.ndarray], jnp.ndarray]:
         """
         Returns a function representing the interaction term.
 
@@ -523,7 +523,7 @@ class JKOnetStarPotentialInternal(JKOnetStar):
 
         Returns
         -------
-        Callable[[jnp.ndarray], float]
+        Callable[[jnp.ndarray], jnp.ndarray]
             A function that always returns 0.
         """
         return lambda _: 0.

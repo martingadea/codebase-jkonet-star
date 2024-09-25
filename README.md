@@ -9,9 +9,10 @@ This repo contains a JAX implementation of the JKOnet* architecture presented in
 ## Abstract 🤓
 <p align='center'><img src='media/cover.png' alt='Cover.' width='45%'> <img src='media/preview.png' alt='Cover.' width='45%'></p>
 
-Diffusion regulates numerous natural processes and the dynamics of many successful generative models. Existing models to learn the diffusion terms from observational data rely on complex bilevel optimization problems and model only the drift of the system.
-We propose a new simple model, 'JKOnet*', which bypasses the complexity of existing architectures while presenting significantly enhanced representational capabilities: 'JKOnet*' recovers the potential, interaction, and internal energy components of the underlying diffusion process. 'JKOnet*' minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally,'JKOnet*' provides a closed-form optimal solution for linearly parametrized functionals, and, when applied to predict the evolution of cellular processes from real-world data, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods.
-Our methodology is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the so-called JKO scheme, which we study via its first-order optimality conditions.
+Diffusion regulates numerous natural processes and the dynamics of many successful generative models. Existing models to learn the diffusion terms from observational data rely on complex bilevel optimization problems and properly model only the drift of the system. We propose a new simple model, JKOnet∗, which bypasses altogether the complexity of existing architectures while presenting significantly enhanced representational capabilities: JKOnet∗
+recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet∗ minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally, JKOnet∗ provides a closed-form optimal solution for linearly
+parametrized functionals, and, when applied to predict the evolution of cellular processes, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods. Our methodology is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the
+so-called JKO scheme, which we study via its first-order optimality conditions.
 
 ## Getting started 🛠️
 The following works on macOS 13.2.1 and should work also on Ubuntu. Windows may require additional packages.
@@ -50,6 +51,7 @@ python data_generator.py --potential styblinski_tang
 | `--batch-size`       | Batch size for computing couplings.                                                           | int    | 1000    |
 | `--n-gmm-components` | Number of components of the Gaussian Mixture Model. Set to 0 for no GMM.                      | int    | 10      |
 | `--seed`             | Seed for the random number generator to ensure reproducibility.                               | int    | 0       |
+| `--test-split`       | Proportion of the dataset to include in the testing split. A value between 0 and 1.           | float  | 0       |
 
 ### How do I use custom data?
 The `load-from-file` parameter allows to load the snapshots, a `(T, N, dim)` array, from the file provided. In this case, the script computes the couplings and fits the densities, but it does not generate new data.
@@ -108,6 +110,7 @@ where `$solver` is one of:
 - jkonet-star
 - jkonet-star-potential
 - jkonet-star-potential-internal
+- jkonet-star-time-potential
 - jkonet-star-linear
 - jkonet-star-linear-potential
 - jkonet-star-linear-potential-internal
@@ -148,7 +151,7 @@ Note that this script will take a while and quite some disk space, as it runs qu
 ```
 @article{terpin2024learning,
   title={{Learning Diffusion at Lightspeed}},
-  author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martí and D\"orfler, Florian},
+  author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martín and D\"orfler, Florian},
   journal={}
   year={2024},
 }

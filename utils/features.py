@@ -95,7 +95,6 @@ def rbf_inverse_multiquadric(x, c):
     Computes the inverse multiquadric radial basis function (RBF).
 
     .. math::
-
         \mathrm{RBF}(x, c) = \left( \sqrt{\sum_{i} (x_i - c_i)^2 + 1} \right)^{-1}
 
     Args:
@@ -131,6 +130,7 @@ def const(x, c):
     This function always returns 1, regardless of the input `x` or the center `c`.
 
     .. math::
+
         \mathrm{const}(x, c) = 1
 
     Args:

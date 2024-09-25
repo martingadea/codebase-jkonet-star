@@ -37,9 +37,11 @@ def plot_couplings(data: np.ndarray) -> Tuple[plt.Figure, plt.Axes]:
     >>> fig, ax = plot_couplings(data)
     >>> plt.show()  # This will display the plot
 
-    .. image:: ../media/plotting_documentation/plot_couplings.png
-       :align: center
-       :alt: Example plot showing circles connected to crosses with weighted lines.
+    .. toggle:: Click to toggle plot
+
+        .. image:: ../media/plotting_documentation/plot_couplings.png
+           :align: center
+           :alt: Example plot showing circles connected to crosses with weighted lines.
     """
     # Extract coordinates and weights
     weights = data[:, -1]
@@ -212,9 +214,8 @@ def plot_level_curves(
         # Display the plot
         plt.show()
 
-    Click to show example plot
 
-    .. toggle:: Click to show/hide example plot
+    .. toggle:: Click to toggle plot
 
         .. image:: ../media/plotting_documentation/plot_level_curves.png
            :align: center
@@ -327,9 +328,11 @@ def plot_predictions(predicted: np.ndarray,
         # Display the plot
         plt.show()
 
-    .. image:: ../media/plotting_documentation/plot_predictions.png
-       :align: center
-       :alt: Example plot showing predictions.
+    .. toggle:: Click to toggle plot
+
+        .. image:: ../media/plotting_documentation/plot_predictions.png
+           :align: center
+           :alt: Example plot showing predictions.
     """
     if interval is None:
         start, end = 0, max(data_dict.keys())
