@@ -23,7 +23,7 @@ Nevertheless, this is not a problem for the couplings calculations.
 
 .. code-block:: bash
 
-   python preprocess_rna_seq-py --n-components 5
+   python preprocess_rna_seq.py --n-components 5
 
 These next script allows us to select the amount of train-test split we want. We also have the option to
 specify 0 and

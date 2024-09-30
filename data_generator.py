@@ -16,9 +16,15 @@ def filename_from_args(args):
     """
     Generates a filename based on the arguments given.
 
-    Parameters:
-        args (argparse.Namespace): Arguments parsed from the command line.
-        - See main() for the arguments.
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Arguments parsed from the command line. See main() for the arguments.
+
+    Returns
+    -------
+    str
+        Generated filename based on the provided arguments.
     """
 
     # Generate filename

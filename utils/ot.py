@@ -93,8 +93,8 @@ def wasserstein_loss(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]
 
-    # M = ot.dist(xs, ys)
-    M = ot.dist(xs, ys, metric='euclidean')
+    M = ot.dist(xs, ys)
+    # M = ot.dist(xs, ys, metric='euclidean')
 
     return ot.emd2(a, b, M, numItermax=1000000)
 

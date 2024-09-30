@@ -2,16 +2,17 @@
 train:
   eval_freq: 100
   batch_size: 250
-  epochs: 100
-  save_locally: True
+  epochs: 1000
+  save_locally: False
 
 metrics:
-  w_one_ahead: True
+  wasserstein_error: 1
+  w_one_ahead: False
   w_cumulative: True
 
 #WandB
 wandb:
-  save_plots: True
+  save_plots: False
   save_model: False
 
 # models

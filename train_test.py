@@ -76,10 +76,10 @@ class TestTrainScript(unittest.TestCase):
                        check=True)
 
         expected_shapes = {
-            "couplings_train_0_to_1.npy": ((3600, 3900), 12),  # range for rows: 3700 to 3800
-            "couplings_train_1_to_2.npy": ((4100, 4400), 12),  # range for rows: 4200 to 4300
-            "couplings_train_2_to_3.npy": ((3800, 4100), 12),  # range for rows: 3900 to 4000
-            "couplings_train_3_to_4.npy": ((3900, 4200), 12),  # range for rows: 4000 to 4100
+            "couplings_train_0_to_1.npy": ((3600, 3900), 12),
+            "couplings_train_1_to_2.npy": ((4100, 4400), 12),
+            "couplings_train_2_to_3.npy": ((3800, 4100), 12),
+            "couplings_train_3_to_4.npy": ((3900, 4200), 12),
         }
 
         folder = f"data/RNA_PCA_5"

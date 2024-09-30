@@ -12,7 +12,7 @@ from utils.sde_simulator import get_SDE_predictions
 from utils.plotting import plot_predictions
 
 from collections import defaultdict
-from typing import Tuple, Optional, Callable, List
+from typing import Tuple, Optional, Callable, List, Union
 
 
 class PopulationDataset(Dataset):
@@ -458,7 +458,7 @@ class PopulationEvalDataset(Dataset):
     def error_potential(self, trajectory_predicted: np.ndarray) -> float:
         """
         Compute the mean squared error between the predicted trajectory and
-        the ground truth trajectory predicted using only the potential function.
+        the trajectory predicted using only the potential function.
 
         This method calculates the error by comparing the predicted trajectory
         to a reference trajectory generated using only the potential function.
@@ -497,7 +497,7 @@ class PopulationEvalDataset(Dataset):
     def error_interaction(self, trajectory_predicted: np.ndarray) -> float:
         """
         Compute the mean squared error between the predicted trajectory and
-        the ground truth trajectory predicted using only the interaction function.
+        the trajectory predicted using only the interaction function.
 
         This method calculates the error by comparing the predicted trajectory
         to a reference trajectory generated using only the interaction function.
@@ -521,7 +521,7 @@ class PopulationEvalDataset(Dataset):
             interaction: Callable[[jnp.ndarray], float],
             key_eval: jnp.ndarray,
             model: str,
-            plot_folder_name: str
+            plot_folder_name: Union[str, None]
     ) -> jnp.ndarray:
         """
         Compute the Wasserstein error for one-step-ahead predictions.
