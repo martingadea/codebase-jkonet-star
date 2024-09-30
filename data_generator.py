@@ -223,7 +223,7 @@ def main(args: argparse.Namespace) -> None:
 
         - seed (int): Random seed for reproducibility.
 
-        - train_test_split (float): Ratio for train-test split. Set to 0 for
+        - test_split (float): Ratio for train-test split. Set to 0 for
           no split.
 
     Returns

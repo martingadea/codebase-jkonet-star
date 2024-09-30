@@ -2,7 +2,7 @@ Results RNA
 ============
 Initial calculations and observations of the dataset suggested that the energy governing cell evolution might
 be time-varying. This hypothesis was further validated when we noticed that other research
-:cite:`tong2023improving` and :cite:`tong2020trajectorynet` also incorporated time as a parameter
+:cite:`tong2020trajectorynet` and :cite:`tong2023improving` also incorporated time as a parameter
 in their methodologies, reinforcing the notion that a time-dependent model could be crucial for accurately
 capturing the dynamics of cell evolution.
 

@@ -49,7 +49,7 @@ class TestTrainScript(unittest.TestCase):
 
     def test_preprocessing_rna(self):
         # Run the train.py script
-        subprocess.run(['python', 'preprocess_rna-seq.py',
+        subprocess.run(['python', 'preprocess_rna_seq.py',
                         '--n-components', '5'],
                        check=True)
 
@@ -87,6 +87,12 @@ class TestTrainScript(unittest.TestCase):
             data = np.load(filepath)
             self.assertEqual(data.shape, expected_shape,
                              f"Shape of {filename} {data.shape} does not match expected shape {expected_shape}")
+
+    def test_data_generator_synthetic(self):
+        # Run the train.py script
+        subprocess.run(['python', 'data_generator.py',
+                        '--potential', 'styblinski_tang'],
+                       check=True)
 
 
 if __name__ == '__main__':

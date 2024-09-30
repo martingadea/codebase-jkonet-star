@@ -36,7 +36,8 @@ not perform any train-test split.
 Training
 ~~~~~~~~~~
 
-Finally, in order to train and evaluate the model we run the last script.
+Finally, in order to train and evaluate the model we run the last script. The argument --eval gives the option to
+calculate the evaluation metrics with either the data used for training, or the data left out for evaluation.
 
 .. code-block:: bash
 
