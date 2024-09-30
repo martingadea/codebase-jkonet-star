@@ -6,7 +6,7 @@ Installation with Docker
 
 Docker (https://www.docker.com/) should be installed on your machine.
 
-To build the Docker image, run the following command from the root of the repository:
+To build the Docker image, make sure Docker is running and run the following command from the root of the repository:
 
 .. code-block:: bash
 

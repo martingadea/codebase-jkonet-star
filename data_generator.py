@@ -32,7 +32,7 @@ def filename_from_args(args):
     filename += f"N_{args.n_particles}_"
     filename += f"gmm_{args.n_gmm_components}_"
     filename += f"seed_{args.seed}_"
-    filename += f"split_{args.train_test_split}"
+    filename += f"split_{args.test_split}"
     
     return filename
 
@@ -284,8 +284,8 @@ def main(args: argparse.Namespace) -> None:
         sample_labels = jax.numpy.load(os.path.join('data', folder, 'sample_labels.npy'))
 
     # Perform train-test split
-    if args.train_test_split != 0:
-        train_values, train_labels, test_values, test_labels = train_test_split(data, sample_labels, test_size=args.train_test_split)
+    if args.test_split != 0:
+        train_values, train_labels, test_values, test_labels = train_test_split(data, sample_labels, test_size=args.test_split)
     else:
         train_values, train_labels = data, sample_labels
 
@@ -295,7 +295,7 @@ def main(args: argparse.Namespace) -> None:
     generate_data_from_trajectory(folder, train_values, train_labels, args.n_gmm_components, args.batch_size,
                                   data_type='train')
 
-    if args.train_test_split != 0:
+    if args.test_split != 0:
         # Generate data for test set
         jax.numpy.save(os.path.join('data', folder, 'test_data.npy'), test_values)
         jax.numpy.save(os.path.join('data', folder, 'test_sample_labels.npy'), test_labels)

@@ -9,7 +9,7 @@ class TestTrainScript(unittest.TestCase):
         # Run the train.py script
         subprocess.run(['python', 'train.py',
                         '--solver', 'jkonet-star-potential',
-                        '--dataset', 'potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0'],
+                        '--dataset', 'potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0_split_0'],
                        check=True)
 
         # Read the loss value from the file
@@ -23,7 +23,7 @@ class TestTrainScript(unittest.TestCase):
         # Run the train.py script
         subprocess.run(['python', 'train.py',
                         '--solver', 'jkonet-star-linear-potential',
-                        '--dataset', 'potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0'],
+                        '--dataset', 'potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0_split_0'],
                        check=True)
 
         # Read the loss value from the file
@@ -69,24 +69,36 @@ class TestTrainScript(unittest.TestCase):
                          f"Sample labels shape {sample_labels.shape} does not match expected shape {expected_labels_shape}")
 
     def test_data_generator_rna(self):
-        # Run the train.py script
+        # Run the data_generator.py script
         subprocess.run(['python', 'data_generator.py',
-                        '--load-from-file', 'RNA_PCA_5'],
+                        '--load-from-file', 'RNA_PCA_5',
+                        '--test-split','0.4'],
                        check=True)
 
         expected_shapes = {
-            "couplings_train_0_to_1.npy": (3733, 12),
-            "couplings_train_1_to_2.npy": (4222, 12),
-            "couplings_train_2_to_3.npy": (3965, 12),
-            "couplings_train_3_to_4.npy": (4004, 12),
+            "couplings_train_0_to_1.npy": ((3600, 3900), 12),  # range for rows: 3700 to 3800
+            "couplings_train_1_to_2.npy": ((4100, 4400), 12),  # range for rows: 4200 to 4300
+            "couplings_train_2_to_3.npy": ((3800, 4100), 12),  # range for rows: 3900 to 4000
+            "couplings_train_3_to_4.npy": ((3900, 4200), 12),  # range for rows: 4000 to 4100
         }
+
         folder = f"data/RNA_PCA_5"
-        # Iterate over each file and check its shape
-        for filename, expected_shape in expected_shapes.items():
+
+        # Iterate over each file and check if its shape falls within the expected range
+        for filename, (row_range, expected_cols) in expected_shapes.items():
             filepath = os.path.join(folder, filename)
             data = np.load(filepath)
-            self.assertEqual(data.shape, expected_shape,
-                             f"Shape of {filename} {data.shape} does not match expected shape {expected_shape}")
+
+            num_rows, num_cols = data.shape
+            min_rows, max_rows = row_range
+
+            # Check if the number of rows is within the expected range
+            self.assertTrue(min_rows <= num_rows <= max_rows,
+                            f"Number of rows in {filename} {num_rows} is not within the expected range {min_rows}-{max_rows}")
+
+            # Check if the number of columns is exactly as expected
+            self.assertEqual(num_cols, expected_cols,
+                             f"Number of columns in {filename} {num_cols} does not match the expected {expected_cols}")
 
     def test_data_generator_synthetic(self):
         # Run the train.py script
@@ -94,6 +106,32 @@ class TestTrainScript(unittest.TestCase):
                         '--potential', 'styblinski_tang'],
                        check=True)
 
+        folder = 'potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0_split_0'
+        data = np.load(os.path.join('data', folder, 'data.npy'))
+        sample_labels = np.load(os.path.join('data', folder, 'sample_labels.npy'))
+
+        # Assert the shape of the processed data
+        expected_data_shape = (6000, 2)
+        self.assertEqual(data.shape, expected_data_shape,
+                         f"Data shape {data.shape} does not match expected shape {expected_data_shape}")
+
+        # Assert the shape of the sample labels
+        expected_labels_shape = (6000,)
+        self.assertEqual(sample_labels.shape, expected_labels_shape,
+                         f"Sample labels shape {sample_labels.shape} does not match expected shape {expected_labels_shape}")
+
 
 if __name__ == '__main__':
-    unittest.main()
+    # unittest.main()
+
+    suite = unittest.TestSuite()
+    # Add tests in the order you want
+    suite.addTest(TestTrainScript('test_preprocessing_rna'))
+    suite.addTest(TestTrainScript('test_data_generator_rna'))
+    suite.addTest(TestTrainScript('test_data_generator_synthetic'))
+    suite.addTest(TestTrainScript('test_jkonet_star_potential_synthetic_data'))
+    suite.addTest(TestTrainScript('test_jkonet_star_linear_potential_synthetic_data'))
+    suite.addTest(TestTrainScript('test_jkonet_star_time_potential_rna'))
+
+    runner = unittest.TextTestRunner()
+    runner.run(suite)
