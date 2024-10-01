@@ -169,6 +169,7 @@ class CouplingsDataset(Dataset):
         -------
         tuple
             A tuple containing:
+
             - Input features (jnp.ndarray): Initial particle distribution.
             - Target features (jnp.ndarray): Target particle distribution.
             - Time label (jnp.ndarray): Time label.
@@ -186,15 +187,16 @@ class LinearParametrizationDataset(Dataset):
     directory and consists of multiple .npy files for couplings and densities.
 
     Attributes
-        ----------
-        data : list of tuple of np.ndarray containing information about the couplings
-            A list where each element is a tuple containing:
-            - Input features (np.ndarray)
-            - Target features (np.ndarray)
-            - Time label (np.ndarray)
-            - Weight of the coupling (np.ndarray)
-            - Density values (np.ndarray)
-            - Gradient of densities (np.ndarray)
+    ----------
+    data : list of tuple of np.ndarray
+        List where each element is a tuple containing the following:
+
+        - Input features (np.ndarray): Features used as inputs to the solver.
+        - Target features (np.ndarray): Features expected as output from the solver.
+        - Time label (np.ndarray): Labels indicating the time or timestep associated with the data.
+        - Weight of the coupling (np.ndarray): Weights corresponding to the couplings between variables.
+        - Density values (np.ndarray): Values representing the density of the data at various points.
+        - Gradient of densities (np.ndarray): The gradient of density values over time or space.
 
     """
     def __init__(self, dataset_name: str) -> None:
@@ -261,6 +263,38 @@ class LinearParametrizationDataset(Dataset):
         return self.data
     
 class PopulationEvalDataset(Dataset):
+    """
+    This dataset class loads and organizes population trajectory data for evaluation.
+    The dataset supports evaluation on test or training data, depending on the label.
+    
+    Attributes
+    ----------
+    trajectory : dict
+        A dictionary where each key corresponds to a unique timestep in the dataset, and
+        the value is an array of trajectory data associated with that timestep.
+    label_mapping : dict
+        A dictionary mapping the original sample labels to consecutive integer indices.
+    T : int
+        The number of timesteps in the trajectories.
+    data_dim : int
+        The dimensionality of the data at each timestep.
+    no_ground_truth : bool
+        Flag indicating if the dataset lacks a ground truth file.
+    potential : str
+        The potential function used in the predictions.
+    internal : str
+        The internal dynamics setting used.
+    beta : float
+        The beta parameter used in the simulations.
+    interaction : str
+        The interaction function used in the predictions.
+    dt : float
+        The timestep size used in the simulation.
+    trajectory_only_potential : np.ndarray
+        Trajectory predictions considering only the potential term.
+    trajectory_only_interaction : np.ndarray
+        Trajectory predictions considering only the interaction term.
+    """
     potential: str = 'none'
     internal: str = 'none'
     beta: float = 0.0
@@ -269,38 +303,6 @@ class PopulationEvalDataset(Dataset):
     T: int = 0
     data_dim: int = 0
 
-    """
-    This dataset class loads and organizes population trajectory data for evaluation.
-    The dataset supports evaluation on test or training data, depending on the label.
-    
-    Attributes
-        ----------
-        trajectory : dict
-            A dictionary where each key corresponds to a unique timestep in the dataset, and
-            the value is an array of trajectory data associated with that timestep.
-        label_mapping : dict
-            A dictionary mapping the original sample labels to consecutive integer indices.
-        T : int
-            The number of timesteps in the trajectories.
-        data_dim : int
-            The dimensionality of the data at each timestep.
-        no_ground_truth : bool
-            Flag indicating if the dataset lacks a ground truth file.
-        potential : str
-            The potential function used in the predictions.
-        internal : str
-            The internal dynamics setting used.
-        beta : float
-            The beta parameter used in the simulations.
-        interaction : str
-            The interaction function used in the predictions.
-        dt : float
-            The timestep size used in the simulation.
-        trajectory_only_potential : np.ndarray
-            Trajectory predictions considering only the potential term.
-        trajectory_only_interaction : np.ndarray
-            Trajectory predictions considering only the interaction term.
-    """
     def __init__(self, key, dataset_name: str, solver: str, label='test_data'):
         """
         Initialize the PopulationEvalDataset.
@@ -521,7 +523,7 @@ class PopulationEvalDataset(Dataset):
             interaction: Callable[[jnp.ndarray], float],
             key_eval: jnp.ndarray,
             model: str,
-            plot_folder_name: Union[str, None]
+            plot_folder_name: Optional[str] = None
     ) -> jnp.ndarray:
         """
         Compute the Wasserstein error for one-step-ahead predictions.

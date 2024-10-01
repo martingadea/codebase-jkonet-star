@@ -455,7 +455,7 @@ class JKOnetStarPotentialInternal(JKOnetStar):
     """
     A specialized variant of the JKOnetStar model that only considers potential and internal terms.
 
-    This class inherits from `JKOnetStar` and provides a specific implementation for the loss function
+    This class inherits from JKOnetStar and provides a specific implementation for the loss function
     that includes only the potential and internal terms. It sets the interaction term to zero and adjusts
     the training step accordingly.
 
@@ -577,7 +577,7 @@ class JKOnetStarPotential(JKOnetStarPotentialInternal):
     """
     A specialized variant of the JKOnetStar model that focuses solely on the potential term.
 
-    This class inherits from `JKOnetStarPotentialInternal` and further specializes the loss function
+    This class inherits from JKOnetStarPotentialInternal and further specializes the loss function
     to consider only the potential term. The interaction term is not used, and the training step
     is adjusted to reflect this specialization.
 
@@ -690,7 +690,7 @@ class JKOnetStarTimePotential(JKOnetStarPotential):
     """
     A variant of the JKOnetStarPotential model that incorporates time information in the potential term.
 
-    This class extends `JKOnetStarPotential` to include time steps (`t`) in the potential calculation,
+    This class extends JKOnetStarPotential to include time steps (`t`) in the potential calculation,
     allowing for models that consider temporal dynamics in addition to spatial information.
 
     Attributes
@@ -1109,7 +1109,7 @@ class JKOnetStarLinear(LearningDiffusionModel):
 
         sol = jnp.linalg.solve(A, b)
         theta = - sol / self.tau
-        err = jnp.sum((A @ sol - b) ** 2).item()
+        err = jnp.sum((A @ sol - b) ** 2)
 
         return err, (
             self.unpack_theta1(theta),

@@ -17,6 +17,7 @@ def get_optimizer(config: Dict[str, Any]) -> optax.GradientTransformation:
     ----------
     config : Dict[str, Any]
         Dictionary containing optimizer configuration. Expected keys are:
+
         - 'optimizer': The name of the optimizer ('Adam' or 'SGD').
         - 'lr': Learning rate for the optimizer.
         - 'beta1': Beta1 parameter for the Adam optimizer.
