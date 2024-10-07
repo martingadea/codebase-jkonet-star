@@ -180,8 +180,8 @@ def plot_level_curves(
         The number of samples (grid points) along each axis. Default is 100.
     dimensions : int, optional
         The number of dimensions of the function output. Default is 2.
-    save_to : Optional[str], optional
-        If provided, the file path to save the plot image and data. If None, the plot is not saved. Default is None.
+    save_to : Optional[str], default=None
+        Directory path where plots should be saved. If None, no plots will be saved.
 
     Returns
     -------
@@ -284,8 +284,8 @@ def plot_predictions(predicted: np.ndarray,
         A tuple specifying the start and end timesteps to plot. If None, plots all timesteps.
     model : str
         A string specifying the model type used to determine color mapping.
-    save_to : Optional[str]
-        If provided, a path to save the plot image and data files. If None, the plot is not saved.
+    save_to : Optional[str], default=None
+        Directory path where plots should be saved. If None, no plots will be saved.
     n_particles : int
         The number of particles to consider for each timestep. Default is 200. If there are less
         particles either in predictions or in ground truth, that will be the number of
@@ -437,8 +437,8 @@ def plot_heatmap(
         Title of the heatmap plot.
     colormap : str
         Name of the colormap to use for the heatmap.
-    save_to : Optional[str]
-        If provided, the base path to save the plot as a PNG file and the data as a CSV file.
+    save_to : Optional[str], default=None
+        Directory path where plots should be saved. If None, no plots will be saved.
 
     Returns
     -------
@@ -482,8 +482,8 @@ def plot_boxplot_comparison_models(
         List of names for each model, corresponding to the data list.
     title : str
         Title of the boxplot.
-    save_to : Optional[str]
-        If provided, the base path to save the plot as a PNG file and the data as text files.
+    save_to : Optional[str], default=None
+        Directory path where plots should be saved. If None, no plots will be saved.
     yscale : Literal['linear', 'log']
         Scale type for the y-axis; 'linear' or 'log'.
 
@@ -545,8 +545,8 @@ def plot_comparison_models(
         List of model names for the axes labels.
     title : str
         Title of the plot.
-    save_to : Optional[str]
-        If provided, the base path to save the plot as a PNG file.
+    save_to : Optional[str], default=None
+        Directory path where plots should be saved. If None, no plots will be saved.
     cmaps : Optional[List[str]]
         List of color maps to use for each label. If None, a default colormap is used.
     insert_inset : bool
@@ -681,8 +681,8 @@ def plot_loss(
         Dictionary with 'name' (name of the parameter) and 'values' (array of parameter values).
     title : str
         Title of the plot.
-    save_to : Optional[str]
-        If provided, the base path to save the plot as a PNG file.
+    save_to : Optional[str], default=None
+        Directory path where plots should be saved. If None, no plots will be saved.
 
     Returns
     -------

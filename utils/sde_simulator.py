@@ -75,15 +75,15 @@ class SDESimulator:
 
     potential : Optional[Callable[[jnp.ndarray, jnp.ndarray]
         If a callable, it should take a JAX array as input and return the potential. If `False`,
-         no potential is applied.
+        no potential is applied.
 
     internal : Optional[Callable[[jnp.ndarray, jnp.ndarray]
         If a callable, it should take a JAX array as input and return the internal component. If `False`,
-         no internal component is used.
+        no internal component is used.
 
     interaction : Optional[Callable[[jnp.ndarray, jnp.ndarray]
         If a callable, it should take a JAX array as input and return the interaction component. If `False`,
-         no interaction is applied.
+        no interaction is applied.
     Methods
     -------
     forward_sampling(key: jax.random.PRNGKey, init: jnp.ndarray) -> jnp.ndarray
@@ -176,21 +176,16 @@ class SDESimulator_implicit_time:
 
     internal : Optional[Callable[[jnp.ndarray, jnp.ndarray]
         If a callable, it should take a JAX array as input and return the internal component. If `False`,
-         no internal component is used.
+        no internal component is used.
 
     interaction : Optional[Callable[[jnp.ndarray, jnp.ndarray]
         If a callable, it should take a JAX array as input and return the interaction component. If `False`,
-         no interaction is applied.
+        no interaction is applied.
 
     Methods
     -------
     forward_sampling(key: jax.random.PRNGKey, init: jnp.ndarray) -> jnp.ndarray
         Performs forward sampling of the SDE from the initial condition `init` using the provided random key.
-
-
-    Usage:
-    >>> simulator = SDESimulator(dt, n_timesteps, potential)
-    >>> simulator.forward_sampling(key, init)
     """
 
     def __init__(
@@ -265,7 +260,6 @@ class SDESimulator_implicit_time:
             for i in range(start_timestep, start_timestep + n_timesteps):
                 # for i in range(start_timestep, start_timestep + n_timesteps * timestep, timestep):
                 key, subkey = jrandom.split(key, 2)
-                # t_array = (i * dt) * jnp.ones((pp.shape[0], 1))  # Create time array for current step
                 t_array = (i) * jnp.ones((pp.shape[0], 1))  # Create time array for current step
                 pp = pp + potential_component_implicit(pp, t_array, subkey)
                 trajectories.append(pp)

@@ -10,7 +10,7 @@ class GaussianMixtureModel:
     gms_den = []
     gms_weights = []
 
-    def fit(self, trajectory: dict, n_components: int) -> None:
+    def fit(self, trajectory: dict, n_components: int, seed: int) -> None:
         """
         Fits a Gaussian Mixture Model to the provided trajectory.
 
@@ -31,13 +31,13 @@ class GaussianMixtureModel:
         data_dim = list(trajectory.values())[0].shape[1]
         for label in sorted(trajectory.keys()):
             data = trajectory[label]
-            gm = GaussianMixture(n_components=n_components)
+            gm = GaussianMixture(n_components=n_components, random_state=seed)
             gm.fit(data)
 
             # Discard components with small determinants
             covariances = gm.covariances_
             dets = jnp.asarray([jnp.linalg.det(covariances[i]) for i in range(n_components)])
-            idxs = jnp.where(jnp.greater(dets, 1e-4))[0]
+            idxs = jnp.where(jnp.greater(dets, 1e-4))
 
             # Store density parameters
             self.gms_means.append(gm.means_[idxs])

@@ -795,7 +795,7 @@ class JKOnetStarTimePotential(JKOnetStarPotential):
         Returns
         -------
         jnp.ndarray
-            The total computed loss value.
+            The computed loss value.
         """
         return jnp.sum(ws * jnp.sum((self.tau * (
             self._loss_potential_term(potential_params, xs, ys, t, ws, rho, rho_grad)
@@ -1068,7 +1068,7 @@ class JKOnetStarLinear(LearningDiffusionModel):
         return potential_params, internal_params, interaction_params
 
 
-    def train_step(self, _, all_samples: Tuple) -> Tuple[float, Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]]:
+    def train_step(self, _, all_samples: Tuple) -> Tuple[jnp.ndarray, Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]]:
         """
         Performs a single training step, updating the model's parameters.
 
@@ -1083,7 +1083,7 @@ class JKOnetStarLinear(LearningDiffusionModel):
 
         Returns
         -------
-        Tuple[float, Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]]
+        Tuple[jnp.ndarray, Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]]
             The error and the updated parameters (potential, interaction, internal).
         """
         A = jnp.eye(self.theta_dim) * self.reg

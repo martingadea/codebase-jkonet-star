@@ -156,7 +156,7 @@ class CouplingsDataset(Dataset):
         """
         return self.x.shape[0]
 
-    def __getitem__(self, idx: int):
+    def __getitem__(self, idx: int) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         """
         Retrieve a sample from the dataset at the given index.
 
@@ -167,7 +167,7 @@ class CouplingsDataset(Dataset):
 
         Returns
         -------
-        tuple
+        Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
             A tuple containing:
 
             - Input features (jnp.ndarray): Initial particle distribution.
@@ -251,14 +251,15 @@ class LinearParametrizationDataset(Dataset):
 
         Returns
         -------
-        list of tuple of np.ndarray
-            The entire dataset as a list of tuples. Each tuple contains:
-            - np.ndarray : Input features.
-            - np.ndarray : Target features.
-            - np.ndarray : Time label.
-            - np.ndarray : Weight associated to the coupling.
-            - np.ndarray : Density values.
-            - np.ndarray : Gradient of densities.
+        List[Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]]
+            A list of tuples, where each tuple contains:
+
+        - Input features (jnp.ndarray): Initial particle distribution.
+        - Target features (jnp.ndarray): Target particle distribution.
+        - Time label (jnp.ndarray): Time label associated with each sample.
+        - Weight of the coupling (jnp.ndarray): Weight assigned to the coupling.
+        - Density values (jnp.ndarray): Density values.
+        - Gradient of densities (jnp.ndarray): Gradient of the density values.
         """
         return self.data
     
@@ -303,7 +304,7 @@ class PopulationEvalDataset(Dataset):
     T: int = 0
     data_dim: int = 0
 
-    def __init__(self, key, dataset_name: str, solver: str, label='test_data'):
+    def __init__(self, key, dataset_name: str, solver: str, wasserstein_metric: int, label='test_data'):
         """
         Initialize the PopulationEvalDataset.
 
@@ -316,12 +317,15 @@ class PopulationEvalDataset(Dataset):
             'data/{dataset_name}' and consist of .npy files.
         solver : str
             The solver method used, primarily for plotting or prediction purposes.
+        wasserstein_metric: int
+            Specifies the order of the Wasserstein distance to be used for the error calculation.
         label : str, optional
             Specifies whether to load 'test_data' or 'train_data'. Default is 'test_data'.
 
         """
         self.key = key
         self.solver = solver
+        self.wasserstein_metric = wasserstein_metric
         if label == 'test_data':
             data = np.load(os.path.join('data', dataset_name, 'test_data.npy'))
             sample_labels = np.load(os.path.join('data', dataset_name, 'test_sample_labels.npy'))
@@ -454,7 +458,7 @@ class PopulationEvalDataset(Dataset):
         error = 0
         for t in range(1, trajectory_predicted.shape[0]):
             error += wasserstein_loss(
-                        trajectory_predicted[t], jnp.asarray(self.trajectory[t]))
+                        trajectory_predicted[t], jnp.asarray(self.trajectory[t]), self.wasserstein_metric)
         return error
     
     def error_potential(self, trajectory_predicted: np.ndarray) -> float:
@@ -543,9 +547,9 @@ class PopulationEvalDataset(Dataset):
             Random key for JAX-based random number generation.
         model : str
             Name of the solver model used. This is primarily used for plotting purposes.
-        plot_folder_name : str
-            Directory path where plots should be saved. If set to an empty string or None,
-            no plots will be saved.
+        plot_folder_name : Optional[str], default=None
+            Directory path where plots should be saved. If None, no plots will be saved.
+
 
         Returns
         -------
@@ -578,7 +582,7 @@ class PopulationEvalDataset(Dataset):
                     save_to=plot_path)
                 plt.close(prediction_fig)
             error_wasserstein_one_ahead = error_wasserstein_one_ahead.at[t].set(
-                wasserstein_loss(predictions[-1], jnp.asarray(self.trajectory[t + 1])))
+                wasserstein_loss(predictions[-1], jnp.asarray(self.trajectory[t + 1]), self.wasserstein_metric))
         return error_wasserstein_one_ahead
 
     def error_wasserstein_cumulative(
@@ -623,5 +627,5 @@ class PopulationEvalDataset(Dataset):
                     save_to=plot_path)
                 plt.close(trajectory_fig)
             error_wasserstein_cumulative = error_wasserstein_cumulative.at[t - 1].set(
-                wasserstein_loss(predictions[t], jnp.asarray(self.trajectory[t])))
+                wasserstein_loss(predictions[t], jnp.asarray(self.trajectory[t]), self.wasserstein_metric))
         return error_wasserstein_cumulative

@@ -50,7 +50,7 @@ def wasserstein_couplings(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
 
     return ot.emd(a, b, M, numItermax=1000000)
 
-def wasserstein_loss(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
+def wasserstein_loss(xs: jnp.ndarray, ys: jnp.ndarray, wasserstein_metric: int) -> jnp.ndarray:
     """
     Computes the Wasserstein loss between two sets of points `xs` and `ys`.
 
@@ -89,12 +89,15 @@ def wasserstein_loss(xs: jnp.ndarray, ys: jnp.ndarray) -> jnp.ndarray:
     chex.assert_rank(ys, 2)
     chex.assert_axis_dimension(xs, axis=1, expected=ys.shape[1])
     chex.assert_type([xs, ys], float)
+    chex.assert_scalar_in(wasserstein_metric, 1, 2)
 
     a = jnp.ones(xs.shape[0]) / xs.shape[0]
     b = jnp.ones(ys.shape[0]) / ys.shape[0]
 
-    M = ot.dist(xs, ys)
-    # M = ot.dist(xs, ys, metric='euclidean')
+    if wasserstein_metric == 1:
+        M = ot.dist(xs, ys, metric='euclidean')
+    else:
+        M = ot.dist(xs, ys)
 
     return ot.emd2(a, b, M, numItermax=1000000)
 

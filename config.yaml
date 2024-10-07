@@ -6,7 +6,7 @@ train:
   save_locally: False
 
 metrics:
-  wasserstein_error: 1
+  wasserstein_error: 2
   w_one_ahead: False
   w_cumulative: True
 

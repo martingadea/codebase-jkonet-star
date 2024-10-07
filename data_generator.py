@@ -65,7 +65,7 @@ def train_test_split(
 
     Returns
     -------
-    tuple of jnp.ndarray
+    Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         A tuple containing:
 
         - Train values: Subset of the data for training.
@@ -89,8 +89,14 @@ def train_test_split(
 
     return values[train_indices], sample_labels[train_indices], values[test_indices], sample_labels[test_indices]
 
-def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_labels: jnp.ndarray,
-                                  n_gmm_components: int = 10, batch_size: int = 1000, data_type: str = 'train') -> None:
+def generate_data_from_trajectory(
+        folder: str,
+        values: jnp.ndarray,
+        sample_labels: jnp.ndarray,
+        n_gmm_components: int = 10,
+        batch_size: int = 1000,
+        data_type: str = 'train',
+) -> None:
     """
     Fits Gaussian Mixture Models (GMM) to the trajectory data, computes couplings,
     and saves the results to disk. This function also plots the data and saves the plots.
@@ -129,7 +135,7 @@ def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_label
     if n_gmm_components > 0:
         print("Fitting Gaussian Mixture Model...")
         gmm = GaussianMixtureModel()
-        gmm.fit(trajectory, n_gmm_components)
+        gmm.fit(trajectory, n_gmm_components, args.seed)
         cmap = plt.get_cmap('Spectral')
 
         all_values = jnp.vstack([trajectory[label] for label in sorted_labels])
@@ -177,12 +183,12 @@ def generate_data_from_trajectory(folder: str, values: jnp.ndarray, sample_label
         ys = couplings[:, (couplings.shape[1] - 1) // 2:-2] #Changed the 2 to match the new shape of couplings
         rho = lambda x: 0.
         if n_gmm_components > 0:
-            rho = lambda x: gmm.gmm_density(t, x)
+            rho = lambda x: gmm.gmm_density(t+1, x)
         densities = jax.vmap(rho)(ys).reshape(-1, 1)
         densities_grads = jax.vmap(jax.grad(rho))(ys)
         data = jnp.concatenate([densities, densities_grads], axis=1)
         jax.numpy.save(os.path.join('data', folder, f'density_and_grads_{data_type}_{label}_to_{next_label}.npy'), data)
-        
+
         # Plot couplings
         plot_couplings(couplings)
         plt.xlim(x_min, x_max)

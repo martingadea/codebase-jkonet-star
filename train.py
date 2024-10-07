@@ -15,10 +15,27 @@ from models import EnumMethod, get_model
 from dataset import PopulationEvalDataset
 from utils.sde_simulator import get_SDE_predictions
 from utils.plotting import plot_level_curves, plot_predictions
+from typing import Union, List, Tuple
 
 # This collate function is taken from the JAX tutorial with PyTorch Data Loading
 # https://jax.readthedocs.io/en/latest/notebooks/Neural_Network_and_Data_Loading.html
-def numpy_collate(batch):
+def numpy_collate(batch: List[Union[np.ndarray, Tuple, List]]) -> Union[np.ndarray, List]:
+    """
+    Collates a batch of samples into a single array or nested list of arrays.
+
+    This function recursively processes a batch of samples, stacking NumPy arrays, and collating lists or tuples by grouping elements together. If the batch consists of NumPy arrays, they are stacked. If the batch contains tuples or lists, the function recursively applies the collation.
+
+    Parameters
+    ----------
+    batch : List[Union[np.ndarray, Tuple, List]]
+        A batch of samples where each sample is either a NumPy array, a tuple, or a list. It depends on the
+        data loader.
+
+    Returns
+    -------
+    np.ndarray
+        The collated batch, either as a stacked NumPy array or as a nested structure of arrays.
+    """
     if isinstance(batch[0], np.ndarray):
         return np.stack(batch)
     elif isinstance(batch[0], (tuple,list)):
@@ -75,7 +92,13 @@ def main(args: argparse.Namespace) -> None:
         wandb.run.name = f"{args.solver}.{args.dataset}.{args.seed}"
 
     # Load model and dataset
-    dataset_eval = PopulationEvalDataset(key, args.dataset, str(args.solver), args.eval)
+    dataset_eval = PopulationEvalDataset(
+        key,
+        args.dataset,
+        str(args.solver),
+        config['metrics']['wasserstein_error'],
+        args.eval,
+        )
     model = get_model(
         args.solver, config, 
         dataset_eval.data_dim, dataset_eval.dt)
