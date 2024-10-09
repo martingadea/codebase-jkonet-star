@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'jkonet-star'
-copyright = '2024, Martin Gadea'
-author = 'Martin Gadea'
+copyright = '2024, Antonio Terpin, Nicolas Lanzetti, Martin Gadea and Florian Dörfler'
+author = 'Martin Gadea, Antonio Terpin'
 release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
@@ -32,7 +32,8 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
     "sphinxcontrib.bibtex",
-    "sphinx_togglebutton"
+    "sphinx_togglebutton",
+    'sphinx_copybutton',
 ]
 
 bibtex_bibfiles = ['bibliography.bib']
