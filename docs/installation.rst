@@ -1,61 +1,82 @@
-Installation
-============
+Installation Guide
+==================
 
-Installation with Docker
---------------------------
+Installation via Docker
+-----------------------
 
-Docker (https://www.docker.com/) should be installed on your machine.
+Before proceeding, ensure Docker is installed on your machine. You can download Docker from the official site: `https://www.docker.com/ <https://www.docker.com/>`_.
 
-To build the Docker image, make sure Docker is running and run the following command from the root of the repository:
+Once Docker is installed and running, follow these steps to build the Docker image. Execute the following command from the root directory of the repository:
 
 .. code-block:: bash
 
     docker build -t jkonet-star-app .
 
-Here an example on how to generate some data and train using the docker image
+Running JKOnet\* using Docker
+------------------------------------
 
-.. code-block::
+After building the image, you can generate data and train models by executing the following commands. Below is an example of how to use the Docker image for these tasks:
 
+.. code-block:: bash
+
+    # Generate data using the Styblinski-Tang potential
     docker run jkonet-star-app python data_generator.py --potential styblinski_tang
+
+    # Train the model using the generated dataset
     docker run jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0_split_0
 
-Installation in OS and Ubuntu
-------------------------------
-The following works on macOS 13.2.1 and should work also on Ubuntu.
+Installation on macOS and Ubuntu
+--------------------------------
 
-1. Install miniconda.
-2. Create an environment:
+These steps have been tested on macOS 13.2.1 and should also work on Ubuntu systems.
 
-.. code-block:: bash
+Steps:
 
-    conda create --name jkonet-star python=3.12
-    conda activate jkonet-star
+1. **Install Miniconda**
 
-3. Install requirements
+   Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.html <https://docs.conda.io/en/latest/miniconda.html>`_.
 
-.. code-block:: bash
+2. **Create a Conda environment**
 
-    pip install -r requirements.txt
+   Open a terminal and run the following commands to create and activate a new Conda environment:
 
-Installation in Windows
-------------------------
+   .. code-block:: bash
 
-The following works on Windows 11. For compatibility issues, the Python version required is the 3.9.
+       conda create --name jkonet-star python=3.12
+       conda activate jkonet-star
 
-1. Install miniconda.
-2. Create an environment:
+3. **Install the required packages**
 
-.. code-block:: bash
+   Once the environment is activated, install the necessary dependencies:
 
-    conda create --name jkonet-star python=3.9
-    conda activate jkonet-star
+   .. code-block:: bash
 
-3. Install requirements
+       pip install -r requirements.txt
 
-.. code-block:: bash
+Installation on Windows
+-----------------------
 
-    pip install -r requirements-win.txt
+The following instructions are for Windows 11 users. Please note that Python 3.9 is required for compatibility.
 
+Steps:
 
+1. **Install Miniconda**
 
+   Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.html <https://docs.conda.io/en/latest/miniconda.html>`_.
 
+2. **Create a Conda environment**
+
+   Run the following commands in your terminal to create and activate the environment with Python 3.9:
+
+   .. code-block:: bash
+
+       conda create --name jkonet-star python=3.9
+       conda activate jkonet-star
+
+3. **Install the required packages**
+
+   Once the environment is activated, install the necessary dependencies for Windows:
+
+   .. code-block:: bash
+
+       pip install -r requirements-win.txt
