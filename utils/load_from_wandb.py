@@ -5,8 +5,9 @@ def parse_name(run_name: str) -> Dict[str, str]:
     """
     Parses the run name and extracts model configuration details.
 
-    The run name is expected to follow a specific pattern which includes various configuration parameters.
-    This function uses regular expressions to extract these parameters and return them in a dictionary.
+    The run name is expected to follow the pattern:
+    <method>.potential_<potential>_internal_<internal>_beta_<beta>_interaction_<interaction>_dt_<dt>_T_<T>_dim_<dim>_N_<N>_gmm_<gmm>_seed_<seed>_split_<split>
+
 
     Parameters
     ----------
