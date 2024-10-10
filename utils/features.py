@@ -13,16 +13,16 @@ between the input `x` and the center `c`.
 
 Available Functions:
 ---------------------
-- `rbf_linear`: Computes the linear RBF, which is the negative Euclidean distance between `x` and `c`.
-- `rbf_thin_plate_spline`: Computes the thin plate spline RBF, which is proportional to the squared distance
+- ``rbf_linear``: Computes the linear RBF, which is the negative Euclidean distance between `x` and `c`.
+- ``rbf_thin_plate_spline``: Computes the thin plate spline RBF, which is proportional to the squared distance
   multiplied by the logarithm of the distance.
-- `rbf_cubic`: Computes the cubic RBF, which sums the cube of differences between `x` and `c`.
-- `rbf_quintic`: Computes the quintic RBF, which sums the fifth power of the differences between `x` and `c`.
-- `rbf_multiquadric`: Computes the multiquadric RBF, which is the negative square root of the sum of squared
+- ``rbf_cubic``: Computes the cubic RBF, which sums the cube of differences between `x` and `c`.
+- ``rbf_quintic``: Computes the quintic RBF, which sums the fifth power of the differences between `x` and `c`.
+- ``rbf_multiquadric``: Computes the multiquadric RBF, which is the negative square root of the sum of squared
   differences plus a constant.
-- `rbf_inverse_multiquadric`: Computes the inverse of the multiquadric RBF.
-- `rbf_inverse_quadratic`: Computes the inverse quadratic RBF.
-- `const`: A constant function that always returns 1 regardless of the inputs.
+- ``rbf_inverse_multiquadric``: Computes the inverse of the multiquadric RBF.
+- ``rbf_inverse_quadratic``: Computes the inverse quadratic RBF.
+- ``const``: A constant function that always returns 1 regardless of the inputs.
 
 The `rbfs` dictionary provides a convenient way to access these RBF functions by name.
 

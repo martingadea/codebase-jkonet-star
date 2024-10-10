@@ -1,7 +1,48 @@
 """
-A collection of functions for energy landscapes.
-These functions are not vectorized on purpose so that we can use jax.grad.
-To get automatic vectorization use jax.vmap.
+This module provides a collection of energy landscape functions commonly used for optimization, testing, and benchmarking purposes. These functions are intentionally not vectorized to enable the use of ``jax.grad`` for automatic differentiation. For automatic vectorization, you can use ``jax.vmap``.
+
+The functions in this module represent a variety of optimization landscapes, including convex, non-convex, and complex synthetic functions. They are commonly used in sensitivity analysis, regression tasks, and testing optimization algorithms.
+
+Available Functions:
+---------------------
+- ``styblinski_tang``: A non-convex function used to test optimization algorithms.
+- ``holder_table``: A complex, non-convex optimization function.
+- ``cross_in_tray``: Another non-convex function, used for benchmarking optimization algorithms.
+- ``oakley_ohagan``: A synthetic function used for testing.
+- ``moon``: A complex function that uses an interaction matrix for polynomial expansions.
+- ``ishigami``: A function used in sensitivity analysis.
+- ``friedman``: A function used in regression and sensitivity analysis.
+- ``sphere``: A simple convex function for optimization testing.
+- ``bohachevsky``: A non-convex function with trigonometric terms.
+- ``three_hump_camel``: A non-convex optimization function.
+- ``beale``: A well-known non-convex function used for optimization testing.
+- ``double_exp``: A double exponential function used in optimization problems.
+- ``relu``: A rectified linear unit (ReLU) function.
+- ``rotational``: A trigonometric-based optimization function.
+- ``flat``: A trivial function that returns zero, useful for testing.
+
+Example Usage:
+--------------
+To use any of the provided functions, pass a ``jax.numpy`` array as input:
+
+.. code-block:: python
+
+    import jax.numpy as jnp
+    from module_name import potentials_all
+
+    v = jnp.array([1.0, 2.0, 3.0])
+    result = potentials_all['styblinski_tang'](v)
+
+You can also compute the gradient of these functions using `jax.grad`:
+
+.. code-block:: python
+
+    from jax import grad
+    gradient = grad(potentials_all['styblinski_tang'])(v)
+
+Note:
+-----
+For vectorized operations, you can use `jax.vmap` over the provided functions.
 """
 
 import jax.numpy as jnp
@@ -10,16 +51,18 @@ def styblinski_tang(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Styblinski-Tang function.
 
-    The Styblinski-Tang function is a non-convex function used for testing optimization algorithms.
-
     .. math::
         f(v) = 0.5 \sum_{i=1}^{d} (v_i^4 - 16v_i^2 + 5v_i)
 
-    Args:
-        v (jnp.ndarray): Input array.
+    Parameters
+    ----------
+    v : jnp.ndarray
+        Input array.
 
-    Returns:
-        jnp.ndarray: The result of the Styblinski-Tang function.
+    Returns
+    -------
+    jnp.ndarray
+        The result of the Styblinski-Tang function.
     """
     u = jnp.square(v)
     return 0.5 * jnp.sum(jnp.square(u) - 16 * u + 5 * v)
@@ -28,16 +71,18 @@ def holder_table(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Holder Table function.
 
-    The Holder Table function is a non-convex function used for optimization, defined as:
-
     .. math::
-        f(v) = -\left|\sin(v_1)\cos(v_2)\exp\left(\left|1 - \frac{\sqrt{v_1^2 + v_2^2}}{\pi}\right|\right)\right|
+        f(v) = -\\left|\sin(v_1)\cos(v_2)\exp\\left(\\left|1 - \\frac{\sqrt{v_1^2 + v_2^2}}{\pi}\\right|\\right)\\right|
 
-    Args:
-        v (jnp.ndarray): Input array.
+    Parameters
+    ----------
+    v : jnp.ndarray
+        Input array.
 
-    Returns:
-        jnp.ndarray: The result of the Holder Table function.
+    Returns
+    -------
+    jnp.ndarray
+        The result of the Holder Table function.
     """
     d = v.shape[0]
     v1 = jnp.mean(v[:d//2])
@@ -48,17 +93,18 @@ def cross_in_tray(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Cross-in-Tray function.
 
-    The Cross-in-Tray function is a complex non-convex function used for benchmarking optimization algorithms.
-    It is defined as:
-
     .. math::
-        f(v) = -2 \left( \left| \sin(z_1) \sin(z_2) \exp\left( \left| 10 - \frac{\norm{v}}{\pi} \right| \right) \right| + 1 \right)^{0.1}
+        f(v) = -2 \\left(\\left| \sin(z_1) \sin(z_2) \exp\\left( \\left| 10 - \\frac{||v||}{\pi} \\right| \\right) \\right| + 1 \\right)^{0.1}
 
-    Args:
-        v (jnp.ndarray): Input array.
+    Parameters
+    ----------
+    v : jnp.ndarray
+        Input array.
 
-    Returns:
-        jnp.ndarray: The result of the Cross-in-Tray function.
+    Returns
+    -------
+    jnp.ndarray
+        The result of the Cross-in-Tray function.
     """
     d = v.shape[0]
     v1 = jnp.mean(v[:d//2])
@@ -69,37 +115,38 @@ def oakley_ohagan(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Oakley-Ohagan function.
 
-    The Oakley-Ohagan function is a synthetic function used for testing, defined as:
+    Parameters
+    ----------
+    v : jnp.ndarray
+        Input array.
+
+    Returns
+    -------
+    jnp.ndarray
+        The result of the Oakley-Ohagan function.
 
     .. math::
         f(v) = 5 \sum_{i=1}^{d} (\sin(v_i) + \cos(v_i) + v_i^2 + v_i)
-
-    Args:
-        v (jnp.ndarray): Input array.
-
-    Returns:
-        jnp.ndarray: The result of the Oakley-Ohagan function.
     """
     return 5 * jnp.sum(jnp.sin(v) + jnp.cos(v) + jnp.square(v) + v)
 
 def moon(v: jnp.ndarray) -> jnp.ndarray:
     """
-   Computes the Moon function.
+    Computes the Moon function.
 
-   The Moon function is a complex function used in optimization, involving an interaction matrix
-   and polynomial expansions of the input variables.
+    .. math::
+        f(v) = \max\\left(-100, \min\\left(100, v^\\top A v\\right)\\right)
 
-   .. math::
-        f(v) = \max\left(-100, \min\left(100, v^\top A v\right)\right)
+    Parameters
+    ----------
+    v : jnp.ndarray
+        Input array.
 
-    where :math:`A` is the interaction matrix.
-
-   Args:
-       v (jnp.ndarray): Input array.
-
-   Returns:
-       jnp.ndarray: The result of the Moon function, clipped between -100 and 100.
-   """
+    Returns
+    -------
+    jnp.ndarray
+        The result of the Moon function, clipped between -100 and 100.
+    """
     interaction_matrix = jnp.array([
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [-2.08, 1.42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -135,19 +182,20 @@ def ishigami(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Ishigami function.
 
-    The Ishigami function is used in sensitivity analysis and is characterized by a combination of sine
-    and polynomial terms. It is defined as:
-
     .. math::
-        f(v) = \sin(z_1) + 7 \sin(z_2)^2 + 0.1 \left(\frac{z_1 + z_2}{2}\right)^4 \sin(z_1)
+        f(v) = \sin(z_1) + 7 \sin(z_2)^2 + 0.1 \\left(\\frac{z_1 + z_2}{2}\\right)^4 \sin(z_1)
 
+    Parameters
+    ----------
+    v : jnp.ndarray
+        Input array.
 
-    Args:
-        v (jnp.ndarray): Input array.
-
-    Returns:
-        jnp.ndarray: The result of the Ishigami function.
+    Returns
+    -------
+    jnp.ndarray
+        The result of the Ishigami function.
     """
+
     d = v.shape[0]
     v0 = jnp.mean(v[:d//2])
     v1 = jnp.mean(v[d//2:])
@@ -158,17 +206,22 @@ def friedman(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Friedman function.
 
-    The Friedman function is commonly used in regression and sensitivity analysis, involving trigonometric
-    and polynomial terms. It is defined as:
-
     .. math::
-        f(v) = \frac{1}{100}\biggl(10\sin\left(2\pi(z_1 - 7)(z_2 - 7)\right)+20\left(2(z_1 - 7)\sin(z_2 - 7)- \frac{1}{2}\right)^2+10\left(2(z_1 - 7)\cos(z_2 - 7) - 1\right)^2+\frac{1}{10}(z_2 - 7)\sin(2(z_1 - 7))\biggr)
+        f(v) = \\frac{1}{100}\\biggl(10\sin\\left(2\pi(z_1 - 7)(z_2 - 7)\\right) + 
+        20\\left(2(z_1 - 7)\sin(z_2 - 7)- \\frac{1}{2}\\right)^2 \\\\+
+        10\\left(2(z_1 - 7)\cos(z_2 - 7) - 1\\right)^2 + \\frac{1}{10}(z_2 - 7)\sin(2(z_1 - 7))\\biggr)
 
-    Args:
-        v (jnp.ndarray): Input array.
 
-    Returns:
-        jnp.ndarray: The result of the Friedman function, scaled down by a factor of 100.
+
+    Parameters
+    ----------
+    v : jnp.ndarray
+        Input array.
+
+    Returns
+    -------
+    jnp.ndarray
+        The result of the Friedman function, scaled down by a factor of 100.
     """
     v = 2 * (v - 7)
     d = v.shape[0]
@@ -183,16 +236,15 @@ def sphere(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Sphere function.
 
-    The Sphere function is a simple convex function commonly used for testing optimization algorithms,
-    defined as:
-
     .. math::
-        f(v) = -10\norm{x}^2
+        f(v) = -10||x||^2
 
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the Sphere function.
     """
     return -10 * jnp.sum(jnp.square(v))
@@ -201,16 +253,16 @@ def bohachevsky(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Bohachevsky function.
 
-    The Bohachevsky function is a non-convex function used for optimization, defined as:
-
     .. math::
         f(v) = v_1^2 + 2v_2^2 - 0.3 \cos(3 \pi v_1) - 0.4 \cos(4 \pi v_2) + 0.7
 
 
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the Bohachevsky function.
     """
     d = v.shape[0]
@@ -222,16 +274,15 @@ def three_hump_camel(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Three-Hump Camel function.
 
-    The Three-Hump Camel function is a non-convex function used for testing optimization algorithms.
-    It is defined as:
-
     .. math::
-        f(v) = 2z_1^2 - 1.05z_1^4 + \frac{z_1^6}{6} + z_1z_2 + z_2^2
+        f(v) = 2z_1^2 - 1.05z_1^4 + \\frac{z_1^6}{6} + z_1z_2 + z_2^2
 
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the Three-Hump Camel function.
     """
     d = v.shape[0]
@@ -243,16 +294,15 @@ def beale(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Beale function.
 
-    The Beale function is a non-convex function used for optimization, particularly in testing algorithms.
-    It is defined as:
-
     .. math::
-        f(v) = \frac{1}{100}((1.5 - z_1 + z_1z_2)^2 + (2.25 - z_1 + z_1z_2)^2 + (2.625 - z_1 + z_1z_2^3)^2)
+        f(v) = \\frac{1}{100}((1.5 - z_1 + z_1z_2)^2 + (2.25 - z_1 + z_1z_2)^2 + (2.625 - z_1 + z_1z_2^3)^2)
 
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the Beale function, scaled down by a factor of 100.
     """
     d = v.shape[0]
@@ -264,19 +314,17 @@ def double_exp(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Double Exponential function.
 
-    The Double Exponential function is used in optimization problems.
-    It is defined as:
-
     .. math::
-        f(v) = 200\exp\left(-\frac{\norm{v - m\mathbf{1}}^2}{\sigma}\right) + \exp\left(-\frac{\norm{v + m\mathbf{1}}}{s}\right)
+        f(v) = 200\exp\\left(-\\frac{||v - m\mathbf{1}||^2}{\sigma}\\right) + \exp\\left(-\\frac{||v + m\mathbf{1}||}{s}\\right)
 
     where :math:`d = 3` and :math:`s = 20`.
 
-
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the Double Exponential function.
     """
     s = 20
@@ -287,17 +335,15 @@ def relu(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the ReLU (Rectified Linear Unit) function.
 
-    The ReLU function is widely used in neural networks and optimization tasks. It
-    outputs the input directly if it is positive; otherwise, it outputs zero.
-    It is defined as:
-
     .. math::
         f(v) = \max(0, v)
 
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the ReLU function.
     """
     r = -50 * jnp.clip(v, a_min=0)
@@ -309,19 +355,17 @@ def rotational(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Rotational function.
 
-    The Rotational function is a non-convex optimization function that involves
-    trigonometric transformations of the input variables.
-    It is defined as:
-
     .. math::
-        f(v) = 10 \cdot \text{ReLU}(\theta + \pi)
+        f(v) = 10 \cdot \\text{ReLU}(\\theta + \pi)
 
-    where :math:`\theta = \arctan\left(\frac{v_2 + 5}{v_1 + 5}\right)`.
+    where :math:`\theta = \\arctan\\left(\frac{v_2 + 5}{v_1 + 5}\\right)`.
 
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the Rotational function.
     """
     d = v.shape[0]
@@ -334,13 +378,12 @@ def flat(v: jnp.ndarray) -> jnp.ndarray:
     """
     Computes the Flat function.
 
-    The Flat function is a trivial optimization function that always returns zero,
-    regardless of the input. It is used for testing purposes.
-
-    Args:
+    Parameters
+    ----------
         v (jnp.ndarray): Input array.
 
-    Returns:
+    Returns
+    -------
         jnp.ndarray: The result of the Flat function (always 0).
     """
     return 0.
