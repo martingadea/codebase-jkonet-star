@@ -1,4 +1,49 @@
-from jax import grad, vmap, numpy as jnp
+"""
+Radial Basis Function (RBF) Module
+
+This module provides implementations of various types of radial basis functions (RBFs),
+which are commonly used in interpolation, machine learning, and numerical approximation.
+
+Radial basis functions take two inputs:
+    - A data point `x` (a jax.numpy array).
+    - A center `c` (a jax.numpy array).
+    
+Each RBF computes a scalar value based on the distance (or other non-linear transformation)
+between the input `x` and the center `c`.
+
+Available Functions:
+---------------------
+- `rbf_linear`: Computes the linear RBF, which is the negative Euclidean distance between `x` and `c`.
+- `rbf_thin_plate_spline`: Computes the thin plate spline RBF, which is proportional to the squared distance
+  multiplied by the logarithm of the distance.
+- `rbf_cubic`: Computes the cubic RBF, which sums the cube of differences between `x` and `c`.
+- `rbf_quintic`: Computes the quintic RBF, which sums the fifth power of the differences between `x` and `c`.
+- `rbf_multiquadric`: Computes the multiquadric RBF, which is the negative square root of the sum of squared
+  differences plus a constant.
+- `rbf_inverse_multiquadric`: Computes the inverse of the multiquadric RBF.
+- `rbf_inverse_quadratic`: Computes the inverse quadratic RBF.
+- `const`: A constant function that always returns 1 regardless of the inputs.
+
+The `rbfs` dictionary provides a convenient way to access these RBF functions by name.
+
+Usage Example:
+--------------
+To compute an RBF between an input data point and a center, you can use one of the provided RBF functions:
+
+.. code-block:: python
+
+    import jax.numpy as jnp
+    from module_name import rbfs
+
+    x = jnp.array([1.0, 2.0])
+    c = jnp.array([0.5, 1.5])
+    rbf_value = rbfs['linear'](x, c)
+
+This will compute the linear RBF between `x` and `c`.
+"""
+
+
+from jax import numpy as jnp
 
 def rbf_linear(x, c):
     """
