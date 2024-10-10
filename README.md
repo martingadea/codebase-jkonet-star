@@ -7,7 +7,7 @@ This repo contains a JAX implementation of the JKOnet* architecture presented in
 
 
 ## Abstract 🤓
-<p align='center'><img src='media/cover.png' alt='Cover.' width='45%'> <img src='media/preview.png' alt='Cover.' width='45%'></p>
+<p align='center'><img src='docs/_static/cover.png' alt='Cover.' width='45%'> <img src='docs/_static/preview.png' alt='Cover.' width='45%'></p>
 
 Diffusion regulates numerous natural processes and the dynamics of many successful generative models. Existing models to learn the diffusion terms from observational data rely on complex bilevel optimization problems and properly model only the drift of the system. We propose a new simple model, JKOnet∗, which bypasses altogether the complexity of existing architectures while presenting significantly enhanced representational capabilities: JKOnet∗
 recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet∗ minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally, JKOnet∗ provides a closed-form optimal solution for linearly

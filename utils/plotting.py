@@ -39,7 +39,7 @@ def plot_couplings(data: np.ndarray) -> Tuple[plt.Figure, plt.Axes]:
 
     .. toggle:: Click to toggle plot
 
-        .. image:: ../media/plotting_documentation/plot_couplings.png
+        .. image:: ../_static/plotting_documentation/plot_couplings.png
            :align: center
            :alt: Example plot showing circles connected to crosses with weighted lines.
     """
@@ -217,7 +217,7 @@ def plot_level_curves(
 
     .. toggle:: Click to toggle plot
 
-        .. image:: ../media/plotting_documentation/plot_level_curves.png
+        .. image:: ../_static/plotting_documentation/plot_level_curves.png
            :align: center
            :alt: Example plot showing level curves of the Styblinski-Tang function.
 
@@ -330,7 +330,7 @@ def plot_predictions(predicted: np.ndarray,
 
     .. toggle:: Click to toggle plot
 
-        .. image:: ../media/plotting_documentation/plot_predictions.png
+        .. image:: ../_static/plotting_documentation/plot_predictions.png
            :align: center
            :alt: Example plot showing predictions.
     """

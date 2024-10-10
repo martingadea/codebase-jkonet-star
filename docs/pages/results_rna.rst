@@ -10,7 +10,7 @@ To further validate our time-varying hypothesis we display the time evolution of
 components of the level curves of the potential energy minimized by the cells,
 along with the cells trajectory (in green the data, in blue the interpolated predictions).
 
-.. image:: ../media/rna_picture.png
+.. image:: ../_static/rna_picture.png
    :alt: RNA
 
 To evaluate quantitatively the quality of our results, we train our models on :math:`60\%` of the data at each time step,

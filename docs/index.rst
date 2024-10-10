@@ -1,12 +1,12 @@
 Learning Diffusion at Lightspeed
 ================================
 
-.. image:: media/cover.png
+.. image:: _static/cover.png
    :align: left
    :width: 45%
    :alt: Cover image
 
-.. image:: media/preview.png
+.. image:: _static/preview.png
    :align: right
    :width: 45%
    :alt: Preview image
@@ -56,7 +56,7 @@ Check out the `paper <https://arxiv.org/abs/2406.12616>`_ for an intuition as we
    pages/applications
 
 Citation 🙏
-----------
+-----------
 
 If you use this code in your research, please cite our paper (NeurIPS 2024, Oral Presentation):
 
