@@ -1,16 +1,15 @@
 from jax import grad, vmap, numpy as jnp
 
-# RBFs
 def rbf_linear(x, c):
     """
     Computes the linear radial basis function (RBF).
 
-    This RBF is simply the negative Euclidean distance between the input `x`
-    and the center `c`.
+    This RBF is simply the negative Euclidean distance between the input ``x``
+    and the center ``c``.
 
     .. math::
-        \mathrm{RBF}(x, c) = -\|x - c\|
 
+        \mathrm{RBF}(x, c) = -\|x - c\|
 
     Args:
         x (jnp.ndarray): Input data point.
@@ -26,6 +25,7 @@ def rbf_thin_plate_spline(x, c):
     Computes the thin plate spline radial basis function (RBF).
 
     .. math::
+
         \mathrm{RBF}(x, c) = \|x - c\|^2 \log(\|x - c\| + \epsilon)
 
     where :math:`\epsilon` is a small constant to avoid numerical issues when
@@ -46,6 +46,7 @@ def rbf_cubic(x, c):
     Computes the cubic radial basis function (RBF).
 
     .. math::
+
         \mathrm{RBF}(x, c) = \sum_{i} (x_i - c_i)^3
 
     Args:
@@ -62,6 +63,7 @@ def rbf_quintic(x, c):
     Computes the quintic radial basis function (RBF).
 
     .. math::
+
         \mathrm{RBF}(x, c) = -\sum_{i} (x_i - c_i)^5
 
     Args:
@@ -95,7 +97,8 @@ def rbf_inverse_multiquadric(x, c):
     Computes the inverse multiquadric radial basis function (RBF).
 
     .. math::
-        \mathrm{RBF}(x, c) = \left( \sqrt{\sum_{i} (x_i - c_i)^2 + 1} \right)^{-1}
+
+        \mathrm{RBF}(x, c) = \\left( \sqrt{\sum_{i} (x_i - c_i)^2 + 1} \\right)^{-1}
 
     Args:
         x (jnp.ndarray): Input data point.
@@ -112,7 +115,7 @@ def rbf_inverse_quadratic(x, c):
 
     .. math::
 
-        \mathrm{RBF}(x, c) = \frac{1}{\sum_{i} (x_i - c_i)^2 + 1}
+        \mathrm{RBF}(x, c) = \\left(\sum_{i} (x_i - c_i)^2 + 1\\right)^{-1}
 
     Args:
         x (jnp.ndarray): Input data point.
@@ -127,7 +130,7 @@ def const(x, c):
     """
     Computes the constant function.
 
-    This function always returns 1, regardless of the input `x` or the center `c`.
+    This function always returns 1, regardless of the input ``x`` or the center ``c``.
 
     .. math::
 
