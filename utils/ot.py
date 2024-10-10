@@ -1,3 +1,36 @@
+"""
+This module provides functions for computing Wasserstein distances, Sinkhorn divergences, and optimal transport
+couplings between two sets of points using the POT (Python Optimal Transport) and JAX-OTT libraries.
+
+Functions
+---------
+- ``wasserstein_couplings``
+    Computes the optimal transport plan (couplings) between two sets of points `xs` and `ys` using the POT library.
+
+- ``wasserstein_loss``
+    Computes the Wasserstein loss between two sets of points `xs` and `ys`, which quantifies the cost of transporting
+    one distribution to match the other.
+
+- ``sinkhorn_loss``
+    Computes the Sinkhorn divergence, a regularized Wasserstein distance, between two sets of points `xs` and `ys`
+    using the JAX-OTT library.
+
+- ``compute_couplings``
+    Computes the couplings between particles in two consecutive batches using the Wasserstein transport plan.
+
+Libraries used
+--------------
+- ``JAX``: A framework for high-performance machine learning and numerical computations with automatic differentiation.
+- ``POT``: A Python library for optimal transport calculations.
+- ``JAX-OTT``: A library for computing optimal transport using JAX.
+- ``Chex``: A library providing assertions and utilities for JAX-related computations.
+
+References
+----------
+- ``POT`` library documentation: https://pythonot.github.io/
+- ``JAX-OTT`` library documentation: https://ott-jax.readthedocs.io/
+"""
+
 import jax
 import jax.numpy as jnp
 from ott.geometry import pointcloud

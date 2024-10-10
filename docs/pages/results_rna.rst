@@ -17,7 +17,7 @@ To evaluate quantitatively the quality of our results, we train our models on :m
 using only the first :math:`5` principal components, and we compute the Earth Mover's Distance (Wasserstein-1 error):
 
 .. math::
-   W_{1}(\mu, \hat{\mu}_t) = \min_{\gamma \in \Pi(\mu_t, \hat{\mu}_t)} \int_{\mathbb{R}^d \times \mathbb{R}^d} \|x - y\| \, d\gamma(x, y)
+   W_{1}(\\mu, \hat{\\mu}_t) = \min_{\gamma \in \Pi(\\mu_t, \hat{\\mu}_t)} \int_{\mathbb{R}^d \times \mathbb{R}^d} \|x - y\| \, d\gamma(x, y)
 
 We juxtapose our numerical results with recent work in the literature on the first :math:`5` Principal Components
 of the embryoid body scRNA-seq dataset. Their numerical values are taken from :cite:`chen2023deep` and
@@ -25,7 +25,7 @@ of the embryoid body scRNA-seq dataset. Their numerical values are taken from :c
 This consists of training the model on all but one of the intermediate timepoints and then evaluating the EMD between the
 validation data and the model's predicted distribution. In contrast, we perform train-test-split validation,
 using :math:`60\%` of the data for training, and :math:`40\%` for validation. We calculate the EMD between the observed
-:math:`\mu_t` and one-step ahead predicted evolution :math:`\hat\mu_t`, and compute the statistics over the time steps.
+:math:`\\mu_t` and one-step ahead predicted evolution :math:`\hat\\mu_t`, and compute the statistics over the time steps.
 The following table gathers all the results. :texttt{JKOnet\textsuperscript{$\ast$}}
 outperforms all the baselines, in under a minute of training time (including the time for computing the
 couplings). The methods listed, instead, take hours to run.

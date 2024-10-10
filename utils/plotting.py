@@ -1,3 +1,54 @@
+"""
+This module provides a set of plotting utilities for visualizing data and model predictions using `matplotlib`. 
+The primary functionalities include plotting couplings between particles, generating level curves, visualizing model 
+predictions, creating heatmaps, comparing execution times of models, and plotting loss comparisons across different 
+model parameters.
+
+Functions
+-------------
+- ``plot_couplings``
+    Visualizes connections between two sets of points (circles and crosses) with lines whose widths are proportional to the weights.
+
+- ``domain_from_data``
+    Computes the domain boundaries for plotting based on the data.
+
+- ``grid_from_domain``
+    Generates a grid of points within a specified domain for visualization purposes.
+
+- ``plot_level_curves``
+    Plots the level curves of a given function over a specified domain.
+
+- ``plot_predictions``
+    Visualizes the predicted and ground truth particle positions for different time steps.
+
+- ``colormap_from_config``
+    Creates a custom colormap from a configuration dictionary.
+
+- ``plot_heatmap``
+    Plots a heatmap of values over a 2D grid.
+
+- ``plot_boxplot_comparison_models``
+    Creates a boxplot to compare execution times of different models.
+
+- ``plot_comparison_models``
+    Compares two sets of model errors, with optional insets for detailed views.
+
+- ``plot_loss``
+    Plots the loss values for different models over varying parameter values.
+
+
+Usage Example
+-------------
+To plot couplings between two sets of points:
+    
+    >>> import numpy as np
+    >>> from matplotlib import pyplot as plt
+    >>> data = np.array([[0., 0., 0., 1., 5., 0.5], [1., 0., 2., 2., 5., 0.5]])
+    >>> fig, ax = plot_couplings(data)
+    >>> plt.show()
+"""
+
+
 import os
 from pathlib import Path
 import jax

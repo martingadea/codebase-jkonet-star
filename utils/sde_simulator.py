@@ -1,3 +1,50 @@
+"""
+This module provides tools to simulate Stochastic Differential Equations (SDEs) using explicit and implicit schemes. 
+It includes functionality to generate trajectories based on specified models, potentials, internal energies, and interactions. 
+The simulations are performed using ``JAX``, which enables efficient computations and automatic differentiation.
+
+Classes
+-----------
+- ``SDESimulator``
+    Simulates SDEs using an explicit scheme, allowing for the application of potential, internal energy, and interaction 
+    components. The class supports forward sampling of trajectories based on the initial condition and a JAX random key.
+
+- ``SDESimulator_implicit_time``
+    Simulates SDEs using implicit time-stepping methods. This class is designed to handle time-varying potentials 
+    and performs fixed-point iterations to account for implicit dynamics. It supports forward sampling similar to ``SDESimulator``.
+
+Functions
+-------------
+- ``get_SDE_predictions``
+    A helper function to choose between explicit and implicit SDE simulators based on the model type and return 
+    the simulated trajectories.
+
+Usage example
+-------------
+To simulate trajectories using an explicit SDE simulator:
+
+    >>> import jax.numpy as jnp
+    >>> import jax.random as jrandom
+    >>> key = jrandom.PRNGKey(0)
+    >>> init_pp = jnp.array([[0.0, 0.0]])
+    >>> sde_simulator = SDESimulator(dt=0.01, n_timesteps=100, start_timestep=0, potential=False, internal=0.1, interaction=False)
+    >>> trajectories = sde_simulator.forward_sampling(key, init_pp)
+    >>> print(trajectories.shape)  # Output: (101, 1, 2)
+
+For implicit time-stepping with a time-dependent potential:
+
+    >>> potential_func = lambda x: 0.5 * jnp.sum(jnp.square(x))
+    >>> implicit_simulator = SDESimulator_implicit_time(dt=0.01, n_timesteps=100, start_timestep=0, potential=potential_func, internal=False, interaction=False)
+    >>> trajectories = implicit_simulator.forward_sampling(key, init_pp)
+    >>> print(trajectories.shape)  # Output: (101, 1, 2)
+
+References
+----------
+- `jax`: https://github.com/google/jax
+- Stochastic Differential Equations (SDE): https://en.wikipedia.org/wiki/Stochastic_differential_equation
+"""
+
+
 import jax
 import jax.numpy as jnp
 import jax.random as jrandom
