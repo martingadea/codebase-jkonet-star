@@ -11,6 +11,15 @@ This dataset tracks the differentiation of human embryonic stem cells over a 27-
 collected at the following time intervals: :math:`t_{0}`: day 0 to 3, :math:`t_{1}`: day 6 to 9, :math:`t_{2}`:
 day 12 to 15, :math:`t_{3}`: day 18 to 21, and :math:`t_{4}`: day 24 to 27.
 
++------------------+------------------+------------------+------------------+------------------+------------------+
+| Time intervals   | Column 1          | Column 2          | Column 3          | Column 4          | Column 5          |
++------------------+------------------+------------------+------------------+------------------+------------------+
+| Row 1            | Data 1            | Data 2            | Data 3            | Data 4            | Data 5            |
++------------------+------------------+------------------+------------------+------------------+------------------+
+| Row 2            | Data 6            | Data 7            | Data 8            | Data 9            | Data 10           |
++------------------+------------------+------------------+------------------+------------------+------------------+
+
+
 We follow the data pre-processing in :cite:`tong2020trajectorynet` and :cite:`tong2023improving`; in particular,
 we use the same processed artifacts of the embryoid data provided in their work, which contains the first 100
 components of the principal components analysis (PCA) of the data.

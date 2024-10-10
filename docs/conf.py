@@ -7,8 +7,8 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'jkonet-star'
-copyright = '2024, Antonio Terpin, Nicolas Lanzetti, Martin Gadea and Florian Dörfler'
-author = 'Martin Gadea, Antonio Terpin'
+copyright = '2024, Learning diffusion at lightspeed authors'
+author = 'Learning diffusion at lightspeed authors'
 release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------

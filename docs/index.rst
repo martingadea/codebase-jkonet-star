@@ -1,62 +1,67 @@
-.. jkonet-star documentation master file, created by
-   sphinx-quickstart on Mon Aug 26 11:08:59 2024.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Learning Diffusion at Lightspeed
+======================
 
-Learning Diffusion at lightspeed
-=================================
-
-.. image:: ../media/cover.png
+.. image:: media/cover.png
    :align: left
    :width: 45%
-   :alt: Cover
+   :alt: Cover image
 
-.. image:: ../media/preview.png
+.. image:: media/preview.png
    :align: right
    :width: 45%
-   :alt: Preview
+   :alt: Preview image
 
 
+JKOnet\*
+----
 
-Diffusion regulates numerous natural processes and the dynamics of many successful generative models. Existing models
-to learn the diffusion terms from observational data rely on complex bilevel optimization problems and properly model
-only the drift of the system. We propose a new simple model, JKOnet∗, which bypasses altogether the complexity of
-existing architectures while presenting significantly enhanced representational capabilities: JKOnet∗
-recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet∗
-minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency,
-computational complexity, and accuracy. Additionally, JKOnet∗ provides a closed-form optimal solution for linearly
-parametrized functionals, and, when applied to predict the evolution of cellular processes, it achieves
-state-of-the-art accuracy at a fraction of the computational cost of all existing methods. Our methodology
-is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the
-so-called JKO scheme, which we study via its first-order optimality conditions.
+`Paper <https://arxiv.org/abs/2406.12616>`_ & `Code <https://github.com/antonioterpin/jkonet-star>`_
 
+Diffusion regulates numerous natural processes and drives the dynamics of many successful generative models. 
+Current models for learning diffusion terms from observational data often require complex bilevel optimization problems and primarily focus on modeling the drift component of the system.
+ 
+
+We propose a new simple model, **JKOnet\***, which bypasses the complexity of existing architectures while presenting significantly enhanced representational capabilities: JKOnet\* recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet\* minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally, JKOnet\* provides a closed-form optimal solution for linearly parametrized functionals, and, when applied to predict the evolution of cellular processes from real-world data, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods.
+
+.. admonition:: Key advantages of JKOnet\*
+
+   - **Outperforms** existing baselines in sample efficiency, computational complexity, and accuracy.
+   - Learns the different components of the diffusion process, including potential, interaction, and internal energy.
+   - Provides a **closed-form optimal solution** for linearly parametrized functionals.
+   - Achieves **state-of-the-art accuracy** in predicting cellular process evolution at a fraction of the computational cost of existing methods.
+
+**TODO comparison table with other methods**
+
+Our methodology is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the so-called **JKO scheme**, which we study via its first-order optimality conditions.
+
+Check out the `paper <https://arxiv.org/abs/2406.12616>`_ for an intuition as well as an in-depth explanation and thorough comparisons with existing methods.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   getting_started
-   developer_resources
-   applications
-
+   pages/getting_started
+   pages/benchmarks
+   pages/developer_resources
+   pages/applications
 
 Citation 🙏
-------------
+----------
 
-If you use this code in your research, please cite our paper:
+If you use this code in your research, please cite our paper (NeurIPS 2024, Oral Presentation):
 
 .. code-block:: latex
 
    @article{terpin2024learning,
      title={{Learning Diffusion at Lightspeed}},
      author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martín and D\"orfler, Florian},
-     journal={},
+     journal={Proceedings of NeurIPS},
      year={2024},
+     note={Oral Presentation},
    }
 
-Contact and Contributing
--------------------------
 
-If you have any questions or would like to contribute to the project, feel free to reach out to [Antonio Terpin](mailto:aterpin@ethz.ch).
+Contact and contributing
+------------------------
 
-
+If you have any questions or would like to contribute to the project, feel free to reach out to **Antonio Terpin** via email: `aterpin@ethz.ch <mailto:aterpin@ethz.ch>`_ or directly open an issue/PR on the `GitHub repository <http://github.com/antonioterpin/jkonet-star>`_.

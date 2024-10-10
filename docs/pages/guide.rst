@@ -1,4 +1,4 @@
-Guide
+Using JKOnet\*
 ============
 
 Generating synthetic data 🧩

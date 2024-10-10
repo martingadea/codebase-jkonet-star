@@ -1,4 +1,4 @@
-Developer resources
+Developer resources 💻
 ====================
 
 .. toctree::
