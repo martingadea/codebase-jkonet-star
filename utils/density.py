@@ -2,29 +2,47 @@ import jax.numpy as jnp
 from sklearn.mixture import GaussianMixture
 import pickle
 import chex
+from typing import List, Dict
 
 class GaussianMixtureModel:
-
-    gms_means = []
-    gms_covs_invs = []
-    gms_den = []
-    gms_weights = []
-
-    def fit(self, trajectory: dict, n_components: int, seed: int) -> None:
+    """
+    A class to represent a Gaussian Mixture Model (GMM) that can be fitted to trajectory data and allows for density computation.
+    
+    Attributes
+    ----------
+    gms_means : List[jnp.ndarray]
+        List to store means of the Gaussian components for each time step.
+    gms_covs_invs : List[jnp.ndarray]
+        List to store the inverses of the covariance matrices for each time step.
+    gms_den : List[float]
+        List to store normalization factors (density denominators) for each time step.
+    gms_weights : List[float]
+        List to store the weights of each Gaussian component for each time step.
+    """
+    
+    def __init__(self):
         """
-        Fits a Gaussian Mixture Model to the provided trajectory.
+        Initializes the GaussianMixtureModel class.
+        """
+        self.gms_means: List[jnp.ndarray] = []
+        self.gms_covs_invs: List[jnp.ndarray] = []
+        self.gms_den: List[float] = []
+        self.gms_weights: List[float] = []
+
+    def fit(self, 
+            trajectory: Dict[float, jnp.ndarray], 
+            n_components: int) -> None:
+        """
+        Fits a Gaussian Mixture Model (GMM) to the given trajectory data.
 
         Parameters
         ----------
         trajectory : dict
-            Dictionary where the trajectories are stored. The keys of the dictionary are the timesteps and the values are arrays of data points.
-            Each array should have shape (n_samples, n_features).
-
+            A dictionary where each key is a time step and each value is a 2D array (n_samples, n_features) of data points.
         n_components : int
-            Number of components (clusters) to use in the Gaussian Mixture Model.
-
+            The number of clusters (components) to use in the GMM.
         """
-        for key, val in trajectory.items():
+        for _, val in trajectory.items():
             chex.assert_type(val, float)
             chex.assert_rank(val, 2)  # Check that each value in trajectory is a 2D array
 
@@ -45,14 +63,15 @@ class GaussianMixtureModel:
             self.gms_den.append(1 / jnp.sqrt((2 * jnp.pi) ** data_dim * dets[idxs]))
             self.gms_weights.append(jnp.asarray(gm.weights_[idxs] / jnp.sum(gm.weights_[idxs])))
 
-    def to_file(self, filename: str):
+    def to_file(self, 
+                filename: str):
         """
-        Saves the Gaussian Mixture Model to a file.
+        Saves the GMM model parameters to a file.
 
         Parameters
         ----------
         filename : str
-            Path to the file where the model should be saved.
+            The file path to save the model to.
         """
         data = {
             'gms_means': self.gms_means,
@@ -63,14 +82,15 @@ class GaussianMixtureModel:
         with open(filename, 'wb') as file:
             pickle.dump(data, file)
 
-    def from_file(self, filename: str):
+    def from_file(self, 
+                  filename: str):
         """
-        Loads the Gaussian Mixture Model from a file.
+        Loads the GMM model parameters from a file.
 
         Parameters
         ----------
         filename : str
-            Path to the file from which the model should be loaded.
+            The file path to load the model from.
         """
         with open(filename, 'rb') as file:
             data = pickle.load(file)
@@ -81,20 +101,19 @@ class GaussianMixtureModel:
 
     def gmm_density(self, t: int, x: jnp.ndarray) -> jnp.ndarray:
         """
-        Computes the density of the Gaussian Mixture Model at a given time t and state x.
+        Computes the GMM density for a given time step and data point.
 
         Parameters
         ----------
         t : int
-            Time index corresponding to Gaussian Mixture Model at time-step t.
-
+            The time step to use for computing the GMM density.
         x : jnp.ndarray
-            State (data point) at which the density should be computed. Should have shape (n_features,).
+            The data point (array of shape (n_features,)) for which to calculate the density.
 
         Returns
         -------
         jnp.ndarray
-            Density of the Gaussian Mixture Model at the specified time and state.
+            The computed density value at the specified time and state.
         """
         diffs = x - self.gms_means[t]  # (n_components, dim)
         mahalanobis_terms = jnp.einsum('ij,ijk,ik->i', diffs, self.gms_covs_invs[t], diffs)  # (n_components,)
