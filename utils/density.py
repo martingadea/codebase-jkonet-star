@@ -1,3 +1,67 @@
+"""
+Gaussian Mixture Model (GMM) Module for Trajectory Data
+
+This module defines the `GaussianMixtureModel` class, which fits a Gaussian Mixture Model (GMM) to trajectory data and provides methods to compute density estimates. The class also allows saving and loading the model parameters to/from a file.
+
+The GMM is fitted to time-dependent trajectory data, where each time step contains a set of data points, and the class allows for computing the GMM-based density at any given time step for a new input point.
+
+Dependencies:
+-------------
+- `jax.numpy`: Used for array manipulation and numerical computations.
+- `sklearn.mixture.GaussianMixture`: Used to fit the Gaussian Mixture Model to data.
+- `pickle`: Used for saving and loading model parameters.
+- `chex`: Provides utilities for type and dimensionality checks.
+- `typing.List`, `typing.Dict`: Used for type hinting.
+
+Class:
+------
+- `GaussianMixtureModel`: Handles the fitting of GMMs to trajectory data, saving/loading the model, and computing the density for a given input.
+
+Class Attributes:
+-----------------
+- `gms_means`: A list storing the means of the Gaussian components for each time step.
+- `gms_covs_invs`: A list storing the inverses of the covariance matrices for each time step.
+- `gms_den`: A list of normalization factors for density computation at each time step.
+- `gms_weights`: A list storing the weights of each Gaussian component for each time step.
+
+Methods:
+--------
+- `__init__`: Initializes the class with empty lists to hold model parameters.
+- `fit`: Fits a GMM to the given trajectory data and stores the relevant parameters (means, inverse covariances, weights).
+- `to_file`: Saves the model parameters to a file using `pickle`.
+- `from_file`: Loads the model parameters from a file using `pickle`.
+- `gmm_density`: Computes the density of the GMM at a specified time step for a given data point.
+
+Example Usage:
+--------------
+.. code-block:: python
+
+    from module_name import GaussianMixtureModel
+    import jax.numpy as jnp
+
+    # Initialize the GMM model
+    gmm = GaussianMixtureModel()
+
+    # Example trajectory data (for multiple time steps)
+    trajectory = {
+        0: jnp.array([[1.0, 2.0], [2.0, 3.0]]),
+        1: jnp.array([[1.5, 2.5], [2.5, 3.5]])
+    }
+
+    # Fit the GMM to the trajectory data with 2 components
+    gmm.fit(trajectory, n_components=2)
+
+    # Compute the density at time step 0 for a new data point
+    x = jnp.array([1.2, 2.2])
+    density = gmm.gmm_density(t=0, x=x)
+
+    # Save the model to a file
+    gmm.to_file("gmm_model.pkl")
+
+    # Load the model from a file
+    gmm.from_file("gmm_model.pkl")
+"""
+
 import jax.numpy as jnp
 from sklearn.mixture import GaussianMixture
 import pickle
