@@ -53,7 +53,3 @@ calculate the evaluation metrics with either the data used for training, or the 
    python train.py --dataset RNA_PCA_5 --solver jkonet-star-time-potential --eval test_data
 
 
-
-.. bibliography:: bibliography.bib
-   :style: unsrt
-

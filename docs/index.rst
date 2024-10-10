@@ -1,5 +1,5 @@
 Learning Diffusion at Lightspeed
-======================
+================================
 
 .. image:: media/cover.png
    :align: left
@@ -13,7 +13,7 @@ Learning Diffusion at Lightspeed
 
 
 JKOnet\*
-----
+--------
 
 `Paper <https://arxiv.org/abs/2406.12616>`_ & `Code <https://github.com/antonioterpin/jkonet-star>`_
 
@@ -30,7 +30,17 @@ We propose a new simple model, **JKOnet\***, which bypasses the complexity of ex
    - Provides a **closed-form optimal solution** for linearly parametrized functionals.
    - Achieves **state-of-the-art accuracy** in predicting cellular process evolution at a fraction of the computational cost of existing methods.
 
-**TODO comparison table with other methods**
+
+.. table:: JKOnet\* vs JKOnet
+
+   +-----------------+-------------------+---------------------+------------------+---------+
+   |                 | Potential energy  | Interaction energy  | Internal energy  | Speed   |
+   +-----------------+-------------------+---------------------+------------------+---------+
+   | **JKOnet**      |        ✅         |     ❌              |   ❌             | slow    |
+   +-----------------+-------------------+---------------------+------------------+---------+
+   | **JKOnet\***    | ✅                |   ✅                |       ✅         | fast 🔥 |
+   +-----------------+-------------------+---------------------+------------------+---------+
+
 
 Our methodology is based on the interpretation of diffusion processes as energy-minimizing trajectories in the probability space via the so-called **JKO scheme**, which we study via its first-order optimality conditions.
 

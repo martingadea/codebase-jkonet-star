@@ -58,5 +58,5 @@ couplings). The methods listed, instead, take hours to run.
    * - :math:`\texttt{JKOnet\textsuperscript{$\ast$}}`
      - :math:`0.623 \pm 0.04`
 
-.. bibliography:: bibliography.bib
-   :style: unsrt
+.. bibliography:: ../bibliography.bib
+   :style: plain
