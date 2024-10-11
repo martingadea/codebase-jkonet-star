@@ -12,6 +12,14 @@ Once Docker is installed and running, follow these steps to build the Docker ima
 
     docker build -t jkonet-star-app .
 
+
+If you encounter any issues with the Docker build, please ensure that Docker is running and that you have the necessary permissions to execute Docker commands. You can also try to pull the ``python:3.12-slim`` image before building the ``jkonet-star-app`` image:
+
+.. code-block:: bash
+
+    docker pull python:3.12-slim
+
+
 Running JKOnet\* using Docker
 ------------------------------------
 
@@ -20,10 +28,10 @@ After building the image, you can generate data and train models by executing th
 .. code-block:: bash
 
     # Generate data using the Styblinski-Tang potential
-    docker run jkonet-star-app python data_generator.py --potential styblinski_tang
+    docker run -v .:/app jkonet-star-app python data_generator.py --potential styblinski_tang --n-particles 5000 --test-split 0.5
 
     # Train the model using the generated dataset
-    docker run jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0_split_0
+    docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
 
 Installation on macOS and Ubuntu
 --------------------------------
