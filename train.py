@@ -3,10 +3,10 @@ This module provides a script for training and evaluating JKOnet* and other mode
 
 Functions
 -------------
-- `numpy_collate(batch: List[Union[np.ndarray, Tuple, List]]) -> Union[np.ndarray, List]`:
+- ``numpy_collate``
     A custom collate function for PyTorch's DataLoader to properly stack or nest NumPy arrays when using JAX.
 
-- `main(args: argparse.Namespace) -> None`:
+- ``main``
     The main function that orchestrates the training loop, evaluation, logging, and visualization. It reads configurations, initializes models and datasets, and executes the training and evaluation processes.
 
 Command-Line arguments

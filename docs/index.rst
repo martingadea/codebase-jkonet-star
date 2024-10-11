@@ -74,4 +74,4 @@ If you use this code in your research, please cite our paper (NeurIPS 2024, Oral
 Contact and contributing
 ------------------------
 
-If you have any questions or would like to contribute to the project, feel free to reach out to **Antonio Terpin** via email: `aterpin@ethz.ch <mailto:aterpin@ethz.ch>`_ or directly open an issue/PR on the `GitHub repository <http://github.com/antonioterpin/jkonet-star>`_.
+If you have any questions, want to signal an error or contribute to the project, feel free to reach out to **Antonio Terpin** via email: `aterpin@ethz.ch <mailto:aterpin@ethz.ch>`_ or directly open an issue/PR on the `GitHub repository <http://github.com/antonioterpin/jkonet-star>`_.

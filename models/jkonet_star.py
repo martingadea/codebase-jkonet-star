@@ -1,3 +1,17 @@
+"""
+Module that implements the JKOnet\* model based on the base interface.
+
+The models are implemented using JAX and the FLAX library, following a functional paradigm to 
+support efficient differentiation and optimization. The core classes include:
+
+- ``JKOnetStar``: The full JKOnet\* method, used for learning all the energy terms.
+- ``JKOnetStarPotentialInternal``: A variant focusing on potential and internal energies.
+- ``JKOnetStarPotential``: A variant focusing solely on the potential energy term.
+- ``JKOnetStarTimePotential``: A time-extended variant of ``JKOnetStarPotential``.
+- ``JKOnetStarLinear``: A model using linear parameterizations with various feature functions.
+"""
+
+
 import jax
 import itertools
 import functools
@@ -14,45 +28,8 @@ from flax.core import FrozenDict
 
 class JKOnetStar(LearningDiffusionModel):
     """
-        JKOnetStar is a model for simulating the evolution of probability distributions
-        under the influence of a diffusion process described by the Fokker-Planck equation.
-
-        The model is based on energy functions represented by vanilla Multi-Layer Perceptrons (MLPs)
-        that define the potential, internal, and interaction energies. These energies influence
-        the behavior of the diffusion process.
-
-        Parameters
-        ----------
-        config : dict
-            Configuration dictionary containing model and optimizer settings. This includes
-            information about the layers of the MLPs used for the energy functions and the
-            optimizer settings.
-        data_dim : int
-            Dimension of the input data. This is the dimensionality of the space in which
-            the probability distributions evolve.
-        tau : float
-            Represents the time scale over which the diffusion process is considered. It
-            influences the rate of change of the probability distribution.
-
-        Attributes
-        ----------
-        tau : float
-            The time scale of the diffusion process.
-        data_dim : int
-            The dimensionality of the input data.
-        layers : list
-            A list specifying the structure of the layers in the MLPs used for the energy functions.
-        config_optimizer : dict
-            Configuration dictionary for the optimizer, including settings like learning rate
-            and other optimization parameters.
-        model_potential : MLP
-            A vanilla MLP that models the potential energy function.
-        model_internal : MLP
-            A vanilla MLP that models the internal energy function. This is typically a simpler
-            MLP with a single layer.
-        model_interaction : MLP
-            A vanilla MLP that models the interaction energy function.
-        """
+    The full JKOnet\* model for learning all energy terms.
+    """
     def __init__(self, config: dict, data_dim: int, tau: float) -> None:
         """
         Initialize the JKOnetStar model.
@@ -454,18 +431,6 @@ class JKOnetStar(LearningDiffusionModel):
 class JKOnetStarPotentialInternal(JKOnetStar):
     """
     A specialized variant of the JKOnetStar model that only considers potential and internal terms.
-
-    This class inherits from JKOnetStar and provides a specific implementation for the loss function
-    that includes only the potential and internal terms. It sets the interaction term to zero and adjusts
-    the training step accordingly.
-
-    Attributes
-    ----------
-    tau : float
-        Represents the time scale over which the diffusion process described by the
-         Fokker-Planck equation is considered.
-    data_dim : int
-        The dimensionality of the input data.
     """
     def loss(
         self,
@@ -575,19 +540,7 @@ class JKOnetStarPotentialInternal(JKOnetStar):
 
 class JKOnetStarPotential(JKOnetStarPotentialInternal):
     """
-    A specialized variant of the JKOnetStar model that focuses solely on the potential term.
-
-    This class inherits from JKOnetStarPotentialInternal and further specializes the loss function
-    to consider only the potential term. The interaction term is not used, and the training step
-    is adjusted to reflect this specialization.
-
-    Attributes
-    ----------
-    tau : float
-        Represents the time scale over which the diffusion process described by the
-        Fokker-Planck equation is considered.
-    data_dim : int
-        The dimensionality of the input data.
+    A variant of the JKOnetStar model to learn only the potential term.
     """
     def loss(
         self,
@@ -689,17 +642,6 @@ class JKOnetStarPotential(JKOnetStarPotentialInternal):
 class JKOnetStarTimePotential(JKOnetStarPotential):
     """
     A variant of the JKOnetStarPotential model that incorporates time information in the potential term.
-
-    This class extends JKOnetStarPotential to include time steps (`t`) in the potential calculation,
-    allowing for models that consider temporal dynamics in addition to spatial information.
-
-    Attributes
-    ----------
-    tau : float
-        Represents the time scale over which the diffusion process described by the
-        Fokker-Planck equation is considered.
-    data_dim : int
-        The dimensionality of the input data.
     """
     def create_state(self, rng: jax.random.PRNGKey) -> Tuple[train_state.TrainState, train_state.TrainState, train_state.TrainState]:
         """
@@ -847,10 +789,7 @@ class JKOnetStarTimePotential(JKOnetStarPotential):
 
 class JKOnetStarLinear(LearningDiffusionModel):
     """
-    A model that uses linear parameterizations with various feature functions for energy computation.
-
-    This class extends `LearningDiffusionModel` to include linear parameterizations for potential, internal, and interaction terms,
-    with support for polynomial, sine, cosine, and radial basis function (RBF) features.
+    The linear parametrization of the JKOnet\* model.
     """
 
     def __init__(

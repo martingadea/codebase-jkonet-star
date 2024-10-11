@@ -23,7 +23,7 @@ If you encounter any issues with the Docker build, please ensure that Docker is 
 Running JKOnet\* using Docker
 ------------------------------------
 
-After building the image, you can generate data and train models by executing the following commands. Below is an example of how to use the Docker image for these tasks:
+After building the image, you can generate data and train models by executing the following commands:
 
 .. code-block:: bash
 
@@ -61,6 +61,18 @@ Steps:
 
        pip install -r requirements.txt
 
+4. **Test the installation**
+
+   You can generate data and train models by executing the following commands:
+
+    .. code-block:: bash
+
+        # Generate data using the Styblinski-Tang potential
+        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-split 0.5
+
+        # Train the model using the generated dataset
+        python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
+
 Installation on Windows
 -----------------------
 
@@ -70,7 +82,7 @@ Steps:
 
 1. **Install Miniconda**
 
-   Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.html <https://docs.conda.io/en/latest/miniconda.html>`_.
+   Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.htmrl <https://docs.conda.io/en/latest/miniconda.html>`_.
 
 2. **Create a Conda environment**
 
@@ -88,3 +100,15 @@ Steps:
    .. code-block:: bash
 
        pip install -r requirements-win.txt
+
+4. **Test the installation**
+
+   You can generate data and train models by executing the following commands:
+
+    .. code-block:: bash
+
+        # Generate data using the Styblinski-Tang potential
+        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-split 0.5
+
+        # Train the model using the generated dataset
+        python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5

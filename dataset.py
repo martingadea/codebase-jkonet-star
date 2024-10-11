@@ -12,7 +12,7 @@ from utils.sde_simulator import get_SDE_predictions
 from utils.plotting import plot_predictions
 
 from collections import defaultdict
-from typing import Tuple, Optional, Callable, List, Union
+from typing import Tuple, Optional, Callable, List
 
 
 class PopulationDataset(Dataset):
