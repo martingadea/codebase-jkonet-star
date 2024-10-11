@@ -1,3 +1,20 @@
+"""
+Module for gradient computation and parameter analysis in Flax neural networks using JAX.
+
+Functions
+---------
+
+- ``network_grad``
+    Computes the gradient of the network's output with respect to its input. The gradient is evaluated for each sample using vectorized mapping (vmap).
+    
+- ``network_grad_time``
+    Computes the gradient of the network's output with respect to its input, excluding the time component.
+    
+- ``count_parameters``
+    Returns the total number of parameters in the given Flax neural network model.
+"""
+
+
 import jax
 from typing import Callable, Dict
 import jax.numpy as jnp
@@ -23,9 +40,9 @@ def network_grad(network: nn.Module, params: Dict[str, jnp.ndarray]) -> Callable
 
 def network_grad_time(network: nn.Module, params: Dict[str, jnp.ndarray]) -> Callable[[jnp.ndarray], jnp.ndarray]:
     """
-    Computes the gradient of the network's output with respect to the input, excluding the time component. In some
-    solvers the input of the network includes time. However, the needed gradients must still be computed without
-    taking into account the time component.
+    Computes the gradient of the network's output with respect to the input, excluding the time component.
+
+    In the time-varying JKOnet\* model, the gradient in the loss is computed with respect to the input, excluding the time component.
 
     Parameters
     ----------

@@ -1,11 +1,32 @@
-# source: https://github.com/bunnech/jkonet
+"""
+This module contains optimization utils used to train the models.
+
+Source: https://github.com/bunnech/jkonet
+
+Functions
+---------
+- ``get_optimizer``
+    Returns an Optax optimizer object based on the provided configuration.
+
+- ``create_train_state``
+    Creates an initial `TrainState` for the given model and optimizer.
+
+- ``create_train_state_from_params``
+    Creates a `TrainState` from existing model parameters.
+
+- ``global_norm``
+    Computes the global norm of gradients across a nested structure of tensors.
+
+- ``clip_weights_icnn``
+    Clip the weights of an Input Convex Neural Network (ICNN).
+"""
 import jax
 import jax.numpy as jnp
 from flax.training import train_state
 from flax import linen as nn
 from flax.core import freeze, FrozenDict
 import optax
-from typing import Dict, Callable, Any
+from typing import Dict, Any
 import chex
 
 

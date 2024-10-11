@@ -1,4 +1,8 @@
-# source: https://github.com/bunnech/jkonet
+"""
+This module contains the implementation of the Input Convex Neural Network (ICNN) model.
+
+Source: https://github.com/bunnech/jkonet
+"""
 import jax
 import jax.numpy as jnp
 from flax import linen as nn
@@ -11,16 +15,6 @@ Array = Any
 
 
 class Dense(nn.Module):
-    """A linear transformation applied over the last dimension of the input.
-    Attributes:
-    dim_hidden: the number of output dim_hidden.
-    use_bias: whether to add a bias to the output (default: True).
-    dtype: the dtype of the computation (default: float32).
-    precision: numerical precision of the computation see `jax.lax.Precision`
-      for details.
-    kernel_init: initializer function for the weight matrix.
-    bias_init: initializer function for the bias.
-    """
     dim_hidden: int
     beta: float = 1.0
     use_bias: bool = True
@@ -32,12 +26,6 @@ class Dense(nn.Module):
 
     @nn.compact
     def __call__(self, inputs):
-        """Applies a linear transformation to inputs along the last dimension.
-        Args:
-          inputs: The nd-array to be transformed.
-        Returns:
-          The transformed input.
-        """
         inputs = jnp.asarray(inputs, self.dtype)
         kernel = self.param('kernel',
                             self.kernel_init,
@@ -56,8 +44,6 @@ class Dense(nn.Module):
 
 
 class ICNN(nn.Module):
-    """Input convex neural network."""
-
     dim_hidden: Sequence[int]
     init_std: float = 0.1
     init_fn: str = 'normal'

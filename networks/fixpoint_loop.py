@@ -1,6 +1,9 @@
-#!/usr/bin/python3
-# author: Jonathan Heek, Marco Cuturi, Charlotte Bunne
-# Source: https://github.com/bunnech/jkonet
+"""
+This module provides a backprop-friendly fixed point loop implementation for JAX.
+
+Authors: Jonathan Heek, Marco Cuturi, Charlotte Bunne
+Source: https://github.com/bunnech/jkonet
+"""
 
 # imports
 import functools
