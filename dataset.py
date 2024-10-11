@@ -1,3 +1,19 @@
+"""
+Module for handling datasets and computing prediction errors in population dynamics.
+
+This module provides several dataset classes designed for loading and accessing different formats of the population trajectory data, including trajectory data and coupling data, and testing fit and prediction errors.
+
+Classes
+-------
+    - ``PopulationDataset``
+        Handles loading and batching of particle trajectory data. The single unit if a particle trajectory.
+    - ``CouplingsDataset``
+        Loads coupling data for trajectory models, including weights, features, and densities. The single unit is a coupling.
+    - ``LinearParametrizationDataset``
+        Loads data for the linear parametrization. The single unit is the entire dataset.
+    - ``PopulationEvalDataset``
+        Facilitates evaluation of model predictions using particle trajectories and computes prediction errors such as the Wasserstein distance.
+"""
 import glob
 import os
 import math
@@ -19,9 +35,9 @@ class PopulationDataset(Dataset):
     """
     Dataset class for loading and accessing particle trajectory data.
 
-    The dataset is expected to be located in a directory named 'data/{dataset_name}'
-    and consist of a single .npy file named 'data.npy'. The data contains particle
-    trajectories over time, where each timestep has a set of particles.
+    The dataset is expected to be located in a directory named 'data/{dataset_name}' and consist of a single .npy file named 'data.npy'. The data contains particle trajectories over time, where each timestep has a set of particles.
+
+    If the number of particles in a timestep is less than the maximum number of particles in any timestep, the dataset wraps around to handle the imbalance.
 
     Attributes
     ----------
@@ -57,14 +73,6 @@ class PopulationDataset(Dataset):
         if self.max_particles % self.batch_size != 0:
             self.max_particles = math.ceil(self.max_particles / self.batch_size) * self.batch_size
 
-        # Pad the particles for each timestep so that all timesteps have `self.max_particles` particles
-        # for label in self.trajectory:
-        #     num_particles = self.trajectory[label].shape[0]
-        #     if num_particles < self.max_particles:
-        #         padding_needed = self.max_particles - num_particles
-        #         repeated_particles = np.tile(self.trajectory[label], (padding_needed, 1))
-        #         self.trajectory[label] = np.vstack((self.trajectory[label], repeated_particles[:padding_needed]))
-
     def __len__(self) -> int:
         """
         Returns the number of timesteps in the dataset.
@@ -93,9 +101,10 @@ class PopulationDataset(Dataset):
             number of timesteps, and each array represents the particle state
             at a specific timestep.
         """
-        # return [self.trajectory[timestep][idx] for timestep in sorted(self.trajectory.keys())]
         particle_index = idx % self.max_particles
         # Retrieve the state of this particle index for each timestep
+        # Wrapping so to handle unbalanced number of particles in each timestep
+        # as if we were sampling
         return [self.trajectory[timestep][particle_index % len(self.trajectory[timestep])]
                 for timestep in sorted(self.trajectory.keys())]
 
@@ -104,9 +113,7 @@ class CouplingsDataset(Dataset):
     """
     Dataset class for loading and accessing couplings data.
 
-    The dataset is expected to be located in a directory named 'data/{dataset_name}'
-    and consist of multiple .npy files. It provides access to input features, target features,
-    time labels, weights, density values, and density gradients.
+    The dataset is expected to be located in a directory named 'data/{dataset_name}' and consist of multiple .npy files. It provides access to input features, target features, time labels, weights, density values, and density gradients.
 
     Attributes
     ----------
@@ -158,7 +165,7 @@ class CouplingsDataset(Dataset):
 
     def __getitem__(self, idx: int) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         """
-        Retrieve a sample from the dataset at the given index.
+        Retrieve a sample (x, y, t, w, rho, rho_grad) from the dataset at the given index.
 
         Parameters
         ----------
@@ -182,22 +189,7 @@ class CouplingsDataset(Dataset):
     
 class LinearParametrizationDataset(Dataset):
     """
-    This dataset class loads and organizes data necessary for linear parametrization
-    solver tasks. The data is expected to be located in the 'data/{dataset_name}'
-    directory and consists of multiple .npy files for couplings and densities.
-
-    Attributes
-    ----------
-    data : list of tuple of np.ndarray
-        List where each element is a tuple containing the following:
-
-        - Input features (np.ndarray): Features used as inputs to the solver.
-        - Target features (np.ndarray): Features expected as output from the solver.
-        - Time label (np.ndarray): Labels indicating the time or timestep associated with the data.
-        - Weight of the coupling (np.ndarray): Weights corresponding to the couplings between variables.
-        - Density values (np.ndarray): Values representing the density of the data at various points.
-        - Gradient of densities (np.ndarray): The gradient of density values over time or space.
-
+    This dataset class loads and organizes data necessary for linear parametrization solver tasks, for which all data is analyzed together.
     """
     def __init__(self, dataset_name: str) -> None:
         """
@@ -227,9 +219,6 @@ class LinearParametrizationDataset(Dataset):
         """
         Return the number of elements in the dataset.
 
-        For this dataset, the number of elements is always 1 because the dataset
-        is treated as a single entity.
-
         Returns
         -------
         int
@@ -241,8 +230,7 @@ class LinearParametrizationDataset(Dataset):
         """
         Retrieve the entire dataset.
 
-        Since this dataset is loaded as a single entity, this method returns all
-        data at once. The parameter `_` is ignored.
+        Since for the linear parametrization all data is used together, this method returns all data at once and the index parameter `_` is ignored.
 
         Parameters
         ----------
@@ -266,13 +254,11 @@ class LinearParametrizationDataset(Dataset):
 class PopulationEvalDataset(Dataset):
     """
     This dataset class loads and organizes population trajectory data for evaluation.
-    The dataset supports evaluation on test or training data, depending on the label.
     
     Attributes
     ----------
     trajectory : dict
-        A dictionary where each key corresponds to a unique timestep in the dataset, and
-        the value is an array of trajectory data associated with that timestep.
+        A dictionary where each key corresponds to a unique timestep in the dataset, and the value is an array of trajectory data associated with that timestep.
     label_mapping : dict
         A dictionary mapping the original sample labels to consecutive integer indices.
     T : int
@@ -378,8 +364,7 @@ class PopulationEvalDataset(Dataset):
         """
         Compute separate predictions based on potential, beta, and interaction.
 
-        This method computes the trajectory predictions for the population based on the
-        specified potential function, beta parameter, and interaction function.
+        This method computes the trajectory predictions for the population based on the specified potential function, beta parameter, and interaction function.
 
         Parameters
         ----------
@@ -532,8 +517,7 @@ class PopulationEvalDataset(Dataset):
         """
         Compute the Wasserstein error for one-step-ahead predictions.
 
-        This method evaluates the prediction error by computing the Wasserstein distance
-        between the predicted trajectory and the actual trajectory at each time step.
+        This method evaluates the prediction error by computing the Wasserstein distance between the predicted trajectory and the actual trajectory at each time step, given the current true population.
 
         Parameters
         ----------
