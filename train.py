@@ -20,7 +20,7 @@ The script accepts the following command-line arguments:
     Name of the dataset to train the model on. The dataset should be prepared and located in a directory matching this name.
 
 - `--eval` (`str`):
-    Option to evaluate on `'train_data'` or `'test_data'` (e.g., for debugging purposes). Default is `'test_data'`.
+    Option to test the fit on `'train_data'` or `'test_data'` (e.g., for debugging purposes). Default is `'test_data'`.
 
 - `--wandb` (`bool`):
     If specified, activates Weights & Biases logging for experiment tracking.
