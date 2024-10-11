@@ -1,10 +1,10 @@
 """
-Module that implements the JKOnet\* model based on the base interface.
+Module that implements the JKOnet* model based on the base interface.
 
 The models are implemented using JAX and the FLAX library, following a functional paradigm to 
 support efficient differentiation and optimization. The core classes include:
 
-- ``JKOnetStar``: The full JKOnet\* method, used for learning all the energy terms.
+- ``JKOnetStar``: The full JKOnet* method, used for learning all the energy terms.
 - ``JKOnetStarPotentialInternal``: A variant focusing on potential and internal energies.
 - ``JKOnetStarPotential``: A variant focusing solely on the potential energy term.
 - ``JKOnetStarTimePotential``: A time-extended variant of ``JKOnetStarPotential``.
@@ -28,7 +28,7 @@ from flax.core import FrozenDict
 
 class JKOnetStar(LearningDiffusionModel):
     """
-    The full JKOnet\* model for learning all energy terms.
+    The full JKOnet* model for learning all energy terms.
     """
     def __init__(self, config: dict, data_dim: int, tau: float) -> None:
         """
@@ -789,7 +789,7 @@ class JKOnetStarTimePotential(JKOnetStarPotential):
 
 class JKOnetStarLinear(LearningDiffusionModel):
     """
-    The linear parametrization of the JKOnet\* model.
+    The linear parametrization of the JKOnet* model.
     """
 
     def __init__(

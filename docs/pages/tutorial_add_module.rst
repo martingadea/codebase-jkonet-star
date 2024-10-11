@@ -1,5 +1,5 @@
-Add a model
-===========
+Adding a custom model
+======================
 
 In this section, we will walk through the key steps required to add a new model. As an example, we'll demonstrate
 by adding a simple dummy model which, after training, returns a trivial potential, internal, and interaction energy.

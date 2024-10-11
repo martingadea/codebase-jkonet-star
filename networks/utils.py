@@ -42,7 +42,7 @@ def network_grad_time(network: nn.Module, params: Dict[str, jnp.ndarray]) -> Cal
     """
     Computes the gradient of the network's output with respect to the input, excluding the time component.
 
-    In the time-varying JKOnet\* model, the gradient in the loss is computed with respect to the input, excluding the time component.
+    In the time-varying JKOnet* model, the gradient in the loss is computed with respect to the input, excluding the time component.
 
     Parameters
     ----------

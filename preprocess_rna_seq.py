@@ -60,6 +60,7 @@ def main(n_components: int) -> None:
 
     sample_labels = data_dict["sample_labels"]
     pca_embeddings = data_dict["pcs"]
+    # Scaling as in https://github.com/KrishnaswamyLab/TrajectoryNet/blob/master/TrajectoryNet/dataset.py
     scaler = StandardScaler()
     scaler.fit(pca_embeddings)
     pca_embeddings = scaler.transform(pca_embeddings)

@@ -330,70 +330,6 @@ class PopulationEvalDataset(Dataset):
             self.data_dim = self.trajectory[label].shape[1]
         self.T = len(self.trajectory.keys())-1
         self.no_ground_truth = False
-        try:
-            with open(os.path.join('data', dataset_name, 'args.txt'), 'r') as file:
-                for line in file:
-                    if "potential" in line:
-                        self.potential = line.split("=")[1][:-1]
-                    elif "internal" in line:
-                        self.internal = line.split("=")[1][:-1]
-                    elif "beta" in line:
-                        self.beta = float(line.split("=")[1][:-1])
-                    elif "interaction" in line:
-                        self.interaction = line.split("=")[1][:-1]
-                    elif "dt" in line:
-                        self.dt = float(line.split("=")[1][:-1])
-            self.trajectory_only_potential = self._compute_separate_predictions(
-                potentials_all[self.potential] if self.potential != 'none' else False,
-                False,
-                False)
-            self.trajectory_only_interaction = self._compute_separate_predictions(
-                False,
-                False,
-                interactions_all[self.interaction] if self.interaction != 'none' else False)
-        except FileNotFoundError:
-            print(f"Dataset {dataset_name} does not have a ground truth file. Skipping error computation.")
-            self.no_ground_truth = True
-
-    def _compute_separate_predictions(
-            self,
-            potential: Callable[[jnp.ndarray], float],
-            beta: float,
-            interaction: Callable[[jnp.ndarray], float]
-    ) -> jnp.ndarray:
-        """
-        Compute separate predictions based on potential, beta, and interaction.
-
-        This method computes the trajectory predictions for the population based on the specified potential function, beta parameter, and interaction function.
-
-        Parameters
-        ----------
-        potential : Callable[[jnp.ndarray], float]
-            A function representing the potential term, which takes a jnp.ndarray as input
-            and returns a float value.
-        beta : float
-            The beta parameter used in the predictions.
-        interaction : Callable[[jnp.ndarray], float]
-            A function representing the interaction term, which takes a jnp.ndarray as
-            input and returns a float value.
-
-        Returns
-        -------
-        jnp.ndarray
-            The predicted trajectories for the population based on the specified
-            potential, beta, and interaction.
-        """
-        return get_SDE_predictions(
-                    self.solver,
-                    self.dt,
-                    self.T,
-                    1,
-                    potential,
-                    beta,
-                    interaction,
-                    self.key,
-                    self.trajectory[0])
-
 
     def __len__(self) -> int:
         """
@@ -445,65 +381,6 @@ class PopulationEvalDataset(Dataset):
             error += wasserstein_loss(
                         trajectory_predicted[t], jnp.asarray(self.trajectory[t]), self.wasserstein_metric)
         return error
-    
-    def error_potential(self, trajectory_predicted: np.ndarray) -> float:
-        """
-        Compute the mean squared error between the predicted trajectory and
-        the trajectory predicted using only the potential function.
-
-        This method calculates the error by comparing the predicted trajectory
-        to a reference trajectory generated using only the potential function.
-
-        Parameters
-        ----------
-        trajectory_predicted : np.ndarray
-            The predicted trajectory with shape (T, n_particles, n_features).
-
-        Returns
-        -------
-        float
-            The mean squared error considering only the potential.
-        """
-        return np.mean(np.sum((trajectory_predicted - self.trajectory_only_potential) ** 2, axis=(0, 2)))
-    
-    def error_internal(self, beta_predicted: float) -> float:
-        """
-        Compute the error in the internal parameter (beta).
-
-        This method calculates the difference between the predicted beta value
-        and the true beta value, scaled by the trajectory length and time step.
-
-        Parameters
-        ----------
-        beta_predicted : float
-            The predicted beta value.
-
-        Returns
-        -------
-        float
-            The error in the internal parameter, scaled by the trajectory length and time step.
-        """
-        return np.sqrt(2) * np.abs(np.abs(beta_predicted) - np.abs(self.beta)) * self.T * self.dt
-    
-    def error_interaction(self, trajectory_predicted: np.ndarray) -> float:
-        """
-        Compute the mean squared error between the predicted trajectory and
-        the trajectory predicted using only the interaction function.
-
-        This method calculates the error by comparing the predicted trajectory
-        to a reference trajectory generated using only the interaction function.
-
-        Parameters
-        ----------
-        trajectory_predicted : np.ndarray
-            The predicted trajectory with shape (T, n_particles, n_features).
-
-        Returns
-        -------
-        float
-            The mean squared error considering only the interaction.
-        """
-        return np.mean(np.sum((trajectory_predicted - self.trajectory_only_interaction) ** 2, axis=(0, 2)))
 
     def error_wasserstein_one_step_ahead(
             self,

@@ -12,21 +12,21 @@ class EnumMethod(Enum):
     Attributes
     ----------
     JKO_NET_STAR : str
-        Solve with JKOnet\* with full generality, accommodating all features.
+        Solve with JKOnet* with full generality, accommodating all features.
     JKO_NET_STAR_POTENTIAL : str
-        Fit only the potential energy component using JKOnet\*.
+        Fit only the potential energy component using JKOnet*.
     JKO_NET_STAR_POTENTIAL_INTERNAL : str
-        Fit both the potential energy and the Wiener process component using JKOnet\*.
+        Fit both the potential energy and the Wiener process component using JKOnet*.
     JKO_NET_STAR_TIME_POTENTIAL : str
-        Fit the potential energy with time-dependent features using JKOnet\*.
+        Fit the potential energy with time-dependent features using JKOnet*.
     JKO_NET_STAR_LINEAR : str
-        Solve with JKOnet\* using linear parametrization for the model.
+        Solve with JKOnet* using linear parametrization for the model.
     JKO_NET_STAR_LINEAR_POTENTIAL : str
-        Solve with JKOnet\* using linear parametrization for only potential and internal energies.
+        Solve with JKOnet* using linear parametrization for only potential and internal energies.
     JKO_NET_STAR_LINEAR_POTENTIAL_INTERNAL : str
-        Solve with JKOnet\* using linear parametrization for both potential and internal energies.
+        Solve with JKOnet* using linear parametrization for both potential and internal energies.
     JKO_NET_STAR_LINEAR_INTERACTION : str
-        Solve with JKOnet\* using linear parametrization for interaction energy only.
+        Solve with JKOnet* using linear parametrization for interaction energy only.
     JKO_NET : str
         Fit the potential energy using JKOnet, as described in https://arxiv.org/abs/2106.06345.
     JKO_NET_VANILLA : str

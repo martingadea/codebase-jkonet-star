@@ -4,5 +4,5 @@ Applications
 .. toctree::
    :maxdepth: 2
 
-   rna
+   tutorial_rna
 

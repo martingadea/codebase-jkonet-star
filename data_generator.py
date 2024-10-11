@@ -37,11 +37,11 @@ To load previously generated data and compute couplings:
 
 Command-line Arguments
 ----------------------
-- ``--load-from-file``: Load trajectory data from a file instead of generating it. Must be a NumPy array of shape (n_timesteps + 1, n_particles, dimension).
+- ``--load-from-file``: Load trajectory data from a file instead of generating it. Must be a NumPy array of shape `(n_timesteps + 1, n_particles, dimension)`.
 - ``--potential``: Specify the potential energy to use for the SDE simulation.
 - ``--n-timesteps``: Number of timesteps for the SDE simulation.
 - ``--dt``: Time step size for the SDE simulation.
-- ``--internal``: Type of internal energy (e.g., 'wiener') to use in the simulation.
+- ``--internal``: Type of internal energy (e.g., `'wiener'`) to use in the simulation.
 - ``--beta``: Standard deviation of the Wiener process for internal energy.
 - ``--interaction``: Specify the interaction energy between particles.
 - ``--dimension``: Dimensionality of the simulated system.
@@ -50,6 +50,7 @@ Command-line Arguments
 - ``--n-gmm-components``: Number of components for the Gaussian Mixture Model.
 - ``--seed``: Random seed for reproducibility.
 - ``--test-split``: Proportion of data to be used as test data during splitting.
+- ``--split-trajectories``: If set, data is split along trajectories; otherwise, it is split at every timestep.
 """
 
 
@@ -100,7 +101,9 @@ def filename_from_args(args):
 def train_test_split(
     values: jnp.ndarray,
     sample_labels: jnp.ndarray,
-    test_size: float = 0.4
+    test_ratio: float = 0.4,
+    split_trajectories: bool = True,
+    seed: int = 0,
 ) -> Tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray, jnp.ndarray]:
     """
     Splits the dataset into training and testing sets while preserving the distribution of labels.
@@ -115,8 +118,13 @@ def train_test_split(
     sample_labels : jnp.ndarray
         The corresponding labels for the data. Contains the timestep
         linked to each value.
-    test_size : float, optional
+    test_ratio : float, optional
         The proportion of the dataset to include in the test split. Defaults to 0.4.
+    split_trajectories : bool, optional
+        If True, the data is split by trajectories. Defaults to True.
+        If False, the data is split by individual data points.
+    seed : int, optional
+        Random seed for reproducibility. Defaults to 0.
 
     Returns
     -------
@@ -128,21 +136,47 @@ def train_test_split(
         - Test values: Subset of the data for testing.
         - Test labels: Corresponding labels for the testing data.
     """
-    unique_labels = np.unique(sample_labels)
-    train_indices = []
-    test_indices = []
+    np.random.seed(seed)
+    #Check if the dataset is balanced
+    unique_labels, counts = np.unique(sample_labels, return_counts=True)
+    is_balanced = np.all(counts == counts[0])
 
-    for label in unique_labels:
-        indices = np.where(sample_labels == label)[0]
+    assert (not split_trajectories) or is_balanced, "Trajectories are not balanced, cannot split by trajectories."
+
+    if split_trajectories:
+        n_particles = counts[0]
+        indices = np.arange(n_particles)
         np.random.shuffle(indices)
-        split = int(len(indices) * (1 - test_size))
-        train_indices.extend(indices[:split])
-        test_indices.extend(indices[split:])
+        test_size = int(n_particles * test_ratio)
 
-    train_indices = jnp.array(train_indices)
-    test_indices = jnp.array(test_indices)
+        train_indices_block = indices[:-test_size]
+        test_indices_block = indices[-test_size:]
 
-    return values[train_indices], sample_labels[train_indices], values[test_indices], sample_labels[test_indices]
+        train_indices = []
+        test_indices = []
+
+        # For each block, apply the same test/train split by adding block-size offsets
+        for label in unique_labels:
+            offset = label * n_particles
+            train_indices.extend(train_indices_block + offset)
+            test_indices.extend(test_indices_block + offset)
+
+    else:
+        unique_labels = np.unique(sample_labels)
+        train_indices = []
+        test_indices = []
+
+        for label in unique_labels:
+            indices = np.where(sample_labels == label)[0]
+            np.random.shuffle(indices)
+            split = int(len(indices) * (1 - test_ratio))
+            train_indices.extend(indices[:split])
+            test_indices.extend(indices[split:])
+
+
+    return values[np.array(train_indices)], sample_labels[np.array(train_indices)], values[np.array(test_indices)], sample_labels[np.array(test_indices)]
+
+
 
 def generate_data_from_trajectory(
         folder: str,
@@ -154,8 +188,7 @@ def generate_data_from_trajectory(
     """
     Preprocesses the trajectory data for JKOnet*.
 
-    Fits Gaussian Mixture Models (GMM) to the trajectory data, computes couplings,
-    and saves the results to disk. This function also plots the data and saves the plots.
+    Fits Gaussian Mixture Models (GMM) to the trajectory data, computes couplings, and saves the results to disk. This function also plots the data and saves the plots.
 
     Parameters
     ----------
@@ -284,13 +317,12 @@ def main(args: argparse.Namespace) -> None:
         )
         print("Generating data...")
         init_pp = jax.random.uniform(
-            key, 
+            key,
             (args.n_particles, args.dimension), minval=-4, maxval=4)
         trajectory = sde_simulator.forward_sampling(key, init_pp)
 
         data = trajectory.reshape(trajectory.shape[0] * trajectory.shape[1], trajectory.shape[2])
         sample_labels = jnp.repeat(jnp.arange(args.n_timesteps+1), trajectory.shape[1])
-        # sample_labels = jnp.repeat(jnp.arange(args.n_timesteps + 1) * args.dt, trajectory.shape[1])
         jax.numpy.save(os.path.join('data', folder, 'data.npy'), data)
         jax.numpy.save(os.path.join('data', folder, "sample_labels.npy"), sample_labels)
 
@@ -317,8 +349,14 @@ def main(args: argparse.Namespace) -> None:
         sample_labels = jax.numpy.load(os.path.join('data', folder, 'sample_labels.npy'))
 
     # Perform train-test split
-    if args.test_split != 0:
-        train_values, train_labels, test_values, test_labels = train_test_split(data, sample_labels, test_size=args.test_split)
+    assert args.test_split >= 0 and args.test_split <= 1, "Test split must be a proportion."
+    if args.test_split > 0:
+        train_values, train_labels, test_values, test_labels = train_test_split(
+            data,
+            sample_labels,
+            args.test_split,
+            args.split_trajectories,
+            args.seed)
     else:
         train_values, train_labels = data, sample_labels
 
@@ -326,7 +364,7 @@ def main(args: argparse.Namespace) -> None:
     jax.numpy.save(os.path.join('data', folder, 'train_data.npy'), train_values)
     jax.numpy.save(os.path.join('data', folder, 'train_sample_labels.npy'), train_labels)
     generate_data_from_trajectory(
-        folder, train_values, train_labels, 
+        folder, train_values, train_labels,
         args.n_gmm_components, args.batch_size)
 
     if args.test_split != 0:
@@ -357,30 +395,21 @@ if __name__ == '__main__':
         type=str, 
         default='none',
         choices=list(potentials_all.keys()) + ['none'],
-        help="""Name of the potential energy to use.
-        
-        Note: This parameter is considered only if --dataset is 'sde'.
-        """
+        help="""Name of the potential energy to use."""
         )
     
     parser.add_argument(
         '--n-timesteps', 
         type=int, 
         default=5,
-        help="""Number of timesteps of the simulation of the SDE.
-        
-        Note: This parameter is considered only if --dataset is 'sde'.
-        """
+        help="""Number of timesteps of the simulation of the SDE."""
         )
     
     parser.add_argument(
         '--dt', 
         type=float, 
         default=0.01,
-        help="""dt in the simulation of the SDE.
-        
-        Note: This parameter is considered only if --dataset is 'sde'.
-        """
+        help="""dt in the simulation of the SDE."""
         )
     
     parser.add_argument(
@@ -391,10 +420,10 @@ if __name__ == '__main__':
         help="""Name of the internal energy to use.
         
         Note: 
-            - This parameter is considered only if --dataset is 'sde'.
-            - 'wiener' requires additionally the --sd parameter.
-            - 'none' means no internal energy is considered.
-            - At the moment only wiener process is implemented.
+
+            - `'wiener'` requires additionally the ``--beta`` parameter.
+            - `'none'` means no internal energy is considered.
+            - At the moment only the wiener process is implemented.
         """
         )
     
@@ -404,7 +433,7 @@ if __name__ == '__main__':
         default=0.0,
         help="""Standard deviation of the wiener process. Must be positive.
         
-        Note: This parameter is considered only if --internal is 'wiener'.
+        Note: This parameter is considered only if ``--internal`` is `'wiener'`.
         """
         )
     
@@ -413,11 +442,8 @@ if __name__ == '__main__':
         type=str, 
         default='none',
         choices=list(interactions_all.keys()) + ['none'],
-        help="""Name of the interaction energy to use.
-        
-        Note: 
-            - This parameter is considered only if --dataset is 'sde'.
-            - 'none' means no internal energy is considered.
+        help="""
+        Name of the interaction energy to use, `'none'` means no interaction energy is considered.
         """
         )
     
@@ -426,7 +452,7 @@ if __name__ == '__main__':
         type=int, 
         default=2,
         help="""
-        Dimensionality of the system. Used to generate synthetic data.
+        Dimensionality of the particles generated in the synthetic data.
         """
         )
     
@@ -461,13 +487,20 @@ if __name__ == '__main__':
         help='Set seed for the run.'
     )
 
-    #Train-test split
+    # Train-test split
     parser.add_argument(
         '--test-split',
         type=float, 
         default=0,
-        help='Train test split.'
+        help='Ratio of the data allocated to the test set.'
         )
+
+    # Flag whether to perform splitting on trajectories
+    parser.add_argument(
+        '--split-trajectories',
+        action='store_true',
+        help='If set, data is split along trajectories. If not set and data needs to be split, it is split at every timestep.'
+    )
 
     args = parser.parse_args()
 

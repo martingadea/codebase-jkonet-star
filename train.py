@@ -1,5 +1,5 @@
 """
-This module provides a script for training and evaluating JKOnet\* and other models for learning diffusion terms on population data.
+This module provides a script for training and evaluating JKOnet* and other models for learning diffusion terms on population data.
 
 Functions
 -------------
@@ -242,6 +242,9 @@ def main(args: argparse.Namespace) -> None:
                 plt.close(level_curves_interaction_fig)
 
             # compute errors
+            wandb_logs = {
+                'epoch': epoch,
+            }
             if config['metrics']['w_one_ahead']:
                 error_w_one_ahead = dataset_eval.error_wasserstein_one_step_ahead(
                     potential,
@@ -251,60 +254,20 @@ def main(args: argparse.Namespace) -> None:
                     model=str(args.solver),
                     plot_folder_name=plot_folder_name if save_locally else None
                 )
-                print("Test One ahead:", error_w_one_ahead)
+                print(f"Epoch {epoch} | Wasserstein error one step ahead: {error_w_one_ahead}, aggregate: {jnp.mean(error_w_one_ahead)} +/- {jnp.std(error_w_one_ahead)}")
+                wandb_logs['error_w_one_ahead'] = float(jnp.mean(error_w_one_ahead))
+                wandb_logs['error_w_one_ahead_std'] = float(jnp.std(error_w_one_ahead))
             if config['metrics']['w_cumulative']:
                 error_w_cumulative = dataset_eval.error_wasserstein_cumulative(
                     predictions,
                     model=str(args.solver),
                     plot_folder_name=plot_folder_name if save_locally else None
                 )
-                print("Test Cumulative:", error_w_cumulative)
-
-            error_wasserstein = dataset_eval.error_wasserstein(predictions)
-
-
-            if dataset_eval.no_ground_truth:
-                error_potential = 0
-                error_internal = 0
-                error_interaction = 0
-            else:
-                error_potential = dataset_eval.error_potential(
-                    get_SDE_predictions(
-                        str(args.solver),
-                        dataset_eval.dt,
-                        dataset_eval.T,
-                        1,
-                        potential,
-                        False,
-                        False,
-                        key_eval,
-                        init_pp)
-                )
-                error_internal = dataset_eval.error_internal(beta)
-                error_interaction = dataset_eval.error_interaction(
-                    get_SDE_predictions(
-                        str(args.solver),
-                        dataset_eval.dt,
-                        dataset_eval.T,
-                        1,
-                        False,
-                        False,
-                        interaction,
-                        key_eval,
-                        init_pp)
-                )
-
-            print(f"Epoch {epoch} | Wasserstein: {error_wasserstein} | Potential: {error_potential} | Internal: {error_internal} | Interaction: {error_interaction}")
+                print(f"Epoch {epoch} | Wasserstein error cumulative: {error_w_cumulative}")
+                wandb_logs['error_w_cumulative'] = float(error_w_cumulative[-1])
 
             if args.wandb:
-                wandb.log({
-                    'epoch': epoch,
-                    'error_wasserstein': float(error_wasserstein),
-                    'error_potential': float(error_potential),
-                    'error_internal': float(error_internal),
-                    'error': float(beta),
-                    'error_interaction': float(error_interaction)
-                })
+                wandb.log(wandb_logs)
 
             # # Save model
             # model.save(f"models/{args.solver}_{args.dataset}_{args.seed}_{epoch}.pt")

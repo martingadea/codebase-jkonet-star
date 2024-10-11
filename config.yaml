@@ -1,14 +1,14 @@
 # training
 train:
-  eval_freq: 100
+  eval_freq: 10
   batch_size: 250
-  epochs: 1000
+  epochs: 100
   save_locally: False
 
 metrics:
-  wasserstein_error: 2
-  w_one_ahead: False
-  w_cumulative: True
+  wasserstein_error: 1
+  w_one_ahead: True
+  w_cumulative: False
 
 #WandB
 wandb:
