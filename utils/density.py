@@ -93,9 +93,7 @@ class GaussianMixtureModel:
         self.gms_den: List[float] = []
         self.gms_weights: List[float] = []
 
-    def fit(self, 
-            trajectory: Dict[float, jnp.ndarray], 
-            n_components: int) -> None:
+    def fit(self, trajectory: dict, n_components: int, seed: int) -> None:
         """
         Fits a Gaussian Mixture Model (GMM) to the given trajectory data.
 
@@ -105,6 +103,8 @@ class GaussianMixtureModel:
             A dictionary where each key is a time step and each value is a 2D array (n_samples, n_features) of data points.
         n_components : int
             The number of clusters (components) to use in the GMM.
+        seed : int
+            Random seed for reproducibility.
         """
         for _, val in trajectory.items():
             chex.assert_type(val, float)
