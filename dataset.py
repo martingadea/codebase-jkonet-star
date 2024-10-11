@@ -135,14 +135,14 @@ class CouplingsDataset(Dataset):
         """
         # load couplings for all timesteps together
         couplings = np.concatenate([np.load(f) for f in glob.glob(
-            os.path.join('data', dataset_name, 'couplings_train_*.npy'))])
+            os.path.join('data', dataset_name, 'couplings_*.npy'))])
         self.weight = couplings[:, -1]
         self.x = couplings[:, :(couplings.shape[1] - 2) // 2]
         self.y = couplings[:, (couplings.shape[1] - 2) // 2:-2]
         self.time = couplings[:, -2]
         self.densities = np.concatenate(
             [np.load(f) for f in glob.glob(
-                os.path.join('data', dataset_name, 'density_and_grads_train_*.npy'))]
+                os.path.join('data', dataset_name, 'density_and_grads_*.npy'))]
         )
         self.densities_grads = self.densities[:, 1:]
         self.densities = self.densities[:, 0]
@@ -210,10 +210,10 @@ class LinearParametrizationDataset(Dataset):
 
         """
         couplings = [np.load(f) for f in glob.glob(
-            os.path.join('data', dataset_name, 'couplings_train_*.npy'))]
+            os.path.join('data', dataset_name, 'couplings_*.npy'))]
 
         densities = [np.load(f) for f in glob.glob(
-            os.path.join('data', dataset_name, 'density_and_grads_train_*.npy'))]
+            os.path.join('data', dataset_name, 'density_and_grads_*.npy'))]
         self.data = [(
             c[:, :(c.shape[1] - 1) // 2], 
             c[:, (c.shape[1] - 1) // 2:-2],

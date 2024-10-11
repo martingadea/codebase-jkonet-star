@@ -1,3 +1,58 @@
+"""
+Module for generating and processing population trajectory data.
+
+This module provides tools to:
+1. Simulate particle trajectories with different potential, internal and interaction energy configurations, or load pre-existing data.
+2. Fit Gaussian Mixture Models (GMMs) on trajectory data.
+3. Compute couplings between particle distributions at consecutive timesteps.
+4. Generate density and gradient data from the simulated or loaded trajectories.
+5. Plot couplings, density levels, and particle trajectories.
+
+Steps 2-4 are the preprocessing steps required to train a JKOnet* model.
+
+Functions
+---------
+- ``filename_from_args``
+    Generates a descriptive filename based on the provided command-line arguments.
+    
+- ``train_test_split``
+    Splits a dataset into training and testing subsets, ensuring the label distribution is preserved.
+    
+- ``generate_data_from_trajectory``
+    Processes trajectory data by fitting a GMM, computing couplings, saving data, and plotting particle densities and couplings.
+    
+- ``main``
+    Main entry point for the data generation pipeline. It handles argument parsing, SDE simulation, train-test splitting, and calls functions to generate and save the processed data.
+
+Example
+-------
+To generate synthetic trajectory data with 1000 particles, a chosen potential, and internal Wiener energy:
+
+.. code-block:: bash
+    python data_generator.py --n-particles 1000 --potential styblinski_tang --n-timesteps 5
+
+To load previously generated data and compute couplings:
+
+    python data_generator.py --load-from-file my_trajectory_data.npy --test-split 0.2 --n-gmm-components 5
+
+Command-line Arguments
+----------------------
+- ``--load-from-file``: Load trajectory data from a file instead of generating it. Must be a NumPy array of shape (n_timesteps + 1, n_particles, dimension).
+- ``--potential``: Specify the potential energy to use for the SDE simulation.
+- ``--n-timesteps``: Number of timesteps for the SDE simulation.
+- ``--dt``: Time step size for the SDE simulation.
+- ``--internal``: Type of internal energy (e.g., 'wiener') to use in the simulation.
+- ``--beta``: Standard deviation of the Wiener process for internal energy.
+- ``--interaction``: Specify the interaction energy between particles.
+- ``--dimension``: Dimensionality of the simulated system.
+- ``--n-particles``: Number of particles in the simulation.
+- ``--batch-size``: Batch size for computing couplings during the data processing phase.
+- ``--n-gmm-components``: Number of components for the Gaussian Mixture Model.
+- ``--seed``: Random seed for reproducibility.
+- ``--test-split``: Proportion of data to be used as test data during splitting.
+"""
+
+
 import os
 import argparse
 import jax
@@ -10,7 +65,7 @@ from utils.density import GaussianMixtureModel
 from utils.ot import compute_couplings
 from utils.plotting import plot_couplings, plot_level_curves
 from collections import defaultdict
-from typing import Tuple, Union
+from typing import Tuple
 
 def filename_from_args(args):
     """
@@ -95,9 +150,10 @@ def generate_data_from_trajectory(
         sample_labels: jnp.ndarray,
         n_gmm_components: int = 10,
         batch_size: int = 1000,
-        data_type: str = 'train',
 ) -> None:
     """
+    Preprocesses the trajectory data for JKOnet*.
+
     Fits Gaussian Mixture Models (GMM) to the trajectory data, computes couplings,
     and saves the results to disk. This function also plots the data and saves the plots.
 
@@ -111,8 +167,6 @@ def generate_data_from_trajectory(
         Array of sample labels corresponding to each data point.
     n_gmm_components : int, optional
         Number of components for the Gaussian Mixture Model (default is 10).
-    data_type : str, optional
-        Type of data being processed, either 'train' or 'test' (default is 'train').
 
     Returns
     -------
@@ -178,22 +232,22 @@ def generate_data_from_trajectory(
                     next_label
                 ))
             couplings = jnp.concatenate(couplings, axis=0)
-        jnp.save(os.path.join('data', folder, f'couplings_{data_type}_{label}_to_{next_label}.npy'), couplings)
+        jnp.save(os.path.join('data', folder, f'couplings_{label}_to_{next_label}.npy'), couplings)
         # Save densities and gradients
         ys = couplings[:, (couplings.shape[1] - 1) // 2:-2] #Changed the 2 to match the new shape of couplings
-        rho = lambda x: 0.
+        rho = lambda _: 0.
         if n_gmm_components > 0:
             rho = lambda x: gmm.gmm_density(t+1, x)
         densities = jax.vmap(rho)(ys).reshape(-1, 1)
         densities_grads = jax.vmap(jax.grad(rho))(ys)
         data = jnp.concatenate([densities, densities_grads], axis=1)
-        jax.numpy.save(os.path.join('data', folder, f'density_and_grads_{data_type}_{label}_to_{next_label}.npy'), data)
+        jax.numpy.save(os.path.join('data', folder, f'density_and_grads_{label}_to_{next_label}.npy'), data)
 
         # Plot couplings
         plot_couplings(couplings)
         plt.xlim(x_min, x_max)
         plt.ylim(y_min, y_max)
-        plt.savefig(os.path.join('out', 'plots', folder, f'couplings_{data_type}_{label}_to_{next_label}.png'))
+        plt.savefig(os.path.join('out', 'plots', folder, f'couplings_{label}_to_{next_label}.png'))
         plt.clf()
 
 def main(args: argparse.Namespace) -> None:
@@ -203,40 +257,7 @@ def main(args: argparse.Namespace) -> None:
     Parameters
     ----------
     args : argparse.Namespace
-        Command-line arguments containing the following:
-
-        - load_from_file (str): Path to a file to load a pre-generated trajectory.
-          If provided, skips data generation.
-
-        - potential (str): Name of the potential energy to use. Options include
-          various potentials or 'none' to skip.
-
-        - n_timesteps (int): Number of timesteps for the SDE simulation.
-
-        - dt (float): Time increment for each step in the simulation.
-
-        - internal (str): Type of internal energy ('wiener' for Wiener process
-          or 'none').
-
-        - beta (float): Standard deviation of the Wiener process. Used only if
-          `internal` is 'wiener'.
-
-        - interaction (str): Name of the interaction energy. Options include
-          various interactions or 'none'.
-
-        - dimension (int): Dimensionality of the system for synthetic data generation.
-
-        - n_particles (int): Number of particles to simulate.
-
-        - batch_size (int): Batch size for computing couplings.
-
-        - n_gmm_components (int): Number of components in the Gaussian Mixture
-          Model. Set to 0 to disable GMM fitting.
-
-        - seed (int): Random seed for reproducibility.
-
-        - test_split (float): Ratio for train-test split. Set to 0 for
-          no split.
+        Command-line arguments (see the module docstring for details).
 
     Returns
     -------
@@ -304,15 +325,14 @@ def main(args: argparse.Namespace) -> None:
     # Generate data for train set
     jax.numpy.save(os.path.join('data', folder, 'train_data.npy'), train_values)
     jax.numpy.save(os.path.join('data', folder, 'train_sample_labels.npy'), train_labels)
-    generate_data_from_trajectory(folder, train_values, train_labels, args.n_gmm_components, args.batch_size,
-                                  data_type='train')
+    generate_data_from_trajectory(
+        folder, train_values, train_labels, 
+        args.n_gmm_components, args.batch_size)
 
     if args.test_split != 0:
         # Generate data for test set
         jax.numpy.save(os.path.join('data', folder, 'test_data.npy'), test_values)
         jax.numpy.save(os.path.join('data', folder, 'test_sample_labels.npy'), test_labels)
-        generate_data_from_trajectory(folder, test_values, test_labels, args.n_gmm_components, args.batch_size,
-                                      data_type='test')
 
     print("Done.")
 
