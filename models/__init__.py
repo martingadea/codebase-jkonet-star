@@ -12,21 +12,21 @@ class EnumMethod(Enum):
     Attributes
     ----------
     JKO_NET_STAR : str
-        Solve with JKOnet* with full generality, accommodating all features.
+        Solve with JKOnet\* with full generality, accommodating all features.
     JKO_NET_STAR_POTENTIAL : str
-        Fit only the potential energy component using JKOnet*.
+        Fit only the potential energy component using JKOnet\*.
     JKO_NET_STAR_POTENTIAL_INTERNAL : str
-        Fit both the potential energy and the Wiener process component using JKOnet*.
+        Fit both the potential energy and the Wiener process component using JKOnet\*.
     JKO_NET_STAR_TIME_POTENTIAL : str
-        Fit the potential energy with time-dependent features using JKOnet*.
+        Fit the potential energy with time-dependent features using JKOnet\*.
     JKO_NET_STAR_LINEAR : str
-        Solve with JKOnet* using linear parametrization for the model.
+        Solve with JKOnet\* using linear parametrization for the model.
     JKO_NET_STAR_LINEAR_POTENTIAL : str
-        Solve with JKOnet* using linear parametrization for only potential and internal energies.
+        Solve with JKOnet\* using linear parametrization for only potential and internal energies.
     JKO_NET_STAR_LINEAR_POTENTIAL_INTERNAL : str
-        Solve with JKOnet* using linear parametrization for both potential and internal energies.
+        Solve with JKOnet\* using linear parametrization for both potential and internal energies.
     JKO_NET_STAR_LINEAR_INTERACTION : str
-        Solve with JKOnet* using linear parametrization for interaction energy only.
+        Solve with JKOnet\* using linear parametrization for interaction energy only.
     JKO_NET : str
         Fit the potential energy using JKOnet, as described in https://arxiv.org/abs/2106.06345.
     JKO_NET_VANILLA : str
@@ -34,17 +34,17 @@ class EnumMethod(Enum):
     JKO_NET_MONGE_GAP : str
         Fit the potential energy using JKOnet with a Monge gap regularizer.
     """
-    JKO_NET_STAR = 'jkonet-star' # Solve with jkonet*, full generality.
-    JKO_NET_STAR_POTENTIAL = 'jkonet-star-potential' # Fit only potential energy.
-    JKO_NET_STAR_POTENTIAL_INTERNAL = 'jkonet-star-potential-internal' # Fit potential energy + wiener process.
-    JKO_NET_STAR_TIME_POTENTIAL = 'jkonet-star-time-potential' #Fit only potential energy. Time varying potential.
-    JKO_NET_STAR_LINEAR = 'jkonet-star-linear' # Solve with jkonet*, linear parametrization.
-    JKO_NET_STAR_LINEAR_POTENTIAL = 'jkonet-star-linear-potential' # Solve with jkonet*, linear parametrization of only the potential and internal energies.
-    JKO_NET_STAR_LINEAR_POTENTIAL_INTERNAL = 'jkonet-star-linear-potential-internal' # Solve with jkonet*, linear parametrization of potential and internal energies.
-    JKO_NET_STAR_LINEAR_INTERACTION = 'jkonet-star-linear-interaction' # Solve with jkonet*, linear parametrization of interaction energy only.
-    JKO_NET = 'jkonet' # Fit potential energy with JKOnet, see https://arxiv.org/abs/2106.06345.
-    JKO_NET_VANILLA = 'jkonet-vanilla' # Fit potential energy with JKOnet, no ICNN
-    JKO_NET_MONGE_GAP = 'jkonet-monge-gap' # Fit potential energy with JKOnet using Monge gap regularizer
+    JKO_NET_STAR = 'jkonet-star'
+    JKO_NET_STAR_POTENTIAL = 'jkonet-star-potential'
+    JKO_NET_STAR_POTENTIAL_INTERNAL = 'jkonet-star-potential-internal'
+    JKO_NET_STAR_TIME_POTENTIAL = 'jkonet-star-time-potential'
+    JKO_NET_STAR_LINEAR = 'jkonet-star-linear'
+    JKO_NET_STAR_LINEAR_POTENTIAL = 'jkonet-star-linear-potential'
+    JKO_NET_STAR_LINEAR_POTENTIAL_INTERNAL = 'jkonet-star-linear-potential-internal'
+    JKO_NET_STAR_LINEAR_INTERACTION = 'jkonet-star-linear-interaction'
+    JKO_NET = 'jkonet'
+    JKO_NET_VANILLA = 'jkonet-vanilla'
+    JKO_NET_MONGE_GAP = 'jkonet-monge-gap'
 
     def __str__(self) -> str:
         """

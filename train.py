@@ -1,5 +1,5 @@
 """
-This module provides a script for training and evaluating JKOnet* and other models for learning diffusion terms on population data.
+This module provides a script for training and evaluating JKOnet\* and other models for learning diffusion terms on population data.
 
 Functions
 -------------
