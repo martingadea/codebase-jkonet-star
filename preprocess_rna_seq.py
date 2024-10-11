@@ -17,7 +17,7 @@ Main steps:
 - Save the processed PCA-transformed data and sample labels in `.npy` format.
 
 Command-line arguments:
-- `--n-components`: Number of PCA components to retain (default: 5).
+- ``--n-components``: Number of PCA components to retain (default: 5).
 
 Example usage:
     To run the script with 5 PCA components
