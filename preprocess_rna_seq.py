@@ -1,31 +1,49 @@
+"""
+Module for preprocessing and saving scRNA-seq data for trajectory analysis using PCA.
+
+This script processes single-cell RNA sequencing (scRNA-seq) data from the TrajectoryNet study by Tong et al. (2020). 
+
+It applies Principal Component Analysis (PCA) to reduce the dimensionality of the dataset, optionally filters the data by specific timesteps, and saves the processed results and corresponding labels for downstream analysis.
+
+The dataset used is from the paper:
+- Tong, A., Huang, J., Wolf, G., Van Dijk, D., & Krishnaswamy, S. (2020, November).
+  TrajectoryNet: A dynamic optimal transport network for modeling cellular dynamics.
+  In International Conference on Machine Learning (pp. 9526-9536). PMLR.
+
+Main steps:
+- Load the dataset (in `.npz` format) containing PCA embeddings and sample labels.
+- Standardize (whiten) the PCA embeddings using `StandardScaler`.
+- Select a specified number of PCA components to retain, as provided via command-line arguments.
+- Save the processed PCA-transformed data and sample labels in `.npy` format.
+
+Command-line arguments:
+- `--n-components`: Number of PCA components to retain (default: 5).
+
+Example usage:
+    To run the script with 5 PCA components
+    
+    .. code-block:: bash
+    
+        python script.py --n-components 5
+
+References:
+    1. Tong, A., Huang, J., Wolf, G., Van Dijk, D., & Krishnaswamy, S. (2020, November).
+       TrajectoryNet: A dynamic optimal transport network for modeling cellular dynamics.
+       In International Conference on Machine Learning (pp. 9526-9536). PMLR.
+"""
 import os
 import numpy as np
 import argparse
 from sklearn.preprocessing import StandardScaler
 
-
-
-def main(args: argparse.Namespace) -> None:
+def main(n_components: int) -> None:
     """
     Load, preprocess and save scRNA-seq PCA-transformed data for trajectory analysis.
 
-    This function loads a dataset from the paper by Tong et al. (2020), whitens the data, selects the number of
-    components to retain, optionally filters the data by timestep, and saves the processed data and corresponding labels.
-
-    The dataset used in this script is sourced from:
-    - Tong, A., Huang, J., Wolf, G., Van Dijk, D., & Krishnaswamy, S. (2020, November).
-      TrajectoryNet: A dynamic optimal transport network for modeling cellular dynamics.
-      In International Conference on Machine Learning (pp. 9526-9536). PMLR.
-
-
     Parameters
     ----------
-    args : argparse.Namespace
-        Command-line arguments containing the following:
-
-        - n_components (int): Number of PCA components to retain.
-
-        - timestep_train (int): Timestep to filter the data (-1 to keep all).
+    n_components : int
+        Number of PCA components to retain.
 
     Returns
     -------
@@ -49,13 +67,6 @@ def main(args: argparse.Namespace) -> None:
     data = pca_embeddings[:, :n_components]
 
     folder = f"data/RNA_PCA_{args.n_components}"
-    time_step_train = args.timestep_train
-
-    if time_step_train !=- 1:
-        folder += f"_pred_{time_step_train}"
-        mask = (sample_labels == time_step_train) | (sample_labels == time_step_train-1)
-        data = data[mask]
-        sample_labels = sample_labels[mask]
 
     os.makedirs(folder, exist_ok=True)
     np.save(os.path.join(folder, "data.npy"), data)
@@ -70,12 +81,6 @@ if __name__ == '__main__':
         default=5,
         help=f"""Number of components to keep in PCA.""",
         )
-    parser.add_argument(
-        '--timestep_train',
-        type=int,
-        choices=[-1, 1, 2, 3, 4,],
-        default=-1,
-        help=f"""Option to reduce the dataset to just one timestep.""",
-    )
+
     args = parser.parse_args()
-    main(args)
+    main(args.n_components)
