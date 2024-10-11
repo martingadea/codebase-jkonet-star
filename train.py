@@ -35,8 +35,10 @@ Usage example
 -------------
 To train a model using the `jkonet-star-potential` solver on a dataset named `my_dataset` with wandb logging:
 
-```bash
-python train.py --solver jkonet-star-potential --dataset my_dataset --wandb
+.. code-block:: bash
+
+    python train.py --solver jkonet-star-potential --dataset my_dataset --wandb
+
 """
 
 import os
