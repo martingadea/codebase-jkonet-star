@@ -48,7 +48,7 @@ For vectorized operations, you can use `jax.vmap` over the provided functions.
 import jax.numpy as jnp
 
 def styblinski_tang(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Styblinski-Tang function.
 
     .. math::
@@ -68,7 +68,7 @@ def styblinski_tang(v: jnp.ndarray) -> jnp.ndarray:
     return 0.5 * jnp.sum(jnp.square(u) - 16 * u + 5 * v)
 
 def holder_table(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Holder Table function.
 
     .. math::
@@ -90,7 +90,7 @@ def holder_table(v: jnp.ndarray) -> jnp.ndarray:
     return 10 * jnp.abs(jnp.sin(v1) * jnp.cos(v2) * jnp.exp(jnp.abs(1 - jnp.sqrt(jnp.sum(jnp.square(v)))/jnp.pi)))
 
 def cross_in_tray(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Cross-in-Tray function.
 
     .. math::
@@ -112,7 +112,7 @@ def cross_in_tray(v: jnp.ndarray) -> jnp.ndarray:
     return -2 * (jnp.abs(jnp.sin(v1) * jnp.sin(v2) * jnp.exp(jnp.abs(10 - jnp.sqrt(jnp.sum(jnp.square(v)))/jnp.pi))) + 1)**0.1
 
 def oakley_ohagan(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Oakley-Ohagan function.
 
     Parameters
@@ -131,7 +131,7 @@ def oakley_ohagan(v: jnp.ndarray) -> jnp.ndarray:
     return 5 * jnp.sum(jnp.sin(v) + jnp.cos(v) + jnp.square(v) + v)
 
 def moon(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Moon function.
 
     .. math::
@@ -179,7 +179,7 @@ def moon(v: jnp.ndarray) -> jnp.ndarray:
     return jnp.clip(jnp.dot(v, jnp.dot(interaction_matrix, v)), -100, 100)
 
 def ishigami(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Ishigami function.
 
     .. math::
@@ -203,7 +203,7 @@ def ishigami(v: jnp.ndarray) -> jnp.ndarray:
     return jnp.sin(v0) + 7 * jnp.sin(v1) ** 2 + 0.1 * v2 ** 4 * jnp.sin(v0)
 
 def friedman(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Friedman function.
 
     .. math::
@@ -233,7 +233,7 @@ def friedman(v: jnp.ndarray) -> jnp.ndarray:
     return (10 * jnp.sin(jnp.pi * v1 * v2) + 20 * (v3 - 0.5) ** 2 + 10 * (v4 - 1) ** 2 + 0.1 * v5) / 100
 
 def sphere(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Sphere function.
 
     .. math::
@@ -250,7 +250,7 @@ def sphere(v: jnp.ndarray) -> jnp.ndarray:
     return -10 * jnp.sum(jnp.square(v))
 
 def bohachevsky(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Bohachevsky function.
 
     .. math::
@@ -271,7 +271,7 @@ def bohachevsky(v: jnp.ndarray) -> jnp.ndarray:
     return 10 * (jnp.square(v1) + 2 * jnp.square(v2) - 0.3 * jnp.cos(3 * jnp.pi * v1) - 0.4 * jnp.cos(4 * jnp.pi * v2))
 
 def three_hump_camel(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Three-Hump Camel function.
 
     .. math::
@@ -291,7 +291,7 @@ def three_hump_camel(v: jnp.ndarray) -> jnp.ndarray:
     return 2 * jnp.square(v1) - 1.05 * jnp.power(v1, 4) + jnp.power(v1, 6) / 6 + v1 * v2 + jnp.square(v2)
 
 def beale(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Beale function.
 
     .. math::
@@ -308,10 +308,11 @@ def beale(v: jnp.ndarray) -> jnp.ndarray:
     d = v.shape[0]
     v1 = jnp.mean(v[:d//2])
     v2 = jnp.mean(v[d//2:])
-    return (jnp.square(1.5 - v1 + v1 * v2) + jnp.square(2.25 - v1 + v1 * jnp.square(v2)) + jnp.square(2.625 - v1 + v1 * jnp.power(v2, 3))) / 100
+    return jnp.clip(
+        jnp.square(1.5 - v1 + v1 * v2) + jnp.square(2.25 - v1 + v1 * jnp.square(v2)) + jnp.square(2.625 - v1 + v1 * jnp.power(v2, 3)) / 100, -10, 10)
 
 def double_exp(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Double Exponential function.
 
     .. math::
@@ -332,7 +333,7 @@ def double_exp(v: jnp.ndarray) -> jnp.ndarray:
     return 200 * (jnp.exp(-jnp.sum(jnp.square(v - d))/s) + jnp.exp(-jnp.sum(jnp.square(v + d))/s))
 
 def relu(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the ReLU (Rectified Linear Unit) function.
 
     .. math::
@@ -352,7 +353,7 @@ def relu(v: jnp.ndarray) -> jnp.ndarray:
     return r
 
 def rotational(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Rotational function.
 
     .. math::
@@ -375,7 +376,7 @@ def rotational(v: jnp.ndarray) -> jnp.ndarray:
     return 10 * relu(theta + jnp.pi)
 
 def flat(v: jnp.ndarray) -> jnp.ndarray:
-    """
+    r"""
     Computes the Flat function.
 
     Parameters
