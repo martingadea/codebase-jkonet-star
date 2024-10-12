@@ -1,4 +1,4 @@
-"""
+r"""
 Radial Basis Function (RBF) Module
 
 This module provides implementations of various types of radial basis functions (RBFs),
@@ -46,7 +46,7 @@ This will compute the linear RBF between `x` and `c`.
 from jax import numpy as jnp
 
 def rbf_linear(x, c):
-    """
+    r"""
     Computes the linear radial basis function (RBF).
 
     This RBF is simply the negative Euclidean distance between the input ``x``
@@ -66,7 +66,7 @@ def rbf_linear(x, c):
     return - jnp.linalg.norm((x - c))
 
 def rbf_thin_plate_spline(x, c):
-    """
+    r"""
     Computes the thin plate spline radial basis function (RBF).
 
     .. math::
@@ -87,7 +87,7 @@ def rbf_thin_plate_spline(x, c):
     return r ** 2 * jnp.log(r + 1e-6)
 
 def rbf_cubic(x, c):
-    """
+    r"""
     Computes the cubic radial basis function (RBF).
 
     .. math::
@@ -104,7 +104,7 @@ def rbf_cubic(x, c):
     return jnp.sum((x - c) ** 3)
 
 def rbf_quintic(x, c):
-    """
+    r"""
     Computes the quintic radial basis function (RBF).
 
     .. math::
@@ -121,7 +121,7 @@ def rbf_quintic(x, c):
     return -jnp.sum((x - c) ** 5)
 
 def rbf_multiquadric(x, c):
-    """
+    r"""
     Computes the multiquadric radial basis function (RBF).
 
     .. math::
@@ -138,7 +138,7 @@ def rbf_multiquadric(x, c):
     return -jnp.sqrt(jnp.sum((x - c) ** 2) + 1)
 
 def rbf_inverse_multiquadric(x, c):
-    """
+    r"""
     Computes the inverse multiquadric radial basis function (RBF).
 
     .. math::
@@ -155,7 +155,7 @@ def rbf_inverse_multiquadric(x, c):
     return 1 / jnp.sqrt(jnp.sum((x - c) ** 2) + 1)
 
 def rbf_inverse_quadratic(x, c):
-    """
+    r"""
     Computes the inverse quadratic radial basis function (RBF).
 
     .. math::
@@ -172,7 +172,7 @@ def rbf_inverse_quadratic(x, c):
     return 1 / (jnp.sum((x - c) ** 2) + 1)
 
 def const(x, c):
-    """
+    r"""
     Computes the constant function.
 
     This function always returns 1, regardless of the input ``x`` or the center ``c``.
