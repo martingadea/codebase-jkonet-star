@@ -33,7 +33,7 @@ To generate synthetic trajectory data with 1000 particles, a chosen potential, a
 
 To load previously generated data and compute couplings:
 
-    python data_generator.py --load-from-file my_trajectory_data.npy --test-split 0.2 --n-gmm-components 5
+    python data_generator.py --load-from-file my_trajectory_data.npy --test-ratio 0.2 --n-gmm-components 5
 
 Command-line Arguments
 ----------------------
@@ -49,7 +49,7 @@ Command-line Arguments
 - ``--batch-size``: Batch size for computing couplings during the data processing phase.
 - ``--n-gmm-components``: Number of components for the Gaussian Mixture Model.
 - ``--seed``: Random seed for reproducibility.
-- ``--test-split``: Proportion of data to be used as test data during splitting.
+- ``--test-ratio``: Proportion of data to be used as test data during splitting.
 - ``--split-trajectories``: If set, data is split along trajectories; otherwise, it is split at every timestep.
 """
 
@@ -94,7 +94,8 @@ def filename_from_args(args):
     filename += f"N_{args.n_particles}_"
     filename += f"gmm_{args.n_gmm_components}_"
     filename += f"seed_{args.seed}_"
-    filename += f"split_{args.test_split}"
+    filename += f"split_{args.test_ratio}"
+    filename += f"_split_trajectories_{args.split_trajectories}"
     
     return filename
 
@@ -184,6 +185,7 @@ def generate_data_from_trajectory(
         sample_labels: jnp.ndarray,
         n_gmm_components: int = 10,
         batch_size: int = 1000,
+        leave_one_out: int = -1
 ) -> None:
     """
     Preprocesses the trajectory data for JKOnet*.
@@ -200,6 +202,10 @@ def generate_data_from_trajectory(
         Array of sample labels corresponding to each data point.
     n_gmm_components : int, optional
         Number of components for the Gaussian Mixture Model (default is 10).
+    batch_size : int, optional
+        Batch size for computing couplings (default is 1000).
+    leave_one_out : int, optional
+        If non-negative, leaves one time point out from the training set (default is -1).
 
     Returns
     -------
@@ -243,12 +249,14 @@ def generate_data_from_trajectory(
     print("Computing couplings...")
 
     for t, label in enumerate(sorted_labels[:-1]):
+        if leave_one_out == t or leave_one_out == t + 1:
+            continue
         next_label = sorted_labels[t + 1]
         values_t = trajectory[label]
         values_t1 = trajectory[next_label]
 
         # Compute couplings
-        if is_unbalanced or batch_size == -1:
+        if is_unbalanced or batch_size < 0:
             couplings = compute_couplings(
                 values_t,
                 values_t1,
@@ -349,12 +357,12 @@ def main(args: argparse.Namespace) -> None:
         sample_labels = jax.numpy.load(os.path.join('data', folder, 'sample_labels.npy'))
 
     # Perform train-test split
-    assert args.test_split >= 0 and args.test_split <= 1, "Test split must be a proportion."
-    if args.test_split > 0:
+    assert args.test_ratio >= 0 and args.test_ratio <= 1, "Test split must be a proportion."
+    if args.test_ratio > 0:
         train_values, train_labels, test_values, test_labels = train_test_split(
             data,
             sample_labels,
-            args.test_split,
+            args.test_ratio,
             args.split_trajectories,
             args.seed)
     else:
@@ -365,9 +373,10 @@ def main(args: argparse.Namespace) -> None:
     jax.numpy.save(os.path.join('data', folder, 'train_sample_labels.npy'), train_labels)
     generate_data_from_trajectory(
         folder, train_values, train_labels,
-        args.n_gmm_components, args.batch_size)
+        args.n_gmm_components, args.batch_size,
+        args.leave_one_out)
 
-    if args.test_split != 0:
+    if args.test_ratio > 0:
         # Generate data for test set
         jax.numpy.save(os.path.join('data', folder, 'test_data.npy'), test_values)
         jax.numpy.save(os.path.join('data', folder, 'test_sample_labels.npy'), test_labels)
@@ -459,7 +468,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--n-particles', 
         type=int, 
-        default=1000,
+        default=2000,
         help="""
         Number of particles sampled generated.
         """
@@ -469,7 +478,7 @@ if __name__ == '__main__':
         '--batch-size',
         type=int,
         default=1000,
-        help='Batch size for computing the couplings.'
+        help='Batch size for computing the couplings. Negative values mean no batching.'
     )
     
     parser.add_argument(
@@ -489,17 +498,25 @@ if __name__ == '__main__':
 
     # Train-test split
     parser.add_argument(
-        '--test-split',
+        '--test-ratio',
         type=float, 
-        default=0,
+        default=0.5,
         help='Ratio of the data allocated to the test set.'
         )
 
-    # Flag whether to perform splitting on trajectories
+    # Flag to perform splitting on trajectories
     parser.add_argument(
         '--split-trajectories',
         action='store_true',
         help='If set, data is split along trajectories. If not set and data needs to be split, it is split at every timestep.'
+    )
+
+    # Leave one time-point out
+    parser.add_argument(
+        '--leave-one-out',
+        type=int,
+        default=-1,
+        help='If non-negative, leaves one-time point out from the training set.'
     )
 
     args = parser.parse_args()
