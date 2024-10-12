@@ -122,7 +122,7 @@ def main(args: argparse.Namespace) -> None:
     # Initialize wandb
     if args.wandb:
         wandb.init(
-            project='jkonet-star',
+            project='learning-diffusion-at-ligthspeed',
             config=config)
         wandb.run.name = f"{args.solver}.{args.dataset}.{args.seed}"
 
