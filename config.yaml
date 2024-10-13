@@ -3,7 +3,7 @@ train:
   eval_freq: 10
   batch_size: 250
   epochs: 100
-  save_locally: True
+  save_locally: False
 
 metrics:
   wasserstein_error: 1
@@ -12,7 +12,7 @@ metrics:
 
 #WandB
 wandb:
-  save_plots: True
+  save_plots: False
   save_model: False
 
 # models
