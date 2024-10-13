@@ -59,12 +59,12 @@ import argparse
 import jax
 import jax.numpy as jnp
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from utils.functions import potentials_all, interactions_all
 from utils.sde_simulator import SDESimulator
 from utils.density import GaussianMixtureModel
 from utils.ot import compute_couplings
-from utils.plotting import plot_couplings, plot_level_curves
+from utils.plotting import plot_level_curves
 from collections import defaultdict
 from typing import Tuple
 
@@ -229,22 +229,22 @@ def generate_data_from_trajectory(
         print("Fitting Gaussian Mixture Model...")
         gmm = GaussianMixtureModel()
         gmm.fit(trajectory, n_gmm_components, args.seed)
-        cmap = plt.get_cmap('Spectral')
+        # cmap = plt.get_cmap('Spectral')
 
-        all_values = jnp.vstack([trajectory[label] for label in sorted_labels])
-        x_min = jnp.min(all_values[:, 0]) * 0.9
-        x_max = jnp.max(all_values[:, 0]) * 1.1
-        y_min = jnp.min(all_values[:, 1]) * 0.9
-        y_max = jnp.max(all_values[:, 1]) * 1.1
+        # all_values = jnp.vstack([trajectory[label] for label in sorted_labels])
+        # x_min = jnp.min(all_values[:, 0]) * 0.9
+        # x_max = jnp.max(all_values[:, 0]) * 1.1
+        # y_min = jnp.min(all_values[:, 1]) * 0.9
+        # y_max = jnp.max(all_values[:, 1]) * 1.1
 
-        for label in sorted_labels:
-            # Plot particles
-            plt.scatter(trajectory[label][:, 0], trajectory[label][:, 1],
-                        c=[cmap(float(label) / len(sorted_labels))], marker='o', s=4)
-            plt.xlim(x_min, x_max)
-            plt.ylim(y_min, y_max)
-            plt.savefig(os.path.join('out', 'plots', folder, f'density_{label}.png'))
-            plt.clf()
+        # for label in sorted_labels:
+        #     # Plot particles
+        #     plt.scatter(trajectory[label][:, 0], trajectory[label][:, 1],
+        #                 c=[cmap(float(label) / len(sorted_labels))], marker='o', s=4)
+        #     plt.xlim(x_min, x_max)
+        #     plt.ylim(y_min, y_max)
+        #     plt.savefig(os.path.join('out', 'plots', folder, f'density_{label}.png'))
+        #     plt.clf()
 
     print("Computing couplings...")
 
@@ -284,12 +284,12 @@ def generate_data_from_trajectory(
         data = jnp.concatenate([densities, densities_grads], axis=1)
         jax.numpy.save(os.path.join('data', folder, f'density_and_grads_{label}_to_{next_label}.npy'), data)
 
-        # Plot couplings
-        plot_couplings(couplings)
-        plt.xlim(x_min, x_max)
-        plt.ylim(y_min, y_max)
-        plt.savefig(os.path.join('out', 'plots', folder, f'couplings_{label}_to_{next_label}.png'))
-        plt.clf()
+        # # Plot couplings
+        # plot_couplings(couplings)
+        # plt.xlim(x_min, x_max)
+        # plt.ylim(y_min, y_max)
+        # plt.savefig(os.path.join('out', 'plots', folder, f'couplings_{label}_to_{next_label}.png'))
+        # plt.clf()
 
 def main(args: argparse.Namespace) -> None:
     """
