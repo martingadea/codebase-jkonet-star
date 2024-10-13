@@ -34,7 +34,7 @@ Next, we generate the data for training and evaluation. We perform a 60-40 train
 
 .. code-block:: bash
 
-   python data_generator.py --load-from-file RNA_PCA_5 --test-split 0.4
+   python data_generator.py --load-from-file RNA_PCA_5 --test-ratio 0.4
 
 Training
 --------

@@ -28,7 +28,7 @@ After building the image, you can generate data and train models by executing th
 .. code-block:: bash
 
     # Generate data using the Styblinski-Tang potential
-    docker run -v .:/app jkonet-star-app python data_generator.py --potential styblinski_tang --n-particles 5000 --test-split 0.5
+    docker run -v .:/app jkonet-star-app python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
 
     # Train the model using the generated dataset
     docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
@@ -68,7 +68,7 @@ Steps:
     .. code-block:: bash
 
         # Generate data using the Styblinski-Tang potential
-        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-split 0.5
+        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
 
         # Train the model using the generated dataset
         python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
@@ -108,7 +108,7 @@ Steps:
     .. code-block:: bash
 
         # Generate data using the Styblinski-Tang potential
-        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-split 0.5
+        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
 
         # Train the model using the generated dataset
         python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
