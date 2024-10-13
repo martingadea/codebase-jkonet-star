@@ -1,6 +1,6 @@
 # training
 train:
-  eval_freq: 10
+  eval_freq: 100
   batch_size: 250
   epochs: 100
   save_locally: False

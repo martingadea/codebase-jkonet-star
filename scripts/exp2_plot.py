@@ -3,7 +3,6 @@ import wandb
 import numpy as np
 from tqdm import tqdm
 from load_from_wandb import parse_name, wandb_config
-import csv
 
 folder = 'out/ablation-dimension'
 
