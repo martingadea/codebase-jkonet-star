@@ -22,7 +22,6 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset
 
-from utils.functions import potentials_all, interactions_all
 from utils.ot import wasserstein_loss
 from utils.sde_simulator import get_SDE_predictions
 from utils.plotting import plot_predictions
