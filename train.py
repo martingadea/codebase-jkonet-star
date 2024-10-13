@@ -200,7 +200,7 @@ def main(args: argparse.Namespace) -> None:
                     'interaction_parameters': interaction_params,
                 })
 
-            if save_locally or args.wandb:
+            if save_locally or (args.wandb and config['wandb']['save_plots']):
                 plot_path = os.path.join(plot_folder_name, 'predictions') if save_locally else None
                 trajectory_fig = plot_predictions(
                     predictions,
@@ -229,7 +229,7 @@ def main(args: argparse.Namespace) -> None:
                     save_to=os.path.join(plot_folder_name, 'level_curves_interaction') if save_locally else None
                 )
 
-                if args.wandb and config['wandb']['save_plots']:
+                if args.wandb:
                     wandb.log({
                         'epoch': epoch,
                         'trajectory': wandb.Image(trajectory_fig),
