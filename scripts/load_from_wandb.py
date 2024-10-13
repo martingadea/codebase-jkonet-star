@@ -1,6 +1,11 @@
 import re
 from typing import Dict
 
+wandb_config = {
+    "entity": "passionfruit-ai",
+    "project": "learning-diffusion-at-ligthspeed",
+}
+
 def parse_name(run_name: str) -> Dict[str, str]:
     """
     Parses the run name and extracts model configuration details.

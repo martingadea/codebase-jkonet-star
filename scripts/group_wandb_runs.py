@@ -1,8 +1,6 @@
 import wandb
 import re
-
-ENTITY = "passionfruit-ai"
-PROJECT = "learning-diffusion-at-ligthspeed"
+from load_from_wandb import wandb_config 
 
 # Authenticate with W&B (if necessary)
 wandb.login()
@@ -11,7 +9,7 @@ wandb.login()
 api = wandb.Api()
 
 # Get all runs from the project
-runs = api.runs(f"{ENTITY}/{PROJECT}")
+runs = api.runs(f"{wandb_config["entity"]}/{wandb_config["project"]}")
 
 split_pattern = re.compile(r"split_(\d+\.?\d*)")
 dimension_pattern = re.compile(r"dim_(\d+)")

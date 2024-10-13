@@ -2,17 +2,15 @@ import os
 import wandb
 import numpy as np
 from tqdm import tqdm
-from load_from_wandb import parse_name
+from load_from_wandb import parse_name, wandb_config
 
 os.makedirs('out/lightspeed', exist_ok=True)
 
 api = wandb.Api()
 
-entity = 'passionfruit-ai'
-project = 'learning-diffusion-at-ligthspeed'
 group_name = 'split-trajectories-ratio_0.5'
 
-runs = api.runs(f'{entity}/{project}', filters={"group": group_name})
+runs = api.runs(f'{wandb_config['entity']}/{wandb_config['project']}', filters={"group": group_name})
 
 per_method_data = {}
 max_error = -np.inf
