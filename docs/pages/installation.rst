@@ -55,11 +55,23 @@ Steps:
 
 3. **Install the required packages**
 
-   Once the environment is activated, install the necessary dependencies:
+    Once the environment is activated, install the necessary dependencies:
 
-   .. code-block:: bash
+    .. code-block:: bash
 
        pip install -r requirements.txt
+
+    To install ``parallel`` (used for running the benchmarks), you can use the following command on macOS:
+
+    .. code-block:: bash
+
+        brew install parallel
+
+    On Ubuntu, you can install ``parallel`` using the following command:
+
+    .. code-block:: bash
+
+        sudo apt-get install parallel
 
 4. **Test the installation**
 
@@ -95,11 +107,17 @@ Steps:
 
 3. **Install the required packages**
 
-   Once the environment is activated, install the necessary dependencies for Windows:
+    Once the environment is activated, install the necessary dependencies for Windows:
 
-   .. code-block:: bash
+    .. code-block:: bash
 
        pip install -r requirements-win.txt
+
+    To install ``parallel`` (used for running the benchmarks), you can use the following command:
+
+    .. code-block:: bash
+
+        choco install parallel
 
 4. **Test the installation**
 
