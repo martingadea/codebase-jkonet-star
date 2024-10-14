@@ -1,274 +1,156 @@
 Using JKOnet\*
-============
+==============
+
+This guide provides an overview of how to use JKOnet\* to train models on synthetic data. The guide is divided into the following sections:
+
+1. Generating synthetic data
+2. Training JKOnet\* (and other models)
+
+For reproducing the experiments in the paper, see the :doc:`benchmarks` page, and for more examples (including training JKOnet\* on the single-cell RNA dataset), see the :doc:`tutorials` page.
 
 Generating synthetic data 🧩
-----------------------
+-----------------------------
 
-.. code-block:: bash
-
-   python data_generator.py --potential $potential --interaction $interaction --internal wiener --beta $beta --interaction $interaction
+You can generate synthetic data using the `data_generator.py` script. The script generates data for a given potential energy, interaction energy, and internal energy. The script also computes the couplings and fits the densities, which are required for training JKOnet\*.
 
 Example 1:
 ~~~~~~~~~~~
 
+To generate population data driven by a potential energy function (e.g., the ``wavy_plateau`` function), run the following command:
+
 .. code-block:: bash
 
-   python data_generator.py --potential styblinski_tang
+   python data_generator.py --potential wavy_plateau
 
-Parameters
+Example 2:
 ~~~~~~~~~~~
 
-The `data_generator.py` script accepts the following parameters:
+If you wish to include also internal and interaction energies, you can specify them as follows:
+
+.. code-block:: bash
+
+   python data_generator.py --potential wavy_plateau --interaction flowers --internal wiener --beta 0.1
+
+Other parameters
+~~~~~~~~~~~~~~~~
+The `data_generator.py` script accepts the following parameters for customizing the data generation and performing ablations on various datasets:
 
 .. list-table::
    :header-rows: 1
-   :widths: 20 50 10 10
+   :widths: 40 60
 
-   * - Argument
+   * - Parameter
      - Description
-     - Type
-     - Default
-   * - `--load-from-file`
-     - Path to a file to load the trajectory from, instead of generating new data.
-     - string
-     - None
-   * - `--potential`
-     - Name of the potential energy to use.
-     - string
-     - 'none'
-   * - `--n-timesteps`
-     - Number of timesteps for the SDE simulation.
-     - int
-     - 5
-   * - `--dt`
-     - Time step size in the SDE simulation.
-     - float
-     - 0.01
-   * - `--internal`
-     - Name of the internal energy to use, e.g., 'wiener'.
-     - string
-     - 'none'
-   * - `--beta`
-     - Standard deviation of the Wiener process, required if `--internal` is 'wiener'.
-     - float
-     - 0.0
-   * - `--interaction`
-     - Name of the interaction energy to use.
-     - string
-     - 'none'
-   * - `--dimension`
-     - Dimensionality of the system.
-     - int
-     - 2
-   * - `--n-particles`
-     - Number of particles in the system.
-     - int
-     - 1000
-   * - `--batch-size`
-     - Batch size for computing couplings.
-     - int
-     - 1000
-   * - `--n-gmm-components`
-     - Number of components of the Gaussian Mixture Model. Set to 0 for no GMM.
-     - int
-     - 10
-   * - `--seed`
-     - Seed for the random number generator to ensure reproducibility.
-     - int
-     - 0
-   * - `--test-ratio`
-     - Proportion of the dataset to include in the testing split. A value between 0 and 1.
-     - float
-     - 0
+   * - ``--load-from-file``
+     - Load pre-generated trajectory data from a file. Expects a NumPy array of shape ``(n_timesteps + 1, n_particles, dimension)``. If not provided, the script generates synthetic data. See :doc:`tutorial_rna` for an example.
+   * - ``--potential``
+     - Specifies the potential energy to be used for the SDE simulation. Examples include ``wavy_plateau``, ``styblinski_tang``, or ``none`` if no potential is desired. See :mod:`utils.functions` for more options.
+   * - ``--n-timesteps``
+     - Number of timesteps in the SDE simulation. Defines the length of the particle trajectory.
+   * - ``--dt``
+     - Time step size in the SDE simulation. Controls how often particles are updated in time.
+   * - ``--internal``
+     - Specifies the type of internal energy, such as ``'wiener'``, to simulate internal particle dynamics. Use ``'none'`` to disable internal energy.
+   * - ``--beta``
+     - Standard deviation of the Wiener process (used with ``--internal wiener``), defining the strength of the internal energy.
+   * - ``--interaction``
+     - Specifies interaction energy between particles, such as ``'flowers'``. Use ``'none'`` if no interaction energy is needed. See :mod:`utils.functions` for more options.
+   * - ``--dimension``
+     - Dimensionality of the system (e.g., 2D, 3D). Determines how many spatial dimensions the particles can move in.
+   * - ``--n-particles``
+     - Number of particles to simulate in the dataset. More particles increase the complexity and size of the data.
+   * - ``--batch-size``
+     - Batch size for computing couplings during the processing phase. Negative values disable batching.
+   * - ``--n-gmm-components``
+     - Number of components in the Gaussian Mixture Model (GMM) fitted to the data. Setting to 0 disables GMM fitting.
+   * - ``--seed``
+     - Seed for random number generation to ensure reproducibility of results.
+   * - ``--test-ratio``
+     - Proportion of the data to be allocated to the test set during the train-test split. Values range from 0 to 1.
+   * - ``--split-trajectories``
+     - If set, the train-test split is performed on entire trajectories, preserving continuity between time steps.
+   * - ``--leave-one-out``
+     - Leaves one time point out from the training data when set to a non-negative integer.
 
-Using Custom Data
-~~~~~~~~~~~~~~~~~~~
+For more information on the ``data_generator.py`` script, see the :mod:`data_generator` module.
 
-You can use custom data by loading snapshots from a file using the `--load-from-file` parameter. The snapshots should be in the form of a `(T, N, dim)` array. In this case, the script computes the couplings and fits the densities, but it does not generate new data.
-
-Functions
-~~~~~~~~~~~
-
-Available options for `$potential` and `$interaction`:
-
-- double_exp
-- styblinski_tang
-- rotational
-- relu
-- flat
-- wavy_plateau
-- friedman
-- watershed
-- ishigami
-- flowers
-- bohachevsky
-- holder_table
-- zigzag_ridge
-- oakley_ohagan
-- sphere
-
-For more information on the different functions refer to :mod:`utils.functions`.
-
-Generating All Synthetic Data for the Paper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The following script generates all data for the paper:
-
-.. code-block:: bash
-
-   for potential in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
-   do
-       for beta in 0.0 0.1 0.2 0.5 1.0
-       do
-           for interaction in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
-           do
-               python data_generator.py --potential $potential --interaction $interaction --internal wiener --beta $beta
-           done
-       done
-
-       for dim in 10 20 30 40 50
-       do
-           for nparticles in 1000 2500 5000 75000 10000
-           do
-               python data_generator.py --potential $potential --internal wiener --beta 0.0 --n-particles $nparticles --dimension $dim
-           done
-       done
-   done
-
-Note: This script will take significant time and disk space, as it generates a large dataset. We recommend starting with the single experiments of interest as described in Example 1.
+The script saves the generated data in the ``data/`` directory by default. The directory name containing the generated data includes the potential, internal, interaction, and the other parameters. In the following, let ``dataset_name`` be the name of the directory containing the generated data.
 
 
-Training 🚀
--------------
+Training JKOnet\* 🚀
+-----------------------------
 
-After generating data, you can train a model using the following command:
+To train JKOnet\* on the generated data, use the ``train.py`` script. The script trains a model using the JKOnet\* architecture and evaluates it on the test set.
 
-.. code-block:: bash
-
-   python train.py --solver $solver --dataset $dataset
-
-Where `$solver` can be one of the following:
-
-- jkonet
-- jkonet-vanilla
-- jkonet-monge-gap
-- jkonet-star
-- jkonet-star-potential
-- jkonet-star-potential-internal
-- jkonet-star-time-potential
-- jkonet-star-linear
-- jkonet-star-linear-potential
-- jkonet-star-linear-potential-internal
+For more information on the ``train.py`` script, see the :mod:`train` module.
+For more information on the available models, see the :doc:`models` page and check the `paper <https://arxiv.org/abs/2406.12616>`__.
 
 Example 1:
 ~~~~~~~~~~~
 
-.. code-block:: bash
-
-   python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0
-
-Training All Models on All Synthetic Data for the Paper
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The following script trains all models on all the data generated:
+To train the JKOnet\* modeling only the potential energy on the generated data, run the following command:
 
 .. code-block:: bash
 
-   for potential in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
-   do
-       for beta in 0.0 0.1 0.2 0.5 1.0
-       do
-           for interaction in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
-           do
-               for model in jkonet jkonet-vanilla jkonet-monge-gap jkonet-star jkonet-star-potential jkonet-star-potential-internal jkonet-star-linear jkonet-star-linear-potential jkonet-star-linear-potential-internal
-               do
-                   python train.py --solver $model --dataset potential_$potential\_internal_wiener_beta_$beta\_interaction_none_dt_0.01_T_5_dim_2_N_1000_gmm_10_seed_0
-               done
-           done
-       done
-
-       for dim in 10 20 30 40 50
-       do
-           for nparticles in 1000 2500 5000 75000 10000
-           do
-               python train.py --solver $model --dataset potential_$potential\_internal_wiener_beta_0.0_interaction_none_dt_0.01_T_5_dim_$dim\_N_$nparticles\_gmm_10_seed_0
-           done
-       done
-   done
-
-Note: This script will take a while and consume significant compute resources. The `jkonet` family, in particular, will require days of computation. We recommend starting with individual experiments as described in Example 1. Consider combining this script with data generation and using the `--wandb` flag.
-
-Configuration file
--------------------
-In the configuration file (config.yaml) most of the hyperparameters of the network are specified.
-Furthermore, the file also contains the option to save files or not, either locally or in wandb and
-the metrics to use. Finally, it also contains parameters about the linear parametrization which are shown
-below.
-
-.. code-block:: yaml
-
-    # training
-    train:
-      eval_freq: 100
-      batch_size: 250
-      epochs: 300
-      save_locally: True
-
-    metrics:
-      w_one_ahead: True
-      w_cumulative: True
-
-    #WandB
-    wandb:
-      save_plots: True
-      save_model: False
-
-    # models
-    energy:
-      # optimization
-      optim:
-        weight_decay: 0.0
-        optimizer: Adam
-        lr: 0.001
-        beta1: 0.9
-        beta2: 0.999
-        eps: 0.00000001
-        grad_clip: 10.0
-
-      # model architecture
-      model:
-        layers: [64, 64]
+   python train.py --solver jkonet-star-potential --dataset dataset_name
 
 
-Selecting features for Linear Parametrization
-----------------------------------------------
-Here is a snippet of the configuration file (config.yaml) showing how features are chosen. One may select how much regularization
-to use, the degree of the polynomials, the use of sines and cosines and finally the RBFS. In the case of RBFS, the
-parameters one may play around with are the number of centers per dimension, the domain, the sigma, and finally,
-the type of RBFS. For more information on the RBFS features refer to :mod:`utils.features` module.
+Available solvers
+~~~~~~~~~~~~~~~~~
 
-.. code-block:: yaml
+The following solvers (models) are available for training with JKOnet\*. Each solver corresponds to a different model configuration or variation:
 
-    linear:
-        reg: 0.01
-        features:
-            polynomials:
-                degree: 4
-                sines: False # Mix also with sines
-                cosines: False # Mix also with cosines
-            rbfs:
-                n_centers_per_dim: 10
-                domain: [-4, 4]
-                sigma: 0.5
-                # types of rbfs to include
-                types: [
-                    # 'linear',
-                    # 'thin_plate_spline',
-                    # 'cubic',
-                    # 'quintic',
-                    'const',
-                    # 'multiquadric',
-                    # 'inverse_multiquadric',
-                    # 'inverse_quadratic'
-                ]
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
 
+   * - Solver
+     - Description
+   * - ``jkonet-star``
+     - JKOnet* with full generality, modeling all energy components (potential, internal, and interaction).
+   * - ``jkonet-star-potential``
+     - Fits only the potential energy component.
+   * - ``jkonet-star-potential-internal``
+     - Fits both the potential energy and Wiener process (internal energy).
+   * - ``jkonet-star-time-potential``
+     - Fits the potential energy with time-dependent features.
+   * - ``jkonet-star-linear``
+     - JKOnet* using a linear parametrization for potential, internal, and interaction energies.
+   * - ``jkonet-star-linear-potential``
+     - JKOnet* using linear parametrization for potential energy only (no interaction or internal energy).
+   * - ``jkonet-star-linear-potential-internal``
+     - JKOnet* using linear parametrization for both potential and internal energies.
+   * - ``jkonet-star-linear-interaction``
+     - JKOnet* using linear parametrization for interaction energy only.
+   * - ``jkonet``
+     - Standard JKOnet model for fitting potential energy, as described in the `paper <https://arxiv.org/abs/2106.06345>`_.
+   * - ``jkonet-vanilla``
+     - JKOnet model without using Input Convex Neural Networks (ICNN).
+   * - ``jkonet-monge-gap``
+     - JKOnet with Monge gap regularization.
+
+To add a custom solver, see the :doc:`tutorial_add_module` page.
+
+Other parameters
+~~~~~~~~~~~~~~~~
+
+The ``train.py`` script accepts the following parameters for customizing the training process:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
+
+   * - Parameter
+     - Description
+   * - ``--solver``
+     - Name of the solver (model) to use.
+   * - ``--dataset``
+     - Name of the dataset to train the model on. The dataset should be prepared and located in a directory matching this name.
+   * - ``--eval``
+     - Option to test the fit on ``train_data`` or ``test_data`` (e.g., for debugging purposes). Default is ``test_data``.
+   * - ``--wandb``
+     - If specified, activates Weights & Biases logging for experiment tracking.
+   * - ``--debug``
+     - If specified, runs the script in debug mode (disables JIT compilation in JAX for easier debugging).
+   * - ``--seed``
+     - Seed for random number generation to ensure reproducibility.
