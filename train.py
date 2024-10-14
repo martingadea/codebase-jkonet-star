@@ -59,6 +59,7 @@ from dataset import PopulationEvalDataset
 from utils.sde_simulator import get_SDE_predictions
 from utils.plotting import plot_level_curves, plot_predictions
 from typing import Union, List, Tuple
+from scripts.load_from_wandb import wandb_config
 
 def numpy_collate(batch: List[Union[np.ndarray, Tuple, List]]) -> Union[np.ndarray, List]:
     """
@@ -122,7 +123,7 @@ def main(args: argparse.Namespace) -> None:
     # Initialize wandb
     if args.wandb:
         wandb.init(
-            project='learning-diffusion-at-ligthspeed',
+            project=wandb_config['project'],
             config=config)
         wandb.run.name = f"{args.solver}.{args.dataset}.{args.seed}"
 

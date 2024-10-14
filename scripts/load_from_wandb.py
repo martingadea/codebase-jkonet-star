@@ -3,7 +3,7 @@ from typing import Dict
 
 wandb_config = {
     "entity": "passionfruit-ai",
-    "project": "learning-diffusion-at-ligthspeed",
+    "project": "jkonet-star-camera-ready",
 }
 
 def parse_name(run_name: str) -> Dict[str, str]:
