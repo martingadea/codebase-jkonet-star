@@ -96,14 +96,14 @@ Available options for `$potential` and `$interaction`:
 - rotational
 - relu
 - flat
-- beale
+- wavy_plateau
 - friedman
-- moon
+- watershed
 - ishigami
-- three_hump_camel
+- flowers
 - bohachevsky
 - holder_table
-- cross_in_tray
+- zigzag_ridge
 - oakley_ohagan
 - sphere
 
@@ -116,11 +116,11 @@ The following script generates all data for the paper:
 
 .. code-block:: bash
 
-   for potential in double_exp styblinski_tang rotational relu flat beale friedman moon ishigami three_hump_camel bohachevsky holder_table cross_in_tray oakley_ohagan sphere
+   for potential in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
    do
        for beta in 0.0 0.1 0.2 0.5 1.0
        do
-           for interaction in double_exp styblinski_tang rotational relu flat beale friedman moon ishigami three_hump_camel bohachevsky holder_table cross_in_tray oakley_ohagan sphere
+           for interaction in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
            do
                python data_generator.py --potential $potential --interaction $interaction --internal wiener --beta $beta
            done
@@ -174,11 +174,11 @@ The following script trains all models on all the data generated:
 
 .. code-block:: bash
 
-   for potential in double_exp styblinski_tang rotational relu flat beale friedman moon ishigami three_hump_camel bohachevsky holder_table cross_in_tray oakley_ohagan sphere
+   for potential in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
    do
        for beta in 0.0 0.1 0.2 0.5 1.0
        do
-           for interaction in double_exp styblinski_tang rotational relu flat beale friedman moon ishigami three_hump_camel bohachevsky holder_table cross_in_tray oakley_ohagan sphere
+           for interaction in double_exp styblinski_tang rotational relu flat wavy_plateau friedman watershed ishigami flowers bohachevsky holder_table zigzag_ridge oakley_ohagan sphere
            do
                for model in jkonet jkonet-vanilla jkonet-monge-gap jkonet-star jkonet-star-potential jkonet-star-potential-internal jkonet-star-linear jkonet-star-linear-potential jkonet-star-linear-potential-internal
                do

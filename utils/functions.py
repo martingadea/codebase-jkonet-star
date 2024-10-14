@@ -7,15 +7,15 @@ Available Functions:
 ---------------------
 - ``styblinski_tang``: A non-convex function used to test optimization algorithms.
 - ``holder_table``: A complex, non-convex optimization function.
-- ``cross_in_tray``: Another non-convex function, used for benchmarking optimization algorithms.
+- ``zigzag_ridge``: Another non-convex function, used for benchmarking optimization algorithms.
 - ``oakley_ohagan``: A synthetic function used for testing.
-- ``moon``: A complex function that uses an interaction matrix for polynomial expansions.
+- ``watershed``: A complex function that uses an interaction matrix for polynomial expansions.
 - ``ishigami``: A function used in sensitivity analysis.
 - ``friedman``: A function used in regression and sensitivity analysis.
 - ``sphere``: A simple convex function for optimization testing.
 - ``bohachevsky``: A non-convex function with trigonometric terms.
-- ``three_hump_camel``: A non-convex optimization function.
-- ``beale``: A well-known non-convex function used for optimization testing.
+- ``flowers``: A non-convex optimization function.
+- ``wavy_plateau``: A well-known non-convex function used for optimization testing.
 - ``double_exp``: A double exponential function used in optimization problems.
 - ``relu``: A rectified linear unit (ReLU) function.
 - ``rotational``: A trigonometric-based optimization function.
@@ -89,12 +89,12 @@ def holder_table(v: jnp.ndarray) -> jnp.ndarray:
     v2 = jnp.mean(v[d//2:])
     return 10 * jnp.abs(jnp.sin(v1) * jnp.cos(v2) * jnp.exp(jnp.abs(1 - jnp.sqrt(jnp.sum(jnp.square(v)))/jnp.pi)))
 
-def cross_in_tray(v: jnp.ndarray) -> jnp.ndarray:
+def zigzag_ridge(v: jnp.ndarray) -> jnp.ndarray:
     r"""
-    Computes the Cross-in-Tray function.
+    Computes the Zigzag Ridge function.
 
     .. math::
-        f(v) = -2 \\left(\\left| \sin(z_1) \sin(z_2) \exp\\left( \\left| 10 - \\frac{||v||}{\pi} \\right| \\right) \\right| + 1 \\right)^{0.1}
+        f(v) = \\sum_{i=1}^{d-1} \\left[ |v_i - v_{i+1}|^2 + \\cos(1.25 \\cdot v_i) \\cdot (v_i + v_{i+1}) + v_i^2 \\cdot v_{i+1} \\right]
 
     Parameters
     ----------
@@ -104,12 +104,11 @@ def cross_in_tray(v: jnp.ndarray) -> jnp.ndarray:
     Returns
     -------
     jnp.ndarray
-        The result of the Cross-in-Tray function.
+        The result of the Zigzag Ridge function.
     """
-    d = v.shape[0]
-    v1 = jnp.mean(v[:d//2])
-    v2 = jnp.mean(v[d//2:])
-    return -2 * (jnp.abs(jnp.sin(v1) * jnp.sin(v2) * jnp.exp(jnp.abs(10 - jnp.sqrt(jnp.sum(jnp.square(v)))/jnp.pi))) + 1)**0.1
+    return jnp.sum(
+        jnp.abs(v[:-1] - v[1:]) ** 2 + jnp.cos(v[:-1]) * (v[:-1] + v[1:]) + v[:-1] ** 2 * v[1:]
+    )
 
 def oakley_ohagan(v: jnp.ndarray) -> jnp.ndarray:
     r"""
@@ -130,12 +129,14 @@ def oakley_ohagan(v: jnp.ndarray) -> jnp.ndarray:
     """
     return 5 * jnp.sum(jnp.sin(v) + jnp.cos(v) + jnp.square(v) + v)
 
-def moon(v: jnp.ndarray) -> jnp.ndarray:
+def watershed(v: jnp.ndarray) -> jnp.ndarray:
     r"""
-    Computes the Moon function.
+    Computes the Watershed function.
+
+    The function is defined as:
 
     .. math::
-        f(v) = \max\\left(-100, \min\\left(100, v^\\top A v\\right)\\right)
+        f(v) = \frac{1}{10} \sum_{i=1}^{d-1} \left( v_i + v_i^2 \cdot (v_{i+1} + 4) \right)
 
     Parameters
     ----------
@@ -145,38 +146,11 @@ def moon(v: jnp.ndarray) -> jnp.ndarray:
     Returns
     -------
     jnp.ndarray
-        The result of the Moon function, clipped between -100 and 100.
+        The result of the Watershed function.
     """
-    interaction_matrix = jnp.array([
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-2.08, 1.42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2.11, 2.18, -1.70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0.76, 0.58, 0.84, 1.00, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-0.57, -1.21, 1.20, -0.49, -3.23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-0.72, -7.15, -2.35, 1.74, 2.75, -1.10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-0.47, -1.29, -0.16, 1.29, -1.40, 2.34, 0.21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0.39, -0.19, -0.35, 0.24, -3.90, -0.03, -4.16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [1.40, -2.75, -5.93, -4.73, -0.70, -0.80, -0.37, 0.26, -1.00, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-0.09, -1.16, -1.15, 3.27, -0.17, 0.13, -1.27, -0.30, 0.77, 3.06, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-0.7, -1.09, 1.89, 1.87, -3.38, -3.97, 2.78, -2.69, 1.09, 2.46, 3.34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-1.27, 0.89, -3.47, 1.42, -1.87, 1.99, 1.37, -2.56, -1.15, 5.80, 2.36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-1.03, -0.16, -0.07, -0.96, -0.17, 0.45, -2.75, 28.99, -1.09, -5.15, -1.77, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [1.07, 4.43, 0.60, -0.91, 1.56, 1.77, -3.15, -2.13, -2.74, -2.05, -3.16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2.23, 1.65, -1.09, 2.06, 2.40, -0.50, 1.86, 1.36, 1.59, 3.17, 1.89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2.46, -1.25, -3.23, 2.89, -1.70, 1.86, 0.12, 1.45, .41, 3.40, 2.20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-1.31, -1.35, 0.44, 0.25, 0.32, 0.02, -0.74, 3.09, 0.48, -0.49, -0.71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [-2.94, 1.15, 1.24, 1.97, 2.11, -2.08, 1.06, -1.73, 2.16, -6.71, -3.78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2.63, -19.71, 2.13, 3.04, -0.20, 1.78, -3.76, -1.66, 0.34, -0.74, 0.98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0.07, 23.72, -0.71, 2.00, 1.39, 1.76, -0.43, -3.94, 4.17, 2.78, 1.40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [2.44, 1.42, 1.64, 1.64, -2.01, 1.30, 1.25, -2.56, 0.73, -0.41, -0.59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    ])
-    v = v / 4
-    d = v.shape[0]
-    while d < 20:
-        v = jnp.concatenate([v, v ** 2], axis=0)
-        d = v.shape[0]
-    v = jnp.concatenate([jnp.ones(1), v[:20]], axis=0)
-    return jnp.clip(jnp.dot(v, jnp.dot(interaction_matrix, v)), -100, 100)
+    return jnp.sum(
+        v[:-1] + v[:-1] ** 2 * (v[1:] + 4)
+    ) / 10
 
 def ishigami(v: jnp.ndarray) -> jnp.ndarray:
     r"""
@@ -270,46 +244,51 @@ def bohachevsky(v: jnp.ndarray) -> jnp.ndarray:
     v2 = jnp.mean(v[d//2:])
     return 10 * (jnp.square(v1) + 2 * jnp.square(v2) - 0.3 * jnp.cos(3 * jnp.pi * v1) - 0.4 * jnp.cos(4 * jnp.pi * v2))
 
-def three_hump_camel(v: jnp.ndarray) -> jnp.ndarray:
+def flowers(v: jnp.ndarray) -> jnp.ndarray:
     r"""
-    Computes the Three-Hump Camel function.
+    Computes the Flowers function.
+
+    The function is defined as:
 
     .. math::
-        f(v) = 2z_1^2 - 1.05z_1^4 + \\frac{z_1^6}{6} + z_1z_2 + z_2^2
+        f(v) = \\sum_{i=1}^{d} \\left[ v_i + 2 \\cdot \\sin(|v_i|^{1.2}) \\right]
 
     Parameters
     ----------
-        v (jnp.ndarray): Input array.
+    v : jnp.ndarray
+        Input array.
 
     Returns
     -------
-        jnp.ndarray: The result of the Three-Hump Camel function.
+    jnp.ndarray
+        The result of the Flowers function.
     """
-    d = v.shape[0]
-    v1 = jnp.mean(v[:d//2])
-    v2 = jnp.mean(v[d//2:])
-    return 2 * jnp.square(v1) - 1.05 * jnp.power(v1, 4) + jnp.power(v1, 6) / 6 + v1 * v2 + jnp.square(v2)
+    return jnp.sum(
+        v + 2 * jnp.sin(jnp.abs(v) ** 1.2)
+    )
 
-def beale(v: jnp.ndarray) -> jnp.ndarray:
+def wavy_plateau(v: jnp.ndarray) -> jnp.ndarray:
     r"""
-    Computes the Beale function.
+    Computes the Wavy Plateau function.
+
+    The function is defined as:
 
     .. math::
-        f(v) = \\frac{1}{100}((1.5 - z_1 + z_1z_2)^2 + (2.25 - z_1 + z_1z_2)^2 + (2.625 - z_1 + z_1z_2^3)^2)
+        f(v) = \\sum_{i=1}^{d} \\left[\\cos(5 \\pi v_i) + 0.5 \\cdot v_i^4 - 3 \\cdot v_i^2 + 1 \\right]
 
     Parameters
     ----------
-        v (jnp.ndarray): Input array.
+    v : jnp.ndarray
+        Input array.
 
     Returns
     -------
-        jnp.ndarray: The result of the Beale function, scaled down by a factor of 100.
+    jnp.ndarray
+        The result of the Wavy Plateau function.
     """
-    d = v.shape[0]
-    v1 = jnp.mean(v[:d//2])
-    v2 = jnp.mean(v[d//2:])
-    return jnp.clip(
-        jnp.square(1.5 - v1 + v1 * v2) + jnp.square(2.25 - v1 + v1 * jnp.square(v2)) + jnp.square(2.625 - v1 + v1 * jnp.power(v2, 3)) / 100, -10, 10)
+    return jnp.sum(
+        jnp.cos(jnp.pi * v) + 0.5 * v**4 - 3 * v**2 + 1
+    )
 
 def double_exp(v: jnp.ndarray) -> jnp.ndarray:
     r"""
@@ -395,14 +374,14 @@ potentials_all = {
     'rotational': rotational,
     'relu': relu,
     'flat': flat,
-    'beale': beale,
+    'wavy_plateau': wavy_plateau,
     'friedman': friedman,
-    'moon': moon,
+    'watershed': watershed,
     'ishigami': ishigami,
-    'three_hump_camel': three_hump_camel,
+    'flowers': flowers,
     'bohachevsky': bohachevsky,
     'holder_table': holder_table,
-    'cross_in_tray': cross_in_tray,
+    'zigzag_ridge': zigzag_ridge,
     'oakley_ohagan': oakley_ohagan,
     'sphere': sphere,
     'styblinski_tang': styblinski_tang
