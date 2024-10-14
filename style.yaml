@@ -68,7 +68,7 @@ holder_table:
   light: '#FDFFC2'
   dark: '#A3D8FF'
 
-cross_in_tray:
+zigzag_ridge:
   light: '#FF204E'
   dark: '#5D0E41'
 
@@ -76,7 +76,7 @@ oakley_ohagan:
   light: '#4CCD99'
   dark: '#007F73'
 
-moon:
+watershed:
   light: '#FF7ED4'
   dark: '#6420AA'
 
@@ -100,11 +100,11 @@ bohachevsky:
   light: '#F8FF95'
   dark: '#A6FF96'
 
-three_hump_camel:
+flowers:
   light: '#80B3FF'
   dark: '#687EFF'
 
-beale:
+wavy_plateau:
   light: '#F94C10'
   dark: '#D7BBF5'
 
