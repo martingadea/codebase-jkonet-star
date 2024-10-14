@@ -48,10 +48,3 @@ utils.sde\_simulator module
    :members:
    :undoc-members:
    :show-inheritance:
-
-utils.load_from_wandb module
-
-.. automodule:: utils.load_from_wandb
-   :members:
-   :undoc-members:
-   :show-inheritance:
