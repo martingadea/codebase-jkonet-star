@@ -37,15 +37,16 @@ for run in tqdm(runs):
         }
         max_error = np.nanmax([max_error, err])
 
-        history = run.history(pandas=False)
-        time = np.asarray([entry['time'] for entry in history if 'time' in entry])
-        time = np.asarray(time[(time != None)])
-        
+        time = []
+        errors = []
+        for entry in run.scan_history():
+            if entry['time']:
+                time.append(entry['time'])
+            if entry['error_w_one_ahead']:
+                errors.append(float(entry['error_w_one_ahead']))
         per_method_data[method][potential]['time_avg'] = np.average(time)
         per_method_data[method][potential]['time_std'] = np.std(time)
-        per_method_data[method][potential]['all_errors_avg'] = np.asarray([
-            float(entry['error_w_one_ahead']) for entry in history if 'error_w_one_ahead' in entry and entry['error_w_one_ahead'] != None
-        ])
+        per_method_data[method][potential]['all_errors_avg'] = np.asarray(errors)
     except Exception as e:
         print(f'Error in {run.name}')
         print(e)
