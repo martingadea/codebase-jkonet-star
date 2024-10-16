@@ -37,11 +37,14 @@ All our methods perform uniformly better than the baseline, regardless of the ge
 
 **Running the experiment**
 --------------------------
-To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
+.. tabs::
 
-.. code-block:: bash
+   .. tab:: macOS and Ubuntu
+    To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
 
-    bash -r scripts/exp1.sh
+    .. code-block:: bash
+
+        bash -r scripts/exp1.sh
 
 
 **Post-processing**
@@ -71,11 +74,14 @@ Below we display the EMD error obtained for every configuration. The stable colo
 
 **Running the experiment**
 --------------------------
-To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
+.. tabs::
 
-.. code-block:: bash
+   .. tab:: macOS and Ubuntu
+    To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
 
-    bash -r scripts/exp2.sh
+    .. code-block:: bash
+
+        bash -r scripts/exp2.sh
 
   
 **Post-processing**
@@ -107,11 +113,14 @@ Below are collected the numerical results of the experiment. Compared to the set
 
 **Running the experiment**
 --------------------------
-To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
+.. tabs::
 
-.. code-block:: bash
+   .. tab:: macOS and Ubuntu
+    To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
 
-    bash -r scripts/exp3.sh
+    .. code-block:: bash
+
+        bash -r scripts/exp3.sh
 
 
 **Post-processing**
