@@ -1,132 +1,162 @@
 Installation guide
 ==================
 
-Installation via Docker
------------------------
+.. tabs::
 
-Before proceeding, ensure Docker is installed on your machine. You can download Docker from the official site: `https://www.docker.com/ <https://www.docker.com/>`_.
+   .. tab:: Docker
 
-Once Docker is installed and running, follow these steps to build the Docker image. Execute the following command from the root directory of the repository:
+      Before proceeding, ensure Docker is installed on your machine. You can download Docker from the official site: `https://www.docker.com/ <https://www.docker.com/>`_.
 
-.. code-block:: bash
+      Once Docker is installed and running, follow these steps to build the Docker image. Execute the following command from the root directory of the repository:
 
-    docker build -t jkonet-star-app .
+      .. code-block:: bash
 
+          docker build -t jkonet-star-app .
 
-If you encounter any issues with the Docker build, please ensure that Docker is running and that you have the necessary permissions to execute Docker commands. You can also try to pull the ``python:3.12-slim`` image before building the ``jkonet-star-app`` image:
+      If you encounter any issues with the Docker build, please ensure that Docker is running and that you have the necessary permissions to execute Docker commands. You can also try to pull the ``python:3.12-slim`` image before building the ``jkonet-star-app`` image:
 
-.. code-block:: bash
+      .. code-block:: bash
 
-    docker pull python:3.12-slim
+          docker pull python:3.12-slim
 
+      Running JKOnet\* using Docker
+      ------------------------------------
 
-Running JKOnet\* using Docker
-------------------------------------
+      After building the image, you can generate data and train models by executing the following commands:
 
-After building the image, you can generate data and train models by executing the following commands:
+      .. code-block:: bash
 
-.. code-block:: bash
+          # Generate data using the Styblinski-Tang potential
+          docker run -v .:/app jkonet-star-app python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
 
-    # Generate data using the Styblinski-Tang potential
-    docker run -v .:/app jkonet-star-app python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
+          # Train the model using the generated dataset
+          docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
 
-    # Train the model using the generated dataset
-    docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
+   .. tab:: macOS
 
-Installation on macOS and Ubuntu
---------------------------------
+      These steps have been tested on macOS 13.2.1 and should also work on Ubuntu systems.
 
-These steps have been tested on macOS 13.2.1 and should also work on Ubuntu systems.
+      Steps:
 
-Steps:
+      1. **Install Miniconda**
 
-1. **Install Miniconda**
+         Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.html <https://docs.conda.io/en/latest/miniconda.html>`_.
 
-   Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.html <https://docs.conda.io/en/latest/miniconda.html>`_.
+      2. **Create a Conda environment**
 
-2. **Create a Conda environment**
+         Open a terminal and run the following commands to create and activate a new Conda environment:
 
-   Open a terminal and run the following commands to create and activate a new Conda environment:
+         .. code-block:: bash
 
-   .. code-block:: bash
+             conda create --name jkonet-star python=3.12
+             conda activate jkonet-star
 
-       conda create --name jkonet-star python=3.12
-       conda activate jkonet-star
+      3. **Install the required packages**
 
-3. **Install the required packages**
+         Once the environment is activated, install the necessary dependencies:
 
-    Once the environment is activated, install the necessary dependencies:
+         .. code-block:: bash
 
-    .. code-block:: bash
+             pip install -r requirements.txt
 
-       pip install -r requirements.txt
+         To install ``parallel`` (used for running the benchmarks), you can use the following command on macOS:
 
-    To install ``parallel`` (used for running the benchmarks), you can use the following command on macOS:
+         .. code-block:: bash
 
-    .. code-block:: bash
+             brew install parallel
 
-        brew install parallel
+      4. **Test the installation**
 
-    On Ubuntu, you can install ``parallel`` using the following command:
+         You can generate data and train models by executing the following commands:
 
-    .. code-block:: bash
+         .. code-block:: bash
 
-        sudo apt-get install parallel
+             # Generate data using the Styblinski-Tang potential
+             python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
 
-4. **Test the installation**
+             # Train the model using the generated dataset
+             python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
 
-   You can generate data and train models by executing the following commands:
+   .. tab:: Ubuntu
 
-    .. code-block:: bash
+      These steps have been tested on Ubuntu systems.
 
-        # Generate data using the Styblinski-Tang potential
-        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
+      Steps:
 
-        # Train the model using the generated dataset
-        python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
+      1. **Install Miniconda**
 
-Installation on Windows
------------------------
+         Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.html <https://docs.conda.io/en/latest/miniconda.html>`_.
 
-The following instructions are for Windows 11 users. Please note that Python 3.9 is required for compatibility.
+      2. **Create a Conda environment**
 
-Steps:
+         Open a terminal and run the following commands to create and activate a new Conda environment:
 
-1. **Install Miniconda**
+         .. code-block:: bash
 
-   Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.htmrl <https://docs.conda.io/en/latest/miniconda.html>`_.
+             conda create --name jkonet-star python=3.12
+             conda activate jkonet-star
 
-2. **Create a Conda environment**
+      3. **Install the required packages**
 
-   Run the following commands in your terminal to create and activate the environment with Python 3.9:
+         Once the environment is activated, install the necessary dependencies:
 
-   .. code-block:: bash
+         .. code-block:: bash
 
-       conda create --name jkonet-star python=3.9
-       conda activate jkonet-star
+             pip install -r requirements.txt
 
-3. **Install the required packages**
+         To install ``parallel`` (used for running the benchmarks), you can use the following command on Ubuntu:
 
-    Once the environment is activated, install the necessary dependencies for Windows:
+         .. code-block:: bash
 
-    .. code-block:: bash
+             sudo apt-get install parallel
 
-       pip install -r requirements-win.txt
+      4. **Test the installation**
 
-    To install ``parallel`` (used for running the benchmarks), you can use the following command:
+         You can generate data and train models by executing the following commands:
 
-    .. code-block:: bash
+         .. code-block:: bash
 
-        choco install parallel
+             # Generate data using the Styblinski-Tang potential
+             python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
 
-4. **Test the installation**
+             # Train the model using the generated dataset
+             python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
 
-   You can generate data and train models by executing the following commands:
+   .. tab:: Windows
 
-    .. code-block:: bash
+      The following instructions are for Windows 11 users. Please note that Python 3.9 is required for compatibility.
 
-        # Generate data using the Styblinski-Tang potential
-        python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
+      Steps:
 
-        # Train the model using the generated dataset
-        python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
+      1. **Install Miniconda**
+
+         Download and install Miniconda from the official website: `https://docs.conda.io/en/latest/miniconda.html <https://docs.conda.io/en/latest/miniconda.html>`_.
+
+      2. **Create a Conda environment**
+
+         Run the following commands in your terminal to create and activate the environment with Python 3.9:
+
+         .. code-block:: bash
+
+             conda create --name jkonet-star python=3.9
+             conda activate jkonet-star
+
+      3. **Install the required packages**
+
+         Once the environment is activated, install the necessary dependencies for Windows:
+
+         .. code-block:: bash
+
+             pip install -r requirements-win.txt
+
+      4. **Test the installation**
+
+         You can generate data and train models by executing the following commands:
+
+         .. code-block:: bash
+
+             # Generate data using the Styblinski-Tang potential
+             python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
+
+             # Train the model using the generated dataset
+             python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5

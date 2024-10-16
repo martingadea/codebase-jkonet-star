@@ -34,6 +34,7 @@ extensions = [
     "sphinxcontrib.bibtex",
     "sphinx_togglebutton",
     'sphinx_copybutton',
+    'sphinx_tabs.tabs',
 ]
 
 bibtex_bibfiles = ['bibliography.bib']
