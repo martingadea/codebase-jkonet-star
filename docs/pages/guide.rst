@@ -155,10 +155,12 @@ The ``train.py`` script accepts the following parameters for customizing the tra
    * - ``--seed``
      - Seed for random number generation to ensure reproducibility.
 
-Config file
-~~~~~~~~~~~~
+Configuration file(s)
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-This configuration file contains the settings for training and evaluating the energy model. The file is divided into several sections:
+There are two configuration files in the repo: ``config.yaml`` and ``config-jkonet-extra.yaml``. The latter imports additional configuration parameters for the JKOnet models; see `the JKOnet repo <https://github.com/bunnech/jkonet>`_ for more information.
+
+The ``config.yaml`` is divided into the following sections:
 
 1. **Training settings**: Specifies evaluation frequency, batch size, total epochs, and whether to save outputs locally.
 
@@ -170,62 +172,4 @@ This configuration file contains the settings for training and evaluating the en
 
 5. **Linear parameterization**: Specifies the features used for linear parameterization.
 
-
-.. code-block:: yaml
-
-   # training
-    train:
-      eval_freq: 1000 # Frequency (in epochs) for evaluating the model
-      batch_size: 250 # Number of samples per gradient update
-      epochs: 1000 # Total number of epochs for training
-      save_locally: False # If True, plots will be saved locally.
-
-    metrics:
-      wasserstein_error: 1 # Order of the Wasserstein error to be computed (order 1 is EMD)
-      w_one_ahead: True # If True, calculate the Wasserstein one-ahead error
-      w_cumulative: False # If True, calculate the Wasserstein cumulative error (all-steps-ahead)
-
-    #WandB
-    wandb:
-      save_plots: False # If True, plots will be saved in wandb
-      save_model: False # If True, model will be saved in wandb
-
-    # models
-    energy:
-      # optimization
-      optim:
-        weight_decay: 0.0
-        optimizer: Adam # Choice of optimizer for updating model parameters
-        lr: 0.001 # Learning rate for the optimizer
-        beta1: 0.9 # Coefficient for computing running averages of gradient
-        beta2: 0.999 # Coefficient for computing running averages of squared gradient
-        eps: 0.00000001 # Term added to improve numerical stability
-        grad_clip: 10.0 # Gradient clipping threshold
-
-      # model architecture
-      model:
-        layers: [64, 64] # Number of units in each layer of the neural network
-
-      # for linear parameterization
-      linear:
-        reg: 0.01 # Regularization term for the linear parameterization
-        features:
-          polynomials:
-            degree: 4 # Degree of polynomial features
-            sines: False # Enable mixing with sine functions (False to disable)
-            cosines: False # Enable mixing with cosine functions (False to disable)
-          rbfs:
-            n_centers_per_dim: 10 # Number of radial basis function centers per dimension
-            domain: [-4, 4] # Domain for radial basis functions
-            sigma: 0.5 # Spread (sigma) for radial basis functions
-            # types of rbfs to include
-            types: [
-              # 'linear',
-              # 'thin_plate_spline',
-              # 'cubic',
-              # 'quintic',
-              'const',
-              # 'multiquadric',
-              # 'inverse_multiquadric',
-              # 'inverse_quadratic'
-            ]
+Please check the configuration files for more details on the available parameters.

@@ -137,3 +137,6 @@ To retrieve the results from wandb and write them into a file for later visualiz
 
 .. note::
    The ``_plot.py`` scripts generate the data we rendered in the paper, but you're on your own when it comes to generating the plots (we like tikz). 😊 If you want to implement the plotting in python and contribute to the repo, we would be very happy to accept a PR!
+
+.. note::
+   To reproduce the results faster, you can also reduce the number of epochs to 100. The results will not change substantially.

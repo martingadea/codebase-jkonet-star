@@ -21,10 +21,13 @@ energy:
   optim:
     weight_decay: 0.0
     optimizer: Adam # Choice of optimizer for updating model parameters
-    lr: 0.001 # Learning rate for the optimizer
-    beta1: 0.9 # Coefficient for computing running averages of gradient
-    beta2: 0.999 # Coefficient for computing running averages of squared gradient
-    eps: 0.00000001 # Term added to improve numerical stability
+    
+    # Adam optimizer parameters
+    lr: 0.001
+    beta1: 0.9
+    beta2: 0.999
+    eps: 0.00000001
+
     grad_clip: 10.0 # Gradient clipping threshold
 
   # model architecture
@@ -37,8 +40,8 @@ energy:
     features:
       polynomials:
         degree: 4 # Degree of polynomial features
-        sines: False # Enable mixing with sine functions (False to disable)
-        cosines: False # Enable mixing with cosine functions (False to disable)
+        sines: False # Enable sine functions of the polynomials as additional features
+        cosines: False # Enable cosine functions of the polynomials as additional features
       rbfs: 
         n_centers_per_dim: 10 # Number of radial basis function centers per dimension
         domain: [-4, 4] # Domain for radial basis functions
