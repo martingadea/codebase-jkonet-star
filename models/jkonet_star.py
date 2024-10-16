@@ -8,7 +8,7 @@ support efficient differentiation and optimization. The core classes include:
 - ``JKOnetStarPotentialInternal``: A variant focusing on potential and internal energies.
 - ``JKOnetStarPotential``: A variant focusing solely on the potential energy term.
 - ``JKOnetStarTimePotential``: A time-extended variant of ``JKOnetStarPotential``.
-- ``JKOnetStarLinear``: A model using linear parameterizations with various feature functions.
+- ``JKOnetStarLinear``: A model using linear parametrizations with various feature functions.
 """
 
 
@@ -1109,7 +1109,7 @@ class JKOnetStarLinear(LearningDiffusionModel):
 
     def load_dataset(self, dataset_name: str) -> LinearParametrizationDataset:
         """
-        Loads and returns the dataset for linear parameterizations.
+        Loads and returns the dataset for linear parametrizations.
 
         Parameters
         ----------
@@ -1119,6 +1119,6 @@ class JKOnetStarLinear(LearningDiffusionModel):
         Returns
         -------
         LinearParametrizationDataset
-            The dataset object for linear parameterizations.
+            The dataset object for linear parametrizations.
         """
         return LinearParametrizationDataset(dataset_name)
