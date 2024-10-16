@@ -3,7 +3,7 @@ Benchmarks 🔥
 
 In this page we report the benchmarks for the JKOnet\* model on the synthetic data. For the results related to the single-cell data, please refer to the :doc:`tutorial_rna` page. Check also the `paper <https://arxiv.org/abs/2406.12616>`_ for more details.
 
-Our Models
+Our models
 ~~~~~~~~~~~
 
 We use the following terminology for our methods. JKOnet\ :sup:`*` is the most general non-linear parametrization and JKOnet\ :sup:`*`\ :sub:`V` introduces the inductive bias :math:`\theta_2 = \theta_3 = 0`. Similarly, we refer to the linear parametrizations as JKOnet\ :sup:`*`\ :sub:`l,V` and JKOnet\ :sup:`*`\ :sub:`l`.
@@ -32,15 +32,17 @@ The figure below, which is composed of three plots, collects all the numerical r
 
 .. image:: ../_static/exp_1.png
    :alt: Scaling laws
+   :align: center
 
 All our methods perform uniformly better than the baseline, regardless of the generality. The speed improvement of the JKOnet\∗ models family suggests that a theoretically guided loss may provide strong computational benefits on par with sophisticated model architectures. Our linearly parameterized models, JKOnet\ :sup:`*`\ :sub:`l` and JKOnet\ :sup:`*`\ :sub:`l,V`, require a computational time per epoch comparable to the JKOnet family, but they only need one epoch to solve the problem optimally. Our non-linear models, JKOnet\ :sup:`*`\ and JKOnet\ :sup:`*`\ :sub:`V`, instead both require significantly lower time per epoch and converge faster than the JKOnet family. Compared to JKOnet, our model also requires a simpler architecture: we drop the additional ICNN used in the inner iteration and the related training details. Notice that simply replacing the ICNN in JKOnet with a vanilla MLP deprives the method of the theoretical connections with optimal transport, which, in our experiments, appears to be associated with stability (NaN in the topmost plot).
 
 **Running the experiment**
 --------------------------
+We provide the following script to run all the experiments:
+
 .. tabs::
 
-   .. tab:: macOS and Ubuntu
-    To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
+   .. tab:: MacOS and Ubuntu
 
     .. code-block:: bash
 
@@ -49,13 +51,11 @@ All our methods perform uniformly better than the baseline, regardless of the ge
 
 **Post-processing**
 --------------------
-To retrieve the results from wandb and write them into a file, run the following command:
+To retrieve the results from wandb and write them into a file for later visualization, we provide the following option:
 
 .. code-block:: bash
 
     python scripts/exp1_plot.py
-
-You're on your own when it comes to generating the plots. 😊
 
 Experiment 4.2:  Scaling laws
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -71,13 +71,15 @@ Below we display the EMD error obtained for every configuration. The stable colo
 
 .. image:: ../_static/exp_2.png
    :alt: Scaling laws
+   :align: center
 
 **Running the experiment**
 --------------------------
+We provide the following script to run all the experiments:
+
 .. tabs::
 
-   .. tab:: macOS and Ubuntu
-    To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
+   .. tab:: MacOS and Ubuntu
 
     .. code-block:: bash
 
@@ -86,13 +88,11 @@ Below we display the EMD error obtained for every configuration. The stable colo
   
 **Post-processing**
 --------------------
-To retrieve the results from wandb and write them into a file, run the following command:
+To retrieve the results from wandb and write them into a file for later visualization, we provide the following option:
 
 .. code-block:: bash
 
     python scripts/exp2_plot.py
-
-You're on your own when it comes to generating the plots. 😊
 
 Experiment 4.3:  General energy functionals
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -113,10 +113,11 @@ Below are collected the numerical results of the experiment. Compared to the set
 
 **Running the experiment**
 --------------------------
+We provide the following script to run all the experiments:
+
 .. tabs::
 
-   .. tab:: macOS and Ubuntu
-    To perform the experiment run the following script. Since the script relies on ``parallel`` you need to make sure it is installed, otherwise refer to the :doc:`installation` page.
+   .. tab:: MacOS and Ubuntu
 
     .. code-block:: bash
 
@@ -125,13 +126,14 @@ Below are collected the numerical results of the experiment. Compared to the set
 
 **Post-processing**
 --------------------
-To retrieve the results from wandb and write them into a file, run the following command:
+To retrieve the results from wandb and write them into a file for later visualization, we provide the following option:
 
 .. code-block:: bash
 
     python scripts/exp3_plot.py
 
-You're on your own when it comes to generating the plots. 😊
+.. note::
+   The scripts to perform the experiments rely on ``parallel`` for parallelization and have been only tested on Ubuntu and MacOS. Please refer to the :doc:`installation` page. If you make them work on Windows or Docker, we can include the instructions here. We did not look into that. You can also reproduce the single results manually using Docker (see the :doc:`installation` page).
 
-
-TODO note we did not test the bash scripts in Docker yet, but you can reproduce the results by running the commands in the terminal.
+.. note::
+   The ``_plot.py`` scripts generate the data we rendered in the paper, but you're on your own when it comes to generating the plots (we like tikz). 😊 If you want to implement the plotting in python and contribute to the repo, we would be very happy to accept a PR!

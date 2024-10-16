@@ -32,9 +32,9 @@ Installation guide
           # Train the model using the generated dataset
           docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
 
-   .. tab:: macOS
+   .. tab:: MacOS
 
-      These steps have been tested on macOS 13.2.1 and should also work on Ubuntu systems.
+      These steps have been tested on MacOS 13.2.1 and should also work on Ubuntu systems.
 
       Steps:
 
@@ -59,7 +59,7 @@ Installation guide
 
              pip install -r requirements.txt
 
-         To install ``parallel`` (used for running the benchmarks), you can use the following command on macOS:
+         To install ``parallel`` (used for running the benchmarks), you can use the following command on MacOS:
 
          .. code-block:: bash
 

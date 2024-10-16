@@ -120,7 +120,7 @@ For this, we edit the ``__init__.py`` file in the ``models`` directory:
         return cls(config, data_dim, dt)
 
 Adding a Colormap for the ``DummyModel``
---------------------------------
+---------------------------------------------
 
 Finally, add a colormap specific to the model in the ``style.yaml`` file. This will be used when plotting the predictions.
 
