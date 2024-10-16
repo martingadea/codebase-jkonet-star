@@ -19,7 +19,7 @@ Functions
     Plots the level curves of a given function over a specified domain.
 
 - ``plot_predictions``
-    Visualizes the predicted and ground truth particle positions for different time steps.
+    Visualizes the predicted and ground truth particle positions for different timesteps.
 
 - ``colormap_from_config``
     Creates a custom colormap from a configuration dictionary.
@@ -329,7 +329,7 @@ def plot_predictions(predicted: np.ndarray,
         An array of shape (num_timesteps, num_particles, num_dimensions) containing
         the predicted particle positions.
     data_dict : Dict[int, np.ndarray]
-        A dictionary mapping time steps to arrays of shape (num_particles, num_dimensions)
+        A dictionary mapping timesteps to arrays of shape (num_particles, num_dimensions)
         containing the ground truth particle positions.
     interval : Optional[Tuple[int, int]]
         A tuple specifying the start and end timesteps to plot. If None, plots all timesteps.

@@ -383,7 +383,7 @@ class JKOnetStar(LearningDiffusionModel):
         ys : jnp.ndarray
             Target particle distribution.
         t : jnp.ndarray
-            Time step of the target particle distribution.
+            Timestep of the target particle distribution.
         ws : jnp.ndarray
             Weights of the couplings.
         rho : jnp.ndarray
@@ -515,7 +515,7 @@ class JKOnetStarPotentialInternal(JKOnetStar):
         ys : jnp.ndarray
             Target particle distribution.
         t : jnp.ndarray
-            Time step of the target particle distribution.
+            Timestep of the target particle distribution.
         ws : jnp.ndarray
             Weights of the couplings.
         rho : jnp.ndarray
@@ -601,7 +601,7 @@ class JKOnetStarPotential(JKOnetStarPotentialInternal):
         ys : jnp.ndarray
             Target particle distribution.
         t : jnp.ndarray
-            Time step of the target particle distribution.
+            Timestep of the target particle distribution.
         ws : jnp.ndarray
             Weights of the couplings.
         rho : jnp.ndarray
@@ -689,7 +689,7 @@ class JKOnetStarTimePotential(JKOnetStarPotential):
         ys : jnp.ndarray
             Target particle distribution.
         t : jnp.ndarray
-            Time step of the target particle distribution.
+            Timestep of the target particle distribution.
         ws : jnp.ndarray
             Weights of the couplings.
         rho : jnp.ndarray
@@ -726,7 +726,7 @@ class JKOnetStarTimePotential(JKOnetStarPotential):
         ys : jnp.ndarray
             Target particle distribution.
         t : jnp.ndarray
-            Time step of the target particle distribution.
+            Timestep of the target particle distribution.
         ws : jnp.ndarray
             Weights of the couplings.
         rho : jnp.ndarray
@@ -765,7 +765,7 @@ class JKOnetStarTimePotential(JKOnetStarPotential):
         ys : jnp.ndarray
             Target particle distribution.
         t : jnp.ndarray
-            Time step of the target particle distribution.
+            Timestep of the target particle distribution.
         ws : jnp.ndarray
             Weights of the couplings.
         rho : jnp.ndarray

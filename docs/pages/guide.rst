@@ -48,7 +48,7 @@ The `data_generator.py` script accepts the following parameters for customizing 
    * - ``--n-timesteps``
      - Number of timesteps in the SDE simulation. Defines the length of the particle trajectory.
    * - ``--dt``
-     - Time step size in the SDE simulation. Controls how often particles are updated in time.
+     - Timestep size in the SDE simulation. Controls how often particles are updated in time.
    * - ``--internal``
      - Specifies the type of internal energy, such as ``'wiener'``, to simulate internal particle dynamics. Use ``'none'`` to disable internal energy.
    * - ``--beta``
@@ -67,8 +67,8 @@ The `data_generator.py` script accepts the following parameters for customizing 
      - Seed for random number generation to ensure reproducibility of results.
    * - ``--test-ratio``
      - Proportion of the data to be allocated to the test set during the train-test split. Values range from 0 to 1.
-   * - ``--split-trajectories``
-     - If set, the train-test split is performed on entire trajectories, preserving continuity between time steps.
+   * - ``--split-population``
+     - If set, the train-test split is performed at every timestep; otherwise, it is performed on entire trajectories preserving continuity between timesteps.
    * - ``--leave-one-out``
      - Leaves one time point out from the training data when set to a non-negative integer.
 

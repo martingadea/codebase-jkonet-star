@@ -393,7 +393,7 @@ class PopulationEvalDataset(Dataset):
         """
         Compute the Wasserstein error for one-step-ahead predictions.
 
-        This method evaluates the prediction error by computing the Wasserstein distance between the predicted trajectory and the actual trajectory at each time step, given the current true population.
+        This method evaluates the prediction error by computing the Wasserstein distance between the predicted trajectory and the actual trajectory at each timestep, given the current true population.
 
         Parameters
         ----------
@@ -414,9 +414,9 @@ class PopulationEvalDataset(Dataset):
         Returns
         -------
         jnp.ndarray
-            An array of Wasserstein errors for the one-step-ahead predictions over time steps.
+            An array of Wasserstein errors for the one-step-ahead predictions over timesteps.
             The array has length `T`, where each entry corresponds to the error at a specific
-            time step.
+            timestep.
         """
         error_wasserstein_one_ahead = jnp.ones(self.T)
         for t in range(self.T):

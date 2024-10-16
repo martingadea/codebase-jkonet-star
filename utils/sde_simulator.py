@@ -73,11 +73,11 @@ def get_SDE_predictions(
         The name of the model to use for simulation. If 'jkonet-star-time-potential' is specified,
         `SDESimulator_implicit_time` is used; otherwise, `SDESimulator` is used.
     dt : float
-        The time step size for the SDE simulation.
+        The timestep size for the SDE simulation.
     n_timesteps : int
-        The total number of time steps to simulate.
+        The total number of timesteps to simulate.
     start_timestep : int
-        The initial time step index for the simulation.
+        The initial timestep index for the simulation.
     potential : Union[bool, Callable[[jnp.ndarray], jnp.ndarray]]
         If `True`, a potential function is used in the simulation. If a callable is provided, it should accept
         a JAX array as input and return the potential. If `False`, no potential is applied.
@@ -96,7 +96,7 @@ def get_SDE_predictions(
     -------
     jnp.ndarray
         An array representing the simulated trajectories of the system, with shape (n_timesteps + 1, ...),
-        where the first dimension corresponds to the time steps and the remaining dimensions correspond
+        where the first dimension corresponds to the timesteps and the remaining dimensions correspond
         to the state variables of the system.
     """
     if model == 'jkonet-star-time-potential':
@@ -112,7 +112,7 @@ class SDESimulator:
     Parameters
     ----------
     dt : float
-        The time step size for the simulation.
+        The timestep size for the simulation.
 
     n_timesteps : int
         The number of timesteps to simulate.
@@ -208,7 +208,7 @@ class SDESimulator_implicit_time:
     Parameters
     ----------
     dt : float
-        The time step size for the simulation.
+        The timestep size for the simulation.
 
     n_timesteps : int
         The number of timesteps to simulate.

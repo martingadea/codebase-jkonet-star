@@ -30,7 +30,7 @@ def parse_name(run_name: str) -> Dict[str, str]:
         - `internal`: Type of internal process used.
         - `beta`: Beta parameter value.
         - `interaction`: Type of interaction used.
-        - `dt`: Time step size.
+        - `dt`: Timestep size.
         - `T`: Total time or steps.
         - `dim`: Dimensionality.
         - `N`: Number of samples.

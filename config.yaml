@@ -1,12 +1,12 @@
 # training
 train:
-  eval_freq: 1000 # Frequency (in epochs) for evaluating the model
+  eval_freq: 100 # Frequency (in epochs) for evaluating the model
   batch_size: 250 # Number of samples per gradient update
   epochs: 1000 # Total number of epochs for training
   save_locally: False # If True, plots will be saved locally.
 
 metrics:
-  wasserstein_error: 1 # Order of the Wasserstein error to be computed (order 1 is EMD)
+  wasserstein_error: 1 # Order of the Wasserstein error to be computed
   w_one_ahead: True # If True, calculate the Wasserstein one-ahead error
   w_cumulative: False # If True, calculate the Wasserstein cumulative error (all-steps-ahead)
 

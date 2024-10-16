@@ -141,7 +141,7 @@ class JKOnet(LearningDiffusionModel):
         grad_fn_energy = jax.value_and_grad(
             jax.jit(self.loss_fn_energy), argnums=0, has_aux=True)
         
-        # iterate through time steps
+        # iterate through timesteps
         self.rng, rng_psi = jax.random.split(self.rng)
 
         @jax.jit
@@ -164,7 +164,7 @@ class JKOnet(LearningDiffusionModel):
             return ((state_energy, batch),
                     (loss_energy, loss_psi))
 
-        # iterate through time steps
+        # iterate through timesteps
         (state, _), (
             loss, _) = jax.lax.scan(
                 _through_time, (state, batch),

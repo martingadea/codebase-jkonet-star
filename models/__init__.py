@@ -87,7 +87,7 @@ def get_model(
     -------
     Type
         The model class corresponding to the specified solver, initialized with the provided
-        configuration, data dimensionality, and time step.
+        configuration, data dimensionality, and timestep.
 
     Raises
     ------

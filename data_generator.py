@@ -29,6 +29,7 @@ Example
 To generate synthetic trajectory data with 1000 particles, a chosen potential, and internal Wiener energy:
 
 .. code-block:: bash
+
     python data_generator.py --n-particles 1000 --potential styblinski_tang --n-timesteps 5
 
 To load previously generated data and compute couplings:
@@ -40,7 +41,7 @@ Command-line Arguments
 - ``--load-from-file``: Load trajectory data from a file instead of generating it. Must be a NumPy array of shape `(n_timesteps + 1, n_particles, dimension)`.
 - ``--potential``: Specify the potential energy to use for the SDE simulation.
 - ``--n-timesteps``: Number of timesteps for the SDE simulation.
-- ``--dt``: Time step size for the SDE simulation.
+- ``--dt``: Timestep size for the SDE simulation.
 - ``--internal``: Type of internal energy (e.g., `'wiener'`) to use in the simulation.
 - ``--beta``: Standard deviation of the Wiener process for internal energy.
 - ``--interaction``: Specify the interaction energy between particles.
@@ -50,7 +51,7 @@ Command-line Arguments
 - ``--n-gmm-components``: Number of components for the Gaussian Mixture Model.
 - ``--seed``: Random seed for reproducibility.
 - ``--test-ratio``: Proportion of data to be used as test data during splitting.
-- ``--split-trajectories``: If set, data is split along trajectories; otherwise, it is split at every timestep.
+- ``--split-population``: If set, data is split at every timestep; otherwise, it is split along the trajectories.
 """
 
 
@@ -95,7 +96,7 @@ def filename_from_args(args):
     filename += f"gmm_{args.n_gmm_components}_"
     filename += f"seed_{args.seed}_"
     filename += f"split_{args.test_ratio}"
-    filename += f"_split_trajectories_{args.split_trajectories}"
+    filename += f"_split_trajectories_{not args.split_population}"
     
     return filename
 
@@ -363,7 +364,7 @@ def main(args: argparse.Namespace) -> None:
             data,
             sample_labels,
             args.test_ratio,
-            args.split_trajectories,
+            not args.split_population,
             args.seed)
     else:
         train_values, train_labels = data, sample_labels
@@ -506,9 +507,9 @@ if __name__ == '__main__':
 
     # Flag to perform splitting on trajectories
     parser.add_argument(
-        '--split-trajectories',
+        '--split-population',
         action='store_true',
-        help='If set, data is split along trajectories. If not set and data needs to be split, it is split at every timestep.'
+        help='If set, data is split at every timestep. If not set, it is split along trajectories.'
     )
 
     # Leave one time-point out

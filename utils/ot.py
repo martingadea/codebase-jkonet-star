@@ -206,7 +206,7 @@ def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: int) ->
         The array of particles at the next timestep with shape (n_particles, n_features).
 
     time : int
-        The time step of batch_next.
+        The timestep of batch_next.
 
     Returns
     -------

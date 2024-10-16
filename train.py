@@ -31,6 +31,9 @@ The script accepts the following command-line arguments:
 - `--seed` (`int`):
     Seed for random number generation to ensure reproducibility.
 
+- `--epochs` (`int`):
+    Number of epochs to train the model. If not specified, the number of epochs is taken from the configuration file.
+
 Usage example
 -------------
 To train a model using the `jkonet-star-potential` solver on a dataset named `my_dataset` with wandb logging:
@@ -119,6 +122,12 @@ def main(args: argparse.Namespace) -> None:
     jkonet_config = yaml.safe_load(open('config-jkonet-extra.yaml'))
     # merge configs
     config.update(jkonet_config)
+
+    if args.epochs:
+        # override epochs
+        config['train']['epochs'] = args.epochs
+
+    print(f"Training {args.solver} on {args.dataset} with seed {args.seed} for {config['train']['epochs']} epochs.")
 
     # Initialize wandb
     if args.wandb:
@@ -304,6 +313,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--debug', action='store_true',
                         help='Option to run in debug mode.')
+    
+    parser.add_argument('--epochs', type=int, help='Number of epochs to train the model.')
     
     # reproducibility
     parser.add_argument(

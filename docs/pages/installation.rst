@@ -72,10 +72,10 @@ Installation guide
          .. code-block:: bash
 
              # Generate data using the Styblinski-Tang potential
-             python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
+             python data_generator.py --potential styblinski_tang --n-particles 2000 --test-ratio 0.5
 
              # Train the model using the generated dataset
-             python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
+             python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_True
 
    .. tab:: Ubuntu
 
@@ -117,10 +117,10 @@ Installation guide
          .. code-block:: bash
 
              # Generate data using the Styblinski-Tang potential
-             python data_generator.py --potential styblinski_tang --n-particles 5000 --test-ratio 0.5
+             python data_generator.py --potential styblinski_tang --n-particles 2000 --test-ratio 0.5
 
              # Train the model using the generated dataset
-             python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
+             python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5
 
    .. tab:: Windows
 
@@ -160,3 +160,6 @@ Installation guide
 
              # Train the model using the generated dataset
              python train.py --solver jkonet-star-potential --dataset potential_styblinski_tang_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_5000_gmm_10_seed_0_split_0.5
+
+.. note::
+   The installation instructions we provide are not GPU friendly. If you have a GPU, you can install the necessary packages for GPU support. Running the experiments on a GPU yields significant speedups, especially for the JKOnet\* full model (``jkonet-star``). We collected the training times on a RTX 4090.

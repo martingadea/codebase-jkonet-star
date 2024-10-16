@@ -13,7 +13,7 @@ This dataset tracks the differentiation of human embryonic stem cells over a 27-
 collected at the following time intervals:
 
 +------------------+------------------+------------------+------------------+------------------+------------------+
-| Time steps       | :math:`t_{0}`    | :math:`t_{1}`    | :math:`t_{2}`    | :math:`t_{3}`    | :math:`t_{4}`    |
+| Timesteps        | :math:`t_{0}`    | :math:`t_{1}`    | :math:`t_{2}`    | :math:`t_{3}`    | :math:`t_{4}`    |
 +------------------+------------------+------------------+------------------+------------------+------------------+
 | Days             | 0 - 3            | 6 - 9            | 12 - 15          | 18 - 21          | 24 - 27          |
 +------------------+------------------+------------------+------------------+------------------+------------------+
@@ -34,7 +34,7 @@ Next, we generate the data for training and evaluation. We perform a 60-40 train
 
 .. code-block:: bash
 
-   python data_generator.py --load-from-file RNA_PCA_5 --test-ratio 0.4
+   python data_generator.py --load-from-file RNA_PCA_5 --test-ratio 0.4 --split-population
 
 Training
 --------
@@ -43,9 +43,19 @@ To train and evaluate the model we run the ``train.py`` script.
 
 .. code-block:: bash
 
-   python train.py --dataset RNA_PCA_5 --solver jkonet-star-time-potential --eval test_data
+   python train.py --dataset RNA_PCA_5 --solver jkonet-star-time-potential --epochs 100
 
-The argument ``--eval`` gives the option to calculate the evaluation metrics on the data used for training (fit), or the data left out (predictive capabilities).
+We also provide the following scripts to run all the experiments:
+
+.. tabs::
+
+   .. tab:: MacOS and Ubuntu
+
+    .. code-block:: bash
+
+         bash -x scripts/exp_rna_jkonet_star.sh
+         bash -x scripts/exp_rna_jkonet.sh
+         bash -x scripts/exp_rna_jkonet_vanilla.sh
 
 .. note::
    Qualitative analysis of the dataset suggests that the energy governing cell evolution might be well-described by a time-varying potential, in line with previous work :cite:`tong2020trajectorynet,tong2023improving`. For this, we use the ``jkonet-star-time-potential`` solver, which incorporates time as a parameter in the model. Check out the `paper <https://arxiv.org/abs/2406.12616>`_ for more details.
@@ -54,7 +64,7 @@ The argument ``--eval`` gives the option to calculate the evaluation metrics on 
 Results
 -------
 
-To evaluate quantitatively the quality of our results, we train our models on :math:`60\%` of the data at each time step,
+To evaluate quantitatively the quality of our results, we train our models on :math:`60\%` of the data at each timestep,
 using only the first :math:`5` principal components, and we compute the one-step-ahead Earth Mover's Distance (Wasserstein-1 error) on the test data:
 
 .. math::

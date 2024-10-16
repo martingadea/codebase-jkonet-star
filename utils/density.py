@@ -3,7 +3,7 @@ Gaussian Mixture Model (GMM) Module for Trajectory Data
 
 This module defines the ``GaussianMixtureModel`` class, which fits a Gaussian Mixture Model (GMM) to trajectory data and provides methods to compute density estimates. The class also allows saving and loading the model parameters to/from a file.
 
-The GMM is fitted to time-dependent trajectory data, where each time step contains a set of data points, and the class allows for computing the GMM-based density at any given time step for a new input point.
+The GMM is fitted to time-dependent trajectory data, where each timestep contains a set of data points, and the class allows for computing the GMM-based density at any given timestep for a new input point.
 
 Dependencies:
 -------------
@@ -19,10 +19,10 @@ Class:
 
 Class Attributes:
 -----------------
-- ``gms_means``: A list storing the means of the Gaussian components for each time step.
-- ``gms_covs_invs``: A list storing the inverses of the covariance matrices for each time step.
-- ``gms_den``: A list of normalization factors for density computation at each time step.
-- ``gms_weights``: A list storing the weights of each Gaussian component for each time step.
+- ``gms_means``: A list storing the means of the Gaussian components for each timestep.
+- ``gms_covs_invs``: A list storing the inverses of the covariance matrices for each timestep.
+- ``gms_den``: A list of normalization factors for density computation at each timestep.
+- ``gms_weights``: A list storing the weights of each Gaussian component for each timestep.
 
 Methods:
 --------
@@ -30,7 +30,7 @@ Methods:
 - ``fit``: Fits a GMM to the given trajectory data and stores the relevant parameters (means, inverse covariances, weights).
 - ``to_file``: Saves the model parameters to a file using `pickle`.
 - ``from_file``: Loads the model parameters from a file using `pickle`.
-- ``gmm_density``: Computes the density of the GMM at a specified time step for a given data point.
+- ``gmm_density``: Computes the density of the GMM at a specified timestep for a given data point.
 
 Example Usage:
 --------------
@@ -42,7 +42,7 @@ Example Usage:
     # Initialize the GMM model
     gmm = GaussianMixtureModel()
 
-    # Example trajectory data (for multiple time steps)
+    # Example trajectory data (for multiple timesteps)
     trajectory = {
         0: jnp.array([[1.0, 2.0], [2.0, 3.0]]),
         1: jnp.array([[1.5, 2.5], [2.5, 3.5]])
@@ -51,7 +51,7 @@ Example Usage:
     # Fit the GMM to the trajectory data with 2 components
     gmm.fit(trajectory, n_components=2)
 
-    # Compute the density at time step 0 for a new data point
+    # Compute the density at timestep 0 for a new data point
     x = jnp.array([1.2, 2.2])
     density = gmm.gmm_density(t=0, x=x)
 
@@ -75,13 +75,13 @@ class GaussianMixtureModel:
     Attributes
     ----------
     gms_means : List[jnp.ndarray]
-        List to store means of the Gaussian components for each time step.
+        List to store means of the Gaussian components for each timestep.
     gms_covs_invs : List[jnp.ndarray]
-        List to store the inverses of the covariance matrices for each time step.
+        List to store the inverses of the covariance matrices for each timestep.
     gms_den : List[float]
-        List to store normalization factors (density denominators) for each time step.
+        List to store normalization factors (density denominators) for each timestep.
     gms_weights : List[float]
-        List to store the weights of each Gaussian component for each time step.
+        List to store the weights of each Gaussian component for each timestep.
     """
     
     def __init__(self):
@@ -100,7 +100,7 @@ class GaussianMixtureModel:
         Parameters
         ----------
         trajectory : dict
-            A dictionary where each key is a time step and each value is a 2D array (n_samples, n_features) of data points.
+            A dictionary where each key is a timestep and each value is a 2D array (n_samples, n_features) of data points.
         n_components : int
             The number of clusters (components) to use in the GMM.
         seed : int
@@ -165,12 +165,12 @@ class GaussianMixtureModel:
 
     def gmm_density(self, t: int, x: jnp.ndarray) -> jnp.ndarray:
         """
-        Computes the GMM density for a given time step and data point.
+        Computes the GMM density for a given timestep and data point.
 
         Parameters
         ----------
         t : int
-            The time step to use for computing the GMM density.
+            The timestep to use for computing the GMM density.
         x : jnp.ndarray
             The data point (array of shape (n_features,)) for which to calculate the density.
 

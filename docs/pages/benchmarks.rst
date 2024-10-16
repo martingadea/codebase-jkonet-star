@@ -38,7 +38,7 @@ All our methods perform uniformly better than the baseline, regardless of the ge
 
 **Running the experiment**
 --------------------------
-We provide the following script to run all the experiments:
+We provide the following scripts to run all the experiments:
 
 .. tabs::
 
@@ -46,7 +46,12 @@ We provide the following script to run all the experiments:
 
     .. code-block:: bash
 
-        bash -r scripts/exp1.sh
+         bash -x scripts/exp1_jkonet_star_potential.sh
+         bash -x scripts/exp1_jkonet_star.sh
+         bash -x scripts/exp1_jkonet_star_linear_potential.sh
+         bash -x scripts/exp1_jkonet_star_linear.sh
+         bash -x scripts/exp1_jkonet.sh
+         bash -x scripts/exp1_jkonet_vanilla.sh
 
 
 **Post-processing**
@@ -83,7 +88,7 @@ We provide the following script to run all the experiments:
 
     .. code-block:: bash
 
-        bash -r scripts/exp2.sh
+        bash -x scripts/exp2.sh
 
   
 **Post-processing**
@@ -121,7 +126,7 @@ We provide the following script to run all the experiments:
 
     .. code-block:: bash
 
-        bash -r scripts/exp3.sh
+        bash -x scripts/exp3.sh
 
 
 **Post-processing**
@@ -139,4 +144,7 @@ To retrieve the results from wandb and write them into a file for later visualiz
    The ``_plot.py`` scripts generate the data we rendered in the paper, but you're on your own when it comes to generating the plots (we like tikz). 😊 If you want to implement the plotting in python and contribute to the repo, we would be very happy to accept a PR!
 
 .. note::
-   To reproduce the results faster, you can also reduce the number of epochs to 100. The results will not change substantially.
+   To reproduce the results faster, you can also reduce the number of epochs to 100. You can also change the evaluation frequency to every 1000 epochs. The results will not change substantially.
+
+.. note::
+   Different machines may yield slightly different results, but they should not change substantially. If they do in your setup, please let us know.
