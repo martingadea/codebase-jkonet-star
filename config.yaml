@@ -36,7 +36,7 @@ energy:
 
   # feature selection for linear parametrization
   linear:
-    reg: 0.01 # Regularization term for the linear parameterization
+    reg: 0.01 # Regularization term for the linear parametrization
     features:
       polynomials:
         degree: 4 # Degree of polynomial features

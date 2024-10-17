@@ -170,6 +170,6 @@ The ``config.yaml`` is divided into the following sections:
 
 4. **Model configuration**: Contains the settings for the model's optimization and network architecture.
 
-5. **Linear parameterization**: Specifies the features used for linear parameterization.
+5. **Linear parametrization**: Specifies the features used for linear parametrization.
 
 Please check the configuration files for more details on the available parameters.
