@@ -20,7 +20,7 @@ Installation guide
           docker pull python:3.12-slim
 
       Running JKOnet\* using Docker
-      ------------------------------------
+      ------------------------------
 
       After building the image, you can generate data and train models by executing the following commands:
 

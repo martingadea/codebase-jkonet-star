@@ -1,5 +1,5 @@
 Developer resources 💻
-====================
+=======================
 
 .. toctree::
    :maxdepth: 2

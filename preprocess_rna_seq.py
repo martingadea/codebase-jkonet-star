@@ -6,18 +6,19 @@ This script processes single-cell RNA sequencing (scRNA-seq) data from the Traje
 It applies Principal Component Analysis (PCA) to reduce the dimensionality of the dataset, optionally filters the data by specific timesteps, and saves the processed results and corresponding labels for downstream analysis.
 
 The dataset used is from the paper:
-- Tong, A., Huang, J., Wolf, G., Van Dijk, D., & Krishnaswamy, S. (2020, November).
-  TrajectoryNet: A dynamic optimal transport network for modeling cellular dynamics.
-  In International Conference on Machine Learning (pp. 9526-9536). PMLR.
+
+    Tong, A., Huang, J., Wolf, G., Van Dijk, D., & Krishnaswamy, S. (2020, November).
+    TrajectoryNet: A dynamic optimal transport network for modeling cellular dynamics.
+    In International Conference on Machine Learning (pp. 9526-9536). PMLR.
 
 Main steps:
-- Load the dataset (in `.npz` format) containing PCA embeddings and sample labels.
-- Standardize (whiten) the PCA embeddings using `StandardScaler`.
-- Select a specified number of PCA components to retain, as provided via command-line arguments.
-- Save the processed PCA-transformed data and sample labels in `.npy` format.
+    - Load the dataset (in `.npz` format) containing PCA embeddings and sample labels.
+    - Standardize (whiten) the PCA embeddings using `StandardScaler`.
+    - Select a specified number of PCA components to retain, as provided via command-line arguments.
+    - Save the processed PCA-transformed data and sample labels in `.npy` format.
 
 Command-line arguments:
-- ``--n-components``: Number of PCA components to retain (default: 5).
+    - ``--n-components``: Number of PCA components to retain (default: 5).
 
 Example usage:
     To run the script with 5 PCA components

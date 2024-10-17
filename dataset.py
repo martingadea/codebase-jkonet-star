@@ -281,14 +281,6 @@ class PopulationEvalDataset(Dataset):
     trajectory_only_interaction : np.ndarray
         Trajectory predictions considering only the interaction term.
     """
-    potential: str = 'none'
-    internal: str = 'none'
-    beta: float = 0.0
-    interaction: str = 'none'
-    dt: float = 1.0
-    T: int = 0
-    data_dim: int = 0
-
     def __init__(self, key, dataset_name: str, solver: str, wasserstein_metric: int, label='test_data'):
         """
         Initialize the PopulationEvalDataset.
@@ -308,6 +300,10 @@ class PopulationEvalDataset(Dataset):
             Specifies whether to load 'test_data' or 'train_data'. Default is 'test_data'.
 
         """
+        # dt does not actually matter for learning, 
+        # because everything can be scaled accordingly - as long as it 
+        # is always consistent
+        self.dt: float = 1.0
         self.key = key
         self.solver = solver
         self.wasserstein_metric = wasserstein_metric
