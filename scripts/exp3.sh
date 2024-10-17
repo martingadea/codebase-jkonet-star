@@ -1,6 +1,6 @@
 #!/bin/bash
 potentials=("wavy_plateau" "double_exp" "rotational" "relu" "flat" "friedman" "watershed" "ishigami" "flowers" "bohachevsky" "sphere" "styblinski_tang" "oakley_ohagan" "zigzag_ridge" "holder_table")
-interactions=("wavy_plateau" "double_exp" "rotational" "relu" "flat" "friedman" "watershed" "ishigami" "flowers" "bohachevsky" "sphere" "styblinski_tang" "oakley_ohagan" "zigzag_ridge" "holder_table")
+interactions=("wavy_plateau" "double_exp" "rotational" "relu" "flat" "friedman" "watershed" "ishigami" "flowers" "bohachevsky" "sphere" "styblinski_tang" "oakley_ohagan" "zigzag_ridge")
 betas=(0.0 0.1 0.2)
 
 export potentials interactions betas
