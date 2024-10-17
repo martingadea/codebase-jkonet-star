@@ -77,6 +77,16 @@ with open(f'{folder}/error.csv', 'w') as file:
     for eps in sinkhorn_eps:
         errors = np.asarray([per_epsilon_data[eps][potential] for potential in potentials])
         errors = (errors - min_val) / (max_val - min_val)
-        file.write(','.join([
-            eps, str(np.mean(errors)), str(np.std(errors)), '\n'
-        ]))
+        file.write(f'{eps} {np.mean(errors)} {np.std(errors)}\n')
+
+# If times are saved from the terminal (TODO: log them in a more convenient way)
+if os.path.exists(f'{folder}/raw_times/'):
+    with open(f'{folder}/times.txt', 'a') as file_times:
+        for eps in sinkhorn_eps:
+            times = []
+            for potential in potentials:
+                with open(f'{folder}/raw_times/{potential}_{eps}.txt') as file:
+                    for line in file:
+                        times.append(float(line))
+        
+            file_times.write(f'{eps} {np.mean(times)} {np.std(times)}\n')
