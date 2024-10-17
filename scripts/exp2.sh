@@ -7,5 +7,5 @@ export potentials dims n_particles_values
 parallel -j 8 "
     potential={1}; dim={2}; n_particles={3};
     python data_generator.py --potential \$potential --n-particles \$n_particles --test-ratio 0.5 --dimension \$dim &&
-    python train.py --solver jkonet-star-potential --dataset potential_\${potential}_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_\${dim}_N_\${n_particles}_gmm_10_seed_0_split_0.5_split_trajectories_True --wandb
+    python train.py --solver jkonet-star-potential --dataset potential_\${potential}_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_\${dim}_N_\${n_particles}_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0 --wandb
 " ::: "${potentials[@]}" ::: "${dims[@]}" ::: "${n_particles_values[@]}"

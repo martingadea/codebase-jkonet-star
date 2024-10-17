@@ -61,4 +61,12 @@ def parse_name(run_name: str) -> Dict[str, str]:
         run_details['seed'] = match.group('seed')
         run_details['split'] = match.group('split')
 
+    sinkhorn_pattern = re.compile(r"sinkhorn_(\d+\.?\d*)")
+    match = sinkhorn_pattern.search(run_name)
+    if match:
+        run_details['sinkhorn'] = match.group(1)
+    else:
+        run_details['sinkhorn'] = '0.0'
+
+
     return run_details

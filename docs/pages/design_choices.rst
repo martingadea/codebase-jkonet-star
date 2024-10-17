@@ -6,7 +6,7 @@ This section contains a work-in-progress collection of design strategies and tip
 Mixture of Gaussians for Density Estimation
 -------------------------------------------
 
-When considering the internal energy term of the energy functional :math:`J` (i.e., when :math:`\\theta_3 \neq 0`), we need to estimate the density :math:`\rho_t` and its gradient :math:`\\nabla \rho_t` from the empirical probability measures :math:`\\mu_t`. To estimate :math:`\rho_t`, we employ a mixture of 10 Gaussians. This method represents :math:`\rho_t` as a weighted sum of multiple Gaussian distributions, each with its own mean and variance, allowing for a flexible and accurate approximation of complex density functions. The gradient :math:`\\nabla \rho_t` is then computed by automatic differentiation (using :code:`JAX`) but it could be computed analytically.
+When considering the internal energy term of the energy functional :math:`J` (i.e., when :math:`\theta_3 \neq 0`), we need to estimate the density :math:`\rho_t` and its gradient :math:`\nabla \rho_t` from the empirical probability measures :math:`\mu_t`. To estimate :math:`\rho_t`, we employ a mixture of 10 Gaussians. This method represents :math:`\rho_t` as a weighted sum of multiple Gaussian distributions, each with its own mean and variance, allowing for a flexible and accurate approximation of complex density functions. The gradient :math:`\nabla \rho_t` is then computed by automatic differentiation (using :code:`JAX`) but it could be computed analytically.
 
 Tips and possible improvements:
 

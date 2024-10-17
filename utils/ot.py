@@ -18,6 +18,12 @@ Functions
 - ``compute_couplings``
     Computes the couplings between particles in two consecutive batches using the Wasserstein transport plan.
 
+- ``compute_couplings_sinkhorn``
+    Computes the Sinkhorn couplings between particles in two consecutive batches using the JAX-OTT library.
+
+- ``compute_relevant_couplings``
+    Computes the relevant couplings between particles in two consecutive batches by filtering out the couplings with low weights.
+
 Libraries used
 --------------
 - ``JAX``: A framework for high-performance machine learning and numerical computations with automatic differentiation.
@@ -172,7 +178,6 @@ def sinkhorn_loss(xs: jnp.ndarray, ys: jnp.ndarray, epsilon: float = 1.0) -> flo
     - JAX-OTT library documentation: https://ott-jax.readthedocs.io/
 
     """
-
     chex.assert_rank(xs, 2)
     chex.assert_rank(ys, 2)
     chex.assert_axis_dimension(xs, axis=1, expected=ys.shape[1])
@@ -188,6 +193,57 @@ def sinkhorn_loss(xs: jnp.ndarray, ys: jnp.ndarray, epsilon: float = 1.0) -> flo
     out = solver(prob)
 
     return out.reg_ot_cost
+
+def compute_couplings_sinkhorn(batch: jnp.ndarray, batch_next: jnp.ndarray, time: int, epsilon: float = 1.0) -> jnp.ndarray:
+    """
+    Computes the Sinkhorn couplings (a regularized Wasserstein distance) between two sets of points `batch` and `batch_next`.
+
+    This function uses the JAX-OTT (Optimal Transport Tools) library to compute the Sinkhorn divergence, which is a regularized version of the Wasserstein distance.
+
+    Parameters
+    ----------
+    batch : jnp.ndarray
+        The array of particles at the current timestep with shape (n_particles, n_features).
+
+    batch_next : jnp.ndarray
+        The array of particles at the next timestep with shape (n_particles, n_features).
+
+    time : int
+        The timestep of batch_next.
+
+    epsilon : float, optional
+        Regularization parameter for the Sinkhorn algorithm, by default 1.
+
+    Returns
+    -------
+    jnp.ndarray
+        An array of shape (n_relevant_couplings, 2 * n_features + 2) where each row contains:
+
+        - Particle from `batch` (shape: (n_features,))
+        - Particle from `batch_next` (shape: (n_features,))
+        - Time (float)
+        - Coupling weight (float)
+
+        Only the relevant couplings, where the weight is greater than a threshold, are included.
+    """
+    chex.assert_rank(batch, 2)
+    chex.assert_rank(batch_next, 2)
+    chex.assert_axis_dimension(batch, axis=1, expected=batch_next.shape[1])
+    chex.assert_type([batch, batch_next], float)
+    chex.assert_type(time, int)
+
+    a = jnp.ones(batch.shape[0]) / batch.shape[0]
+    b = jnp.ones(batch_next.shape[0]) / batch_next.shape[0]
+
+    geom = pointcloud.PointCloud(batch, batch_next, epsilon=epsilon)
+    prob = linear_problem.LinearProblem(geom, a, b)
+
+    solver = sinkhorn.Sinkhorn()
+    out = solver(prob)
+
+    weights = out.matrix
+
+    return compute_relevant_couplings(batch, batch_next, time, weights)
 
 
 def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: int) -> jnp.ndarray:
@@ -244,6 +300,36 @@ def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: int) ->
 
     weights = wasserstein_couplings(batch, batch_next)
 
+    return compute_relevant_couplings(batch, batch_next, time, weights)
+
+
+def compute_relevant_couplings(batch, batch_next, time, weights):
+    """
+    Computes the relevant couplings between particles in two consecutive batches by filtering out the couplings with low weights.
+
+    Parameters
+    ----------
+    batch : jnp.ndarray
+        The array of particles at the current timestep with shape (n_particles, n_features).
+    batch_next : jnp.ndarray
+        The array of particles at the next timestep with shape (n_particles, n_features).
+    time : int
+        The timestep of batch_next.
+    weights : jnp.ndarray
+        The optimal transport plan matrix of shape (n_samples_x, n_samples_y).
+
+    Returns
+    -------
+    jnp.ndarray
+        An array of shape (n_relevant_couplings, 2 * n_features + 2) where each row contains:
+
+        - Particle from `batch` (shape: (n_features,))
+        - Particle from `batch_next` (shape: (n_features,))
+        - Time (float)
+        - Coupling weight (float)
+
+        Only the relevant couplings, where the weight is greater than a threshold, are included.
+    """
     # Create particle indices
     idx_t = jnp.arange(batch.shape[0])
     idx_t_next = jnp.arange(batch_next.shape[0])
@@ -257,6 +343,10 @@ def compute_couplings(batch: jnp.ndarray, batch_next: jnp.ndarray, time: int) ->
 
 
     # Pick top couplings (~transport map)
-    relevant_couplings = couplings[couplings[:, -1] > 1/ (10 * max(batch.shape[0],batch_next.shape[0]))]
+    min_probability = 1 / (10 * max(batch.shape[0], batch_next.shape[0]))
+    relevant_couplings = []
+    while len(relevant_couplings) == 0:
+        relevant_couplings = couplings[couplings[:, -1] > min_probability]
+        min_probability /= 2
 
     return relevant_couplings

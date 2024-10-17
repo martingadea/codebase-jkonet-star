@@ -3,5 +3,5 @@ potentials=("zigzag_ridge" "double_exp" "rotational" "relu" "flat" "friedman" "w
 
 parallel -j 8 "
     python data_generator.py --potential {} --n-particles 2000 --test-ratio 0.5 &&
-    python train.py --solver jkonet-star-linear --dataset potential_{}_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True --wandb
+    python train.py --solver jkonet-star-linear --dataset potential_{}_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0 --wandb
 " ::: "${potentials[@]}"

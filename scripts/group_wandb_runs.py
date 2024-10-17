@@ -14,6 +14,7 @@ runs = api.runs(f"{wandb_config["entity"]}/{wandb_config["project"]}")
 split_pattern = re.compile(r"split_(\d+\.?\d*)")
 dimension_pattern = re.compile(r"dim_(\d+)")
 interaction_pattern = re.compile(r"interaction_(.*?)_dt")
+sinkhorn_pattern = re.compile(r"sinkhorn_(\d+\.?\d*)")
 for run in runs:
     GROUP_NAME = None
     if "RNA" in run.name:
@@ -37,6 +38,12 @@ for run in runs:
             dimension = match.group(1)
             if int(dimension) > 2:
                 GROUP_NAME = "ablation-dimension"
+
+        match = sinkhorn_pattern.search(run.name)
+        if match:
+            sinkhorn = match.group(1)
+            if float(sinkhorn) > 1e-12:
+                GROUP_NAME = "ablation-couplings"
 
         match = interaction_pattern.search(run.name)
         if match:

@@ -143,7 +143,7 @@ def rbf_inverse_multiquadric(x, c):
 
     .. math::
 
-        \mathrm{RBF}(x, c) = \\left( \sqrt{\sum_{i} (x_i - c_i)^2 + 1} \\right)^{-1}
+        \mathrm{RBF}(x, c) = \left( \sqrt{\sum_{i} (x_i - c_i)^2 + 1} \right)^{-1}
 
     Args:
         x (jnp.ndarray): Input data point.
@@ -160,7 +160,7 @@ def rbf_inverse_quadratic(x, c):
 
     .. math::
 
-        \mathrm{RBF}(x, c) = \\left(\sum_{i} (x_i - c_i)^2 + 1\\right)^{-1}
+        \mathrm{RBF}(x, c) = \left(\sum_{i} (x_i - c_i)^2 + 1\right)^{-1}
 
     Args:
         x (jnp.ndarray): Input data point.

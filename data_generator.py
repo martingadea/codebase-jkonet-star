@@ -64,10 +64,11 @@ import numpy as np
 from utils.functions import potentials_all, interactions_all
 from utils.sde_simulator import SDESimulator
 from utils.density import GaussianMixtureModel
-from utils.ot import compute_couplings
+from utils.ot import compute_couplings, compute_couplings_sinkhorn
 from utils.plotting import plot_level_curves
 from collections import defaultdict
 from typing import Tuple
+import time
 
 def filename_from_args(args):
     """
@@ -97,6 +98,8 @@ def filename_from_args(args):
     filename += f"seed_{args.seed}_"
     filename += f"split_{args.test_ratio}"
     filename += f"_split_trajectories_{not args.split_population}"
+    filename += f"_lo_{args.leave_one_out}"
+    filename += f"_sinkhorn_{args.sinkhorn}"
     
     return filename
 
@@ -186,7 +189,8 @@ def generate_data_from_trajectory(
         sample_labels: jnp.ndarray,
         n_gmm_components: int = 10,
         batch_size: int = 1000,
-        leave_one_out: int = -1
+        leave_one_out: int = -1,
+        sinkhorn: float = 0.0
 ) -> None:
     """
     Preprocesses the trajectory data for JKOnet*.
@@ -207,6 +211,8 @@ def generate_data_from_trajectory(
         Batch size for computing couplings (default is 1000).
     leave_one_out : int, optional
         If non-negative, leaves one time point out from the training set (default is -1).
+    sinkhorn : float, optional
+        Regularization parameter for the Sinkhorn algorithm. If < 1e-12, no regularization is applied (default is 0.0).
 
     Returns
     -------
@@ -249,6 +255,12 @@ def generate_data_from_trajectory(
 
     print("Computing couplings...")
 
+    if sinkhorn > 1e-12:
+        # change compute_couplings to use the sinkhorn function
+        f_compute_couplings = lambda x, y, t: compute_couplings_sinkhorn(x, y, t, sinkhorn)
+    else:
+        f_compute_couplings = lambda x, y, t: compute_couplings(x, y, t)
+
     for t, label in enumerate(sorted_labels[:-1]):
         if leave_one_out == t or leave_one_out == t + 1:
             continue
@@ -257,8 +269,9 @@ def generate_data_from_trajectory(
         values_t1 = trajectory[next_label]
 
         # Compute couplings
+        time_t = time.time()
         if is_unbalanced or batch_size < 0:
-            couplings = compute_couplings(
+            couplings = f_compute_couplings(
                 values_t,
                 values_t1,
                 next_label)
@@ -268,12 +281,14 @@ def generate_data_from_trajectory(
                 idxs = jnp.arange(i * batch_size, min(
                     trajectory[0].shape[0], (i + 1) * batch_size
                 ))
-                couplings.append(compute_couplings(
+                couplings.append(f_compute_couplings(
                     trajectory[t][idxs, :],
                     trajectory[t + 1][idxs, :],
                     next_label
                 ))
             couplings = jnp.concatenate(couplings, axis=0)
+        time_couplings = time.time() - time_t
+        print(f"Time to compute couplings: {time_couplings} [s]")
         jnp.save(os.path.join('data', folder, f'couplings_{label}_to_{next_label}.npy'), couplings)
         # Save densities and gradients
         ys = couplings[:, (couplings.shape[1] - 1) // 2:-2] #Changed the 2 to match the new shape of couplings
@@ -375,7 +390,8 @@ def main(args: argparse.Namespace) -> None:
     generate_data_from_trajectory(
         folder, train_values, train_labels,
         args.n_gmm_components, args.batch_size,
-        args.leave_one_out)
+        args.leave_one_out,
+        args.sinkhorn)
 
     if args.test_ratio > 0:
         # Generate data for test set
@@ -518,6 +534,13 @@ if __name__ == '__main__':
         type=int,
         default=-1,
         help='If non-negative, leaves one-time point out from the training set.'
+    )
+
+    parser.add_argument(
+        '--sinkhorn',
+        type=float,
+        default=0.0,
+        help='Regularization parameter for the Sinkhorn algorithm. If < 1e-12, no regularization is applied.'
     )
 
     args = parser.parse_args()

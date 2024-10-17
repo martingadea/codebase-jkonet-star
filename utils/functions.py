@@ -72,7 +72,7 @@ def holder_table(v: jnp.ndarray) -> jnp.ndarray:
     Computes the Holder Table function.
 
     .. math::
-        f(v) = -\\left|\sin(v_1)\cos(v_2)\exp\\left(\\left|1 - \\frac{\sqrt{v_1^2 + v_2^2}}{\pi}\\right|\\right)\\right|
+        f(v) = -\left|\sin(v_1)\cos(v_2)\exp\left(\left|1 - \frac{\sqrt{v_1^2 + v_2^2}}{\pi}\right|\right)\right|
 
     Parameters
     ----------
@@ -94,7 +94,7 @@ def zigzag_ridge(v: jnp.ndarray) -> jnp.ndarray:
     Computes the Zigzag Ridge function.
 
     .. math::
-        f(v) = \\sum_{i=1}^{d-1} \\left[ |v_i - v_{i+1}|^2 + \\cos(1.25 \\cdot v_i) \\cdot (v_i + v_{i+1}) + v_i^2 \\cdot v_{i+1} \\right]
+        f(v) = \sum_{i=1}^{d-1} \left[ |v_i - v_{i+1}|^2 + \cos(1.25 \cdot v_i) \cdot (v_i + v_{i+1}) + v_i^2 \cdot v_{i+1} \right]
 
     Parameters
     ----------
@@ -124,8 +124,9 @@ def oakley_ohagan(v: jnp.ndarray) -> jnp.ndarray:
     jnp.ndarray
         The result of the Oakley-Ohagan function.
 
-    .. math::
-        f(v) = 5 \sum_{i=1}^{d} (\sin(v_i) + \cos(v_i) + v_i^2 + v_i)
+        .. math::
+
+            f(v) = 5 \sum_{i=1}^{d} (\sin(v_i) + \cos(v_i) + v_i^2 + v_i)
     """
     return 5 * jnp.sum(jnp.sin(v) + jnp.cos(v) + jnp.square(v) + v)
 
@@ -157,7 +158,7 @@ def ishigami(v: jnp.ndarray) -> jnp.ndarray:
     Computes the Ishigami function.
 
     .. math::
-        f(v) = \sin(z_1) + 7 \sin(z_2)^2 + 0.1 \\left(\\frac{z_1 + z_2}{2}\\right)^4 \sin(z_1)
+        f(v) = \sin(z_1) + 7 \sin(z_2)^2 + 0.1 \left(\frac{z_1 + z_2}{2}\right)^4 \sin(z_1)
 
     Parameters
     ----------
@@ -181,9 +182,9 @@ def friedman(v: jnp.ndarray) -> jnp.ndarray:
     Computes the Friedman function.
 
     .. math::
-        f(v) = \\frac{1}{100}\\biggl(10\sin\\left(2\pi(z_1 - 7)(z_2 - 7)\\right) + 
-        20\\left(2(z_1 - 7)\sin(z_2 - 7)- \\frac{1}{2}\\right)^2 \\\\+
-        10\\left(2(z_1 - 7)\cos(z_2 - 7) - 1\\right)^2 + \\frac{1}{10}(z_2 - 7)\sin(2(z_1 - 7))\\biggr)
+        f(v) = \frac{1}{100}\biggl(10\sin\left(2\pi(z_1 - 7)(z_2 - 7)\right) + 
+        20\left(2(z_1 - 7)\sin(z_2 - 7)- \frac{1}{2}\right)^2 \\\\ +
+        10\left(2(z_1 - 7)\cos(z_2 - 7) - 1\right)^2 + \frac{1}{10}(z_2 - 7)\sin(2(z_1 - 7))\biggr)
 
 
 
@@ -251,7 +252,7 @@ def flowers(v: jnp.ndarray) -> jnp.ndarray:
     The function is defined as:
 
     .. math::
-        f(v) = \\sum_{i=1}^{d} \\left[ v_i + 2 \\cdot \\sin(|v_i|^{1.2}) \\right]
+        f(v) = \sum_{i=1}^{d} \left[ v_i + 2 \cdot \sin(|v_i|^{1.2}) \right]
 
     Parameters
     ----------
@@ -274,7 +275,7 @@ def wavy_plateau(v: jnp.ndarray) -> jnp.ndarray:
     The function is defined as:
 
     .. math::
-        f(v) = \\sum_{i=1}^{d} \\left[\\cos(5 \\pi v_i) + 0.5 \\cdot v_i^4 - 3 \\cdot v_i^2 + 1 \\right]
+        f(v) = \sum_{i=1}^{d} \left[\cos(5 \pi v_i) + 0.5 \cdot v_i^4 - 3 \cdot v_i^2 + 1 \right]
 
     Parameters
     ----------
@@ -295,7 +296,7 @@ def double_exp(v: jnp.ndarray) -> jnp.ndarray:
     Computes the Double Exponential function.
 
     .. math::
-        f(v) = 200\exp\\left(-\\frac{||v - m\mathbf{1}||^2}{\sigma}\\right) + \exp\\left(-\\frac{||v + m\mathbf{1}||}{s}\\right)
+        f(v) = 200\exp\left(-\frac{||v - m\mathbf{1}||^2}{\sigma}\right) + \exp\left(-\frac{||v + m\mathbf{1}||}{s}\right)
 
     where :math:`d = 3` and :math:`s = 20`.
 
@@ -336,9 +337,9 @@ def rotational(v: jnp.ndarray) -> jnp.ndarray:
     Computes the Rotational function.
 
     .. math::
-        f(v) = 10 \cdot \\text{ReLU}(\\theta + \pi)
+        f(v) = 10 \cdot \text{ReLU}(\theta + \pi)
 
-    where :math:`\theta = \\arctan\\left(\frac{v_2 + 5}{v_1 + 5}\\right)`.
+    where :math:`\theta = \arctan\left(\frac{v_2 + 5}{v_1 + 5}\right)`.
 
     Parameters
     ----------

@@ -62,7 +62,7 @@ with open('out/all-energies/failed_runs_unique.sh', 'w') as f:
             potential, interaction, beta = exp.split('|')
             f.write('\n')
             f.write(f'python data_generator.py --potential {potential} --interaction {interaction} --n-particles 2000 --test-ratio 0.5 --internal wiener --beta {beta}\n')
-            f.write(f'python train.py --dataset potential_{potential}_internal_wiener_beta_{beta}_interaction_{interaction}_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True --wandb --solver {methods[0]}\n')
+            f.write(f'python train.py --dataset potential_{potential}_internal_wiener_beta_{beta}_interaction_{interaction}_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0 --wandb --solver {methods[0]}\n')
         
 
 methods = list(per_method_data.keys())
