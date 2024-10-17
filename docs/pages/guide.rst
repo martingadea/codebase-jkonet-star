@@ -13,7 +13,7 @@ Generating synthetic data 🧩
 
 You can generate synthetic data using the `data_generator.py` script. The script generates data for a given potential energy, interaction energy, and internal energy. The script also computes the couplings and fits the densities, which are required for training JKOnet\*.
 
-Example 1:
+Example:
 ~~~~~~~~~~~
 
 To generate population data driven by a potential energy function (e.g., the ``wavy_plateau`` function), run the following command:
@@ -21,15 +21,6 @@ To generate population data driven by a potential energy function (e.g., the ``w
 .. code-block:: bash
 
    python data_generator.py --potential wavy_plateau
-
-Example 2:
-~~~~~~~~~~~
-
-If you wish to include also internal and interaction energies, you can specify them as follows:
-
-.. code-block:: bash
-
-   python data_generator.py --potential wavy_plateau --interaction flowers --internal wiener --beta 0.1
 
 Other parameters
 ~~~~~~~~~~~~~~~~
@@ -74,7 +65,7 @@ The `data_generator.py` script accepts the following parameters for customizing 
 
 For more information on the ``data_generator.py`` script, see the :mod:`data_generator` module.
 
-The script saves the generated data in the ``data/`` directory by default. The directory name containing the generated data includes the potential, internal, interaction, and the other parameters. In the following, let ``dataset_name`` be the name of the directory containing the generated data.
+The script saves the generated data in the ``data/`` directory by default. The directory name containing the generated data includes the potential, internal, interaction, and the other parameters. The name of the folder is the ``dataset`` parameter to use in the following.
 
 
 Training JKOnet\* 🚀
@@ -92,7 +83,7 @@ To train the JKOnet\* modeling only the potential energy on the generated data, 
 
 .. code-block:: bash
 
-   python train.py --solver jkonet-star-potential --dataset dataset_name
+   python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
 
 
 Available solvers

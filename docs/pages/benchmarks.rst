@@ -19,6 +19,13 @@ To evaluate the prediction capabilities, we use the one-step-ahead earth-mover d
 
 where :math:`\mu_t` and :math:`\hat{\mu}_t` are the observed and predicted populations, respectively. In particular, we consider the average and standard deviation over a trajectory.
 
+.. note::
+   The scripts to perform the experiments rely on ``parallel`` for parallelization and have been only tested on Ubuntu and MacOS. Please refer to the :doc:`installation` page. If you make them work on Windows or Docker, we can include the instructions here. We did not look into that. You can also reproduce the single results manually using Docker (see the :doc:`installation` page).
+
+.. note::
+   The scripts log the results to `wandb <https://wandb.ai>`_. Make sure to have a working installation. Please check the `instructions <https://docs.wandb.ai/quickstart/>`_, or remove the flag ``--wandb`` from the scripts you are using.
+
+
 Experiment 4.1: Training at lightspeed
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -136,9 +143,6 @@ To retrieve the results from wandb and write them into a file for later visualiz
 .. code-block:: bash
 
     python scripts/exp3_plot.py
-
-.. note::
-   The scripts to perform the experiments rely on ``parallel`` for parallelization and have been only tested on Ubuntu and MacOS. Please refer to the :doc:`installation` page. If you make them work on Windows or Docker, we can include the instructions here. We did not look into that. You can also reproduce the single results manually using Docker (see the :doc:`installation` page).
 
 .. note::
    The ``_plot.py`` scripts generate the data we rendered in the paper, but you're on your own when it comes to generating the plots (we like tikz). 😊 If you want to implement the plotting in python and contribute to the repo, we would be very happy to accept a PR!
