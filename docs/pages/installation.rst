@@ -26,11 +26,11 @@ Installation guide
 
       .. code-block:: bash
 
-          # Generate data using the Styblinski-Tang potential
-          docker run -v .:/app jkonet-star-app python data_generator.py --potential wavy_plateau
+         # Generate population data
+         docker run -v .:/app jkonet-star-app python data_generator.py --potential wavy_plateau
 
-          # Train the model using the generated dataset
-          docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
+         # Train the model on the generated dataset
+         docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
 
    .. tab:: MacOS
 
@@ -71,10 +71,10 @@ Installation guide
 
          .. code-block:: bash
 
-             # Generate data using the Styblinski-Tang potential
+             # Generate population data
              python data_generator.py --potential wavy_plateau
 
-             # Train the model using the generated dataset
+             # Train the model on the generated dataset
              python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
 
    .. tab:: Ubuntu
@@ -116,10 +116,10 @@ Installation guide
 
          .. code-block:: bash
 
-             # Generate data using the Styblinski-Tang potential
+             # Generate population data
              python data_generator.py --potential wavy_plateau
 
-             # Train the model using the generated dataset
+             # Train the model on the generated dataset
              python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
 
    .. tab:: Windows
@@ -155,10 +155,10 @@ Installation guide
 
          .. code-block:: bash
 
-             # Generate data using the Styblinski-Tang potential
+             # Generate population data
              python data_generator.py --potential wavy_plateau
 
-             # Train the model using the generated dataset
+             # Train the model on the generated dataset
              python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
 
 .. note::
