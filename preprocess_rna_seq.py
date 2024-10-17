@@ -1,15 +1,7 @@
 """
 Module for preprocessing and saving scRNA-seq data for trajectory analysis using PCA.
 
-This script processes single-cell RNA sequencing (scRNA-seq) data from the TrajectoryNet study by Tong et al. (2020). 
-
 It applies Principal Component Analysis (PCA) to reduce the dimensionality of the dataset, optionally filters the data by specific timesteps, and saves the processed results and corresponding labels for downstream analysis.
-
-The dataset used is from the paper:
-
-    Tong, A., Huang, J., Wolf, G., Van Dijk, D., & Krishnaswamy, S. (2020, November).
-    TrajectoryNet: A dynamic optimal transport network for modeling cellular dynamics.
-    In International Conference on Machine Learning (pp. 9526-9536). PMLR.
 
 Main steps:
     - Load the dataset (in `.npz` format) containing PCA embeddings and sample labels.
@@ -26,11 +18,6 @@ Example usage:
     .. code-block:: bash
     
         python script.py --n-components 5
-
-References:
-    1. Tong, A., Huang, J., Wolf, G., Van Dijk, D., & Krishnaswamy, S. (2020, November).
-       TrajectoryNet: A dynamic optimal transport network for modeling cellular dynamics.
-       In International Conference on Machine Learning (pp. 9526-9536). PMLR.
 """
 import os
 import numpy as np
