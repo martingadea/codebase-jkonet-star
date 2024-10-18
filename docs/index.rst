@@ -62,10 +62,10 @@ If you use this code in your research, please cite our paper (NeurIPS 2024, Oral
 
 .. code-block:: latex
 
-   @article{terpin2024learning,
-     title={{Learning Diffusion at Lightspeed}},
+   @inproceedings{terpin2024learning,
+     title={Learning Diffusion at Lightspeed},
      author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martín and D\"orfler, Florian},
-     journal={Proceedings of NeurIPS},
+     booktitle = {Advances in Neural Information Processing Systems},
      year={2024},
      note={Oral Presentation},
    }
