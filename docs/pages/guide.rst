@@ -20,7 +20,7 @@ To generate population data driven by a potential energy function (e.g., the ``w
 
 .. code-block:: bash
 
-   python data_generator.py --potential wavy_plateau
+   python data_generator.py --potential wavy_plateau --dataset-name test-wavy-plateau
 
 Other parameters
 ~~~~~~~~~~~~~~~~
@@ -87,7 +87,7 @@ To train the JKOnet\* modeling only the potential energy on the generated data, 
 
 .. code-block:: bash
 
-   python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
+   python train.py --solver jkonet-star-potential --dataset test-wavy-plateau
 
 
 Available solvers

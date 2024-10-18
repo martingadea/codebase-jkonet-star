@@ -11,7 +11,7 @@ This repo contains a JAX implementation of the JKOnet* architecture presented in
 
 Diffusion regulates numerous natural processes and drives the dynamics of many successful generative models. Current models for learning diffusion terms from observational data often require complex bilevel optimization problems and primarily focus on modeling the drift component of the system.
 
-We propose a new simple model, JKOnet*, which bypasses the complexity of existing architectures while presenting significantly enhanced representational capabilities: JKOnet* recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet* minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally, JKOnet* provides a closed-form optimal solution for linearly parametrized functionals, and, when applied to predict the evolution of cellular processes from real-world data, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods.
+We propose a new simple model, JKOnet*, which bypasses the complexity of existing architectures while presenting significantly enhanced representational capabilities: JKOnet* recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet* minimizes a simple quadratic loss and outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally, JKOnet* provides a closed-form optimal solution for linearly parametrized functionals, and, when applied to predict the evolution of cellular processes from real-world data, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods.
 
 ## Installation guide
 - [Docker](#docker)
@@ -43,10 +43,10 @@ After building the image, you can generate data and train models by executing th
 
 ```bash
 # Generate population data
-docker run -v .:/app jkonet-star-app python data_generator.py --potential wavy_plateau --dataset-name test-jkonet-star
+docker run -v .:/app jkonet-star-app python data_generator.py --potential wavy_plateau --dataset-name test-wavy-plateau
 
 # Train the model on the generated dataset
-docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset test-jkonet-star
+docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset test-wavy-plateau
 ```
 
 ### MacOS
@@ -148,14 +148,14 @@ To generate population data driven by a potential energy function (e.g., the wav
 
 ```bash
    # Generate population data
-   python data_generator.py --potential wavy_plateau --dataset-name test-jkonet-star
+   python data_generator.py --potential wavy_plateau --dataset-name test-wavy-plateau
 ```
 
 To train the JKOnet* modeling only the potential energy on the generated data, run the following command:
 
 ```bash
    # Train the model on the generated dataset
-   python train.py --solver jkonet-star-potential --dataset test-jkonet-star
+   python train.py --solver jkonet-star-potential --dataset test-wavy-plateau
 ```
 
 The figure below displays the ground truth potential (left) and the recovered potential from JKOnet* (right).
@@ -176,7 +176,7 @@ If you use this code in your research, please cite our paper (NeurIPS 2024, Oral
 ## Compiling the documentation with Sphinx
 To compile the documentation using Sphinx, follow these steps:
 
-1. **Install Required Packages**
+1. **Install additional required packages**
 
    Make sure you have Sphinx and any necessary extensions installed: 
    ```bash
