@@ -9,8 +9,11 @@ This repo contains a JAX implementation of the JKOnet* architecture presented in
 ## Abstract 🤓
 <p align='center'><img src='docs/_static/cover.png' alt='Cover.' width='45%'> <img src='docs/_static/preview.png' alt='Cover.' width='45%'></p>
 
+Diffusion regulates numerous natural processes and drives the dynamics of many successful generative models. Current models for learning diffusion terms from observational data often require complex bilevel optimization problems and primarily focus on modeling the drift component of the system.
 
-# Installation guide
+We propose a new simple model, JKOnet*, which bypasses the complexity of existing architectures while presenting significantly enhanced representational capabilities: JKOnet* recovers the potential, interaction, and internal energy components of the underlying diffusion process. JKOnet* minimizes a simple quadratic loss and drastically outperforms other baselines in terms of sample efficiency, computational complexity, and accuracy. Additionally, JKOnet* provides a closed-form optimal solution for linearly parametrized functionals, and, when applied to predict the evolution of cellular processes from real-world data, it achieves state-of-the-art accuracy at a fraction of the computational cost of all existing methods.
+
+## Installation guide
 - [Docker](#docker)
 - [MacOS](#macos)
 - [Ubuntu](#ubuntu)
@@ -18,7 +21,7 @@ This repo contains a JAX implementation of the JKOnet* architecture presented in
 
 **Note**: The installation instructions provided here are not GPU friendly. If you have a GPU, install the necessary packages for GPU support. Running the experiments on a GPU can yield significant speedups, especially for the JKOnet* full model (`jkonet-star`). We collected the training times on a RTX 4090.
 
-## Docker
+### Docker
 
 Docker needs to be installed on your machine before proceeding. You can download Docker from the official site: https://www.docker.com/.
 
@@ -34,7 +37,7 @@ If you encounter any issues with the Docker build, ensure that Docker is running
 docker pull python:3.12-slim
 ```
 
-### Running JKOnet* using Docker
+#### Running JKOnet* using Docker
 
 After building the image, you can generate data and train models by executing the following commands:
 
@@ -46,11 +49,11 @@ docker run -v .:/app jkonet-star-app python data_generator.py --potential wavy_p
 docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
 ```
 
-## MacOS
+### MacOS
 
 These steps have been tested on MacOS 13.2.1 and should also work on Ubuntu systems.
 
-### Steps:
+#### Steps:
 
 1. **Install Miniconda**
 
@@ -78,23 +81,11 @@ These steps have been tested on MacOS 13.2.1 and should also work on Ubuntu syst
    brew install parallel
 ```
 
-4. **Test the installation**
-
-   You can generate data and train models by executing the following commands:
-
-```bash
-   # Generate population data
-   python data_generator.py --potential wavy_plateau
-
-   # Train the model on the generated dataset
-   python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
-```
-
-## Ubuntu
+### Ubuntu
 
 These steps have been tested on Ubuntu systems.
 
-### Steps:
+#### Steps:
 
 1. **Install Miniconda**
 
@@ -122,23 +113,12 @@ These steps have been tested on Ubuntu systems.
    sudo apt-get install parallel
 ```
 
-4. **Test the installation**
 
-   You can generate data and train models by executing the following commands:
-
-```bash
-   # Generate population data
-   python data_generator.py --potential wavy_plateau
-
-   # Train the model on the generated dataset
-   python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
-```
-
-## Windows
+### Windows
 
 The following instructions are for Windows 11 users. Please note that Python 3.9 is required for compatibility.
 
-### Steps:
+#### Steps:
 
 1. **Install Miniconda**
 
@@ -161,16 +141,54 @@ The following instructions are for Windows 11 users. Please note that Python 3.9
    pip install -r requirements-win.txt
 ```
 
-4. **Test the installation**
+---
 
-   You can generate data and train models by executing the following commands:
+## Example
+To generate population data driven by a potential energy function (e.g., the wavy_plateau function), run the following command:
 
 ```bash
    # Generate population data
    python data_generator.py --potential wavy_plateau
+```
 
+To train the JKOnet* modeling only the potential energy on the generated data, run the following command:
+
+```bash
    # Train the model on the generated dataset
    python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
 ```
 
----
+The figure below displays the ground truth potential (left) and the recovered potential from JKOnet* (right).
+<p align='center'><img src='docs/_static/wavy_plateau_gt.jpg' alt='wavy_plateau_gt.' width='45%'> <img src='docs/_static/wavy_plateau.jpg' alt='wavy_plateau_pred.' width='45%'></p>
+
+## Citation
+If you use this code in your research, please cite our paper (NeurIPS 2024, Oral Presentation):
+```bash
+   @inproceedings{terpin2024learning,
+     title={Learning Diffusion at Lightspeed},
+     author={Terpin, Antonio and Lanzetti, Nicolas and Gadea, Martín and D\"orfler, Florian},
+     booktitle = {Advances in Neural Information Processing Systems},
+     year={2024},
+     note={Oral Presentation},
+   }
+```
+
+## Compiling the documentation with Sphinx
+To compile the documentation using Sphinx, follow these steps:
+
+1. **Install Required Packages**
+
+   Make sure you have Sphinx and any necessary extensions installed: 
+   ```bash
+   pip install -r requirements-sphinx.txt
+   ```
+
+2. **Building the documentation**
+
+   Next, navigate to the root directory of your project and run the following command to build the HTML documentation:
+   ```bash
+   sphinx-build -b html ./docs ./docs/build/
+   ```
+   This command tells Sphinx to generate HTML files from the source files located in the ./docs directory and place the generated files in the ./docs/build/ directory.
+
+The compiled HTML pages will be located in the docs/build directory. You can open the index.html file in your web browser to view the documentation.
