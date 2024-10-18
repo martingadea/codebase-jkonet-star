@@ -43,10 +43,10 @@ After building the image, you can generate data and train models by executing th
 
 ```bash
 # Generate population data
-docker run -v .:/app jkonet-star-app python data_generator.py --potential wavy_plateau
+docker run -v .:/app jkonet-star-app python data_generator.py --potential wavy_plateau --dataset-name test-jkonet-star
 
 # Train the model on the generated dataset
-docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
+docker run -v .:/app jkonet-star-app python train.py --solver jkonet-star-potential --dataset test-jkonet-star
 ```
 
 ### MacOS
@@ -148,14 +148,14 @@ To generate population data driven by a potential energy function (e.g., the wav
 
 ```bash
    # Generate population data
-   python data_generator.py --potential wavy_plateau
+   python data_generator.py --potential wavy_plateau --dataset-name test-jkonet-star
 ```
 
 To train the JKOnet* modeling only the potential energy on the generated data, run the following command:
 
 ```bash
    # Train the model on the generated dataset
-   python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
+   python train.py --solver jkonet-star-potential --dataset test-jkonet-star
 ```
 
 The figure below displays the ground truth potential (left) and the recovered potential from JKOnet* (right).

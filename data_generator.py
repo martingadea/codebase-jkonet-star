@@ -2,6 +2,7 @@
 Module for generating and processing population trajectory data.
 
 This module provides tools to:
+
 1. Simulate particle trajectories with different potential, internal and interaction energy configurations, or load pre-existing data.
 2. Fit Gaussian Mixture Models (GMMs) on trajectory data.
 3. Compute couplings between particle distributions at consecutive timesteps.
@@ -52,6 +53,10 @@ Command-line Arguments
 - ``--seed``: Random seed for reproducibility.
 - ``--test-ratio``: Proportion of data to be used as test data during splitting.
 - ``--split-population``: If set, data is split at every timestep; otherwise, it is split along the trajectories.
+- ``--leave-one-out``: If non-negative, leaves one time point out from the training set.
+- ``--sinkhorn``: Regularization parameter for the Sinkhorn algorithm. If < 1e-12, no regularization is applied.
+- ``--dataset-name``: Specifies the name of the output dataset. If not provided, a filename will be automatically generated based on the simulation parameters. This option is only used if data is generated. If data is loaded from a file (using --load-from-file), the output dataset will retain the name of the input file.
+
 """
 
 
@@ -84,6 +89,10 @@ def filename_from_args(args):
     str
         Generated filename based on the provided arguments.
     """
+
+    # Use dataset name if provided, else generate filename from args
+    if args.dataset_name:
+        return args.dataset_name
 
     # Generate filename
     filename = f"potential_{args.potential}_"
@@ -542,6 +551,11 @@ if __name__ == '__main__':
         default=0.0,
         help='Regularization parameter for the Sinkhorn algorithm. If < 1e-12, no regularization is applied.'
     )
+
+    parser.add_argument(
+        '--dataset-name',
+        type=str,
+        help='Name for the dataset.')
 
     args = parser.parse_args()
 

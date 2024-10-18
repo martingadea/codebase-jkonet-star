@@ -62,6 +62,10 @@ The `data_generator.py` script accepts the following parameters for customizing 
      - If set, the train-test split is performed at every timestep; otherwise, it is performed on entire trajectories preserving continuity between timesteps.
    * - ``--leave-one-out``
      - Leaves one time point out from the training data when set to a non-negative integer.
+   * - ``--sinkhorn``
+     - Regularization parameter for the Sinkhorn algorithm. If less than ``1e-12``, no regularization is applied.
+   * - ``--dataset-name``
+     - Specifies the name of the output dataset. If not provided, a filename will be automatically generated based on the simulation parameters. This option is only used if data is generated. If data is loaded from a file (using ``--load-from-file``), the output dataset will retain the name of the input file.
 
 For more information on the ``data_generator.py`` script, see the :mod:`data_generator` module.
 

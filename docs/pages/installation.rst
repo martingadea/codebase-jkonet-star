@@ -155,10 +155,13 @@ Installation guide
          .. code-block:: bash
 
              # Generate population data
-             python data_generator.py --potential wavy_plateau
+             python data_generator.py --potential wavy_plateau --dataset-name test-jkonet-star
 
              # Train the model on the generated dataset
-             python train.py --solver jkonet-star-potential --dataset potential_wavy_plateau_internal_none_beta_0.0_interaction_none_dt_0.01_T_5_dim_2_N_2000_gmm_10_seed_0_split_0.5_split_trajectories_True_lo_-1_sinkhorn_0.0
+             python train.py --solver jkonet-star-potential --dataset test-jkonet-star
+
+         .. note::
+            Since Windows has a maximum filename length limitation, use the ``dataset-name`` argument. Using the automatically generated filenames might result in errors.
 
 .. note::
    The installation instructions we provide are not GPU friendly. If you have a GPU, you can install the necessary packages for GPU support. Running the experiments on a GPU yields significant speedups, especially for the JKOnet\* full model (``jkonet-star``). We collected the training times on a RTX 4090.
