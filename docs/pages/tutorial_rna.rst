@@ -24,7 +24,7 @@ we use the same processed artifacts of the embryoid data provided in their work,
 components of the principal components analysis (PCA) of the data.
 The data is located in ``data/TrajectoryNet/eb_velocity_v5_npz``.
 
-To start, we load the data, scale it as in the `dataset.py <https://github.com/KrishnaswamyLab/TrajectoryNet/blob/master/TrajectoryNet/dataset.py>`_ of :cite:`tong2020trajectorynet`, and save it in the format needed for our preprocessing script. In particular, we consider the first 5 principal components.
+To start, we load the data, scale it as in the `dataset.py <https://github.com/KrishnaswamyLab/TrajectoryNet/blob/master/TrajectoryNet/dataset.py>`_ of :cite:`tong2020trajectorynet`, and save it in the format needed for our preprocessing script. In particular, we consider the first 5 principal components. The preprocessing script creates two files in the data directory: data.npy and sample_labels.npy, both saved under the name RNA_PCA_5.
 
 .. code-block:: bash
 

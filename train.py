@@ -127,7 +127,6 @@ def main(args: argparse.Namespace) -> None:
         # override epochs
         config['train']['epochs'] = args.epochs
 
-    print(f"Training {args.solver} on {args.dataset} with seed {args.seed} for {config['train']['epochs']} epochs.")
 
     # Initialize wandb
     if args.wandb:
@@ -154,6 +153,8 @@ def main(args: argparse.Namespace) -> None:
             dataset_train, batch_size=batch_size if batch_size > 0 else len(dataset_train), shuffle=True, collate_fn=numpy_collate)
     loader_val = DataLoader(
             dataset_eval, batch_size=len(dataset_eval), shuffle=False,  collate_fn=numpy_collate)
+
+    print(f"Training {args.solver} on {args.dataset} with seed {args.seed} for {config['train']['epochs']} epochs.")
 
     # Train
     epochs = config['train']['epochs']
@@ -288,7 +289,7 @@ if __name__ == '__main__':
 
     parser.add_argument(
         '--solver', '-s',
-        type=EnumMethod, 
+        type=EnumMethod,
         choices=list(EnumMethod), 
         default=EnumMethod.JKO_NET_STAR_POTENTIAL,
         help=f"""Name of the solver to use.""",

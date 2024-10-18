@@ -35,28 +35,62 @@ To generate synthetic trajectory data with 1000 particles, a chosen potential, a
 
 To load previously generated data and compute couplings:
 
-    python data_generator.py --load-from-file my_trajectory_data.npy --test-ratio 0.2 --n-gmm-components 5
+    python data_generator.py --load-from-file my_trajectory_data --test-ratio 0.2 --n-gmm-components 5
 
 Command-line Arguments
 ----------------------
-- ``--load-from-file``: Load trajectory data from a file instead of generating it. Must be a NumPy array of shape `(n_timesteps + 1, n_particles, dimension)`.
-- ``--potential``: Specify the potential energy to use for the SDE simulation.
-- ``--n-timesteps``: Number of timesteps for the SDE simulation.
-- ``--dt``: Timestep size for the SDE simulation.
-- ``--internal``: Type of internal energy (e.g., `'wiener'`) to use in the simulation.
-- ``--beta``: Standard deviation of the Wiener process for internal energy.
-- ``--interaction``: Specify the interaction energy between particles.
-- ``--dimension``: Dimensionality of the simulated system.
-- ``--n-particles``: Number of particles in the simulation.
-- ``--batch-size``: Batch size for computing couplings during the data processing phase.
-- ``--n-gmm-components``: Number of components for the Gaussian Mixture Model.
-- ``--seed``: Random seed for reproducibility.
-- ``--test-ratio``: Proportion of data to be used as test data during splitting.
-- ``--split-population``: If set, data is split at every timestep; otherwise, it is split along the trajectories.
-- ``--leave-one-out``: If non-negative, leaves one time point out from the training set.
-- ``--sinkhorn``: Regularization parameter for the Sinkhorn algorithm. If < 1e-12, no regularization is applied.
-- ``--dataset-name``: Specifies the name of the output dataset. If not provided, a filename will be automatically generated based on the simulation parameters. This option is only used if data is generated. If data is loaded from a file (using --load-from-file), the output dataset will retain the name of the input file.
+The script accepts the following command-line arguments:
 
+- `--load-from-file` (`str`):
+    Load trajectory data from a file instead of generating it. Must be a NumPy array of shape `(n_timesteps + 1, n_particles, dimension)`.
+
+- `--potential` (`str`):
+    Specify the potential energy to use for the SDE simulation.
+
+- `--n-timesteps` (`int`):
+    Number of timesteps for the SDE simulation.
+
+- `--dt` (`float`):
+    Timestep size for the SDE simulation.
+
+- `--internal` (`str`):
+    Type of internal energy (e.g., `'wiener'`) to use in the simulation.
+
+- `--beta` (`float`):
+    Standard deviation of the Wiener process for internal energy.
+
+- `--interaction` (`str`):
+    Specify the interaction energy between particles.
+
+- `--dimension` (`int`):
+    Dimensionality of the simulated system.
+
+- `--n-particles` (`int`):
+    Number of particles in the simulation.
+
+- `--batch-size` (`int`):
+    Batch size for computing couplings during the data processing phase.
+
+- `--n-gmm-components` (`int`):
+    Number of components for the Gaussian Mixture Model.
+
+- `--seed` (`int`):
+    Random seed for reproducibility.
+
+- `--test-ratio` (`float`):
+    Proportion of data to be used as test data during splitting.
+
+- `--split-population` (`bool`):
+    If set, data is split at every timestep; otherwise, it is split along the trajectories.
+
+- `--leave-one-out` (`int`):
+    If non-negative, leaves one time point out from the training set.
+
+- `--sinkhorn` (`float`):
+    Regularization parameter for the Sinkhorn algorithm. If < 1e-12, no regularization is applied.
+
+- `--dataset-name` (`str`):
+    Specifies the name of the output dataset. If not provided, a directory name will be automatically generated based on the simulation parameters. This option is only used if data is generated. If data is loaded from a file (using `--load-from-file`), the output dataset will retain the name of the input file.
 """
 
 
